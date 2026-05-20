@@ -24,7 +24,6 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 /* ── VIDEO FULL SCREEN ── */
 .video-wrap{position:fixed;inset:0;background:#000;}
 #localVideo{width:100%;height:100%;object-fit:cover;display:block;}
-#localVideo.mirror{transform:scaleX(-1)}
 
 /* ── TOP BAR ── */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:50;
@@ -45,7 +44,7 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 .badge-conn{color:var(--green);border-color:#2dc65330;background:var(--green-dim)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* ── LIVE BADGE on video ── */
+/* ── LIVE BADGE ── */
 .vid-live-badge{position:fixed;top:60px;left:50%;transform:translateX(-50%);
   background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;
   font-size:.65rem;font-weight:700;padding:5px 14px;border-radius:4px;letter-spacing:.1em;
@@ -82,7 +81,7 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 .copy-btn:hover{background:rgba(255,255,255,.2);color:#fff}
 .copy-btn svg{width:16px;height:16px}
 
-/* ── TORCH indicator (when on) ── */
+/* ── TORCH indicator ── */
 .torch-indicator{position:fixed;bottom:90px;left:18px;
   background:rgba(255,214,10,.9);color:#000;
   font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;
@@ -112,23 +111,21 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
   text-align:center;font-family:'JetBrains Mono',monospace;z-index:60;
   display:none;backdrop-filter:blur(8px);white-space:nowrap;}
 
-/* ── KEEPALIVE STATUS ── */
+/* ── KEEPALIVE DOT ── */
 .keepalive-dot{position:fixed;bottom:26px;left:18px;
   width:6px;height:6px;border-radius:50%;background:var(--green);
   box-shadow:0 0 6px var(--green);display:none;z-index:50;}
 
-/* ── FLASH overlay for screenshot ── */
+/* ── FLASH overlay ── */
 .flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:200;transition:opacity .25s;}
 </style>
 </head>
 <body>
 
-<!-- Video -->
 <div class="video-wrap">
   <video id="localVideo" autoplay playsinline muted></video>
 </div>
 
-<!-- Top bar -->
 <div class="topbar">
   <div class="brand">
     <div class="brand-dot"></div>
@@ -137,21 +134,14 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
   <div id="statusBadge" class="badge badge-idle">OFFLINE</div>
 </div>
 
-<!-- Live badge -->
 <div class="vid-live-badge" id="liveBadge">● EN VIVO</div>
-
-<!-- Viewers -->
 <div class="vid-viewers" id="vidViewers"><span id="viewerCount">0</span> visor(es)</div>
-
-<!-- Torch indicator -->
 <div class="torch-indicator" id="torchIndicator">⚡ FLASH ON</div>
 
-<!-- REC indicator -->
 <div class="rec-indicator" id="recIndicator">
   <div class="rec-dot"></div> REC
 </div>
 
-<!-- Bottom code -->
 <div class="bottom-bar">
   <div class="code-row">
     <div class="code-label">CÓDIGO</div>
@@ -165,13 +155,9 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
   </div>
 </div>
 
-<!-- Keep alive dot -->
 <div class="keepalive-dot" id="keepaliveDot"></div>
-
-<!-- Flash effect -->
 <div class="flash" id="flashEffect"></div>
 
-<!-- Start overlay -->
 <div class="start-overlay" id="startOverlay">
   <div class="start-icon">
     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8">
@@ -183,14 +169,16 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
   <button class="btn-start" id="startBtn">Encender Cámara</button>
 </div>
 
-<!-- Error bar -->
 <div class="error-bar" id="errorBar"></div>
 
 <script>
-// ══════════════════════════════════════
-//  STREAMLINK CAM — Solo transmisión
-//  El admin controla todo lo demás
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  STREAMLINK CAM v2.0
+//  Bugs corregidos:
+//  - Data channel ↔ call matching robusto
+//  - Acks enviados por el canal correcto (no broadcast ciego)
+//  - Todos los comandos del admin funcionan correctamente
+// ══════════════════════════════════════════════════════
 
 // ── ELEMENTOS ──
 const localVideo    = document.getElementById('localVideo');
@@ -209,160 +197,174 @@ const keepaliveDot  = document.getElementById('keepaliveDot');
 const flashEffect   = document.getElementById('flashEffect');
 
 // ── ESTADO ──
-let peer, localStream, currentTrack;
+let peer           = null;
+let localStream    = null;
+let currentTrack   = null;
 let facingMode     = 'environment';
-let isMirrored     = false;
 let torchOn        = false;
 let torchCapable   = false;
-let viewers        = 0;
-let viewerMap      = {};   // callId → viewerNum
-let viewerIdCounter= 0;
-let viewerDataChannels = [];
 let wakeLock       = null;
 let keepAliveCtx   = null;
 let keepAliveInterval = null;
-let statsInterval  = null;
-let prevBytes      = 0;
+let videoHealthInterval = null;
 let mediaRecorder  = null;
 let isRecording    = false;
 let recordedChunks = [];
 let gpsWatchId     = null;
 let lastGpsData    = null;
-let videoHealthInterval = null;
+
+// adminId → { dc: DataConnection, pc: RTCPeerConnection }
+// Mapa central: un solo objeto por peer admin
+const adminSessions = {};
 
 // ── UTILS ──
 function setStatus(text, cls) {
   statusBadge.textContent = text;
   statusBadge.className   = 'badge ' + cls;
 }
-function showError(msg, dur = 5000) {
+function showError(msg, dur = 6000) {
   errorBar.textContent = '⚠ ' + msg;
   errorBar.style.display = 'block';
   clearTimeout(errorBar._t);
   errorBar._t = setTimeout(() => { errorBar.style.display = 'none'; }, dur);
 }
-function fmtTime(sec) {
-  return Math.floor(sec/60).toString().padStart(2,'0') + ':' + (sec%60).toString().padStart(2,'0');
+
+// Cuenta cuántos admins hay conectados con stream
+function liveAdminCount() {
+  return Object.values(adminSessions).filter(s => s.callActive).length;
 }
 
-// ── WAKE LOCK ──────────────────────────────────────────────
-// Prevents the browser from throttling the page in background
+function updateViewerUI() {
+  const n = liveAdminCount();
+  viewerCount.textContent = n;
+  vidViewers.style.display = n > 0 ? 'block' : 'none';
+  liveBadge.style.display  = n > 0 ? 'block' : 'none';
+  if (n > 0) setStatus(`EN VIVO · ${n}`, 'badge-live');
+  else       setStatus('LISTA · ESPERANDO', 'badge-wait');
+}
+
+// Obtiene o crea sesión para un adminId
+function getSession(adminId) {
+  if (!adminSessions[adminId]) {
+    adminSessions[adminId] = { dc: null, pc: null, callActive: false };
+  }
+  return adminSessions[adminId];
+}
+
+// ── ENVIAR ACK por el canal de datos del admin que mandó el comando ──
+function sendAck(adminId, payload) {
+  const session = adminSessions[adminId];
+  if (!session || !session.dc) return;
+  const dc = session.dc;
+  if (dc.readyState === 'open') {
+    try { dc.send(JSON.stringify(payload)); } catch(e) {}
+  }
+}
+
+// ── BROADCAST GPS/DEVICEINFO a todos los admins conectados ──
+function broadcastToAll(obj) {
+  const msg = JSON.stringify(obj);
+  Object.values(adminSessions).forEach(s => {
+    if (s.dc && s.dc.readyState === 'open') {
+      try { s.dc.send(msg); } catch(e) {}
+    }
+  });
+}
+
+// ── WAKE LOCK ──
 async function requestWakeLock() {
   try {
     if ('wakeLock' in navigator) {
       wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => {
-        wakeLock = null;
-        // Re-acquire when page becomes visible again
-      });
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
     }
   } catch(e) {}
 }
 
-// ── AUDIO KEEPALIVE ────────────────────────────────────────
-// Silent AudioContext oscillation every second prevents the
-// browser from suspending the page (works on Android Chrome).
+// ── AUDIO KEEPALIVE ──
 function startAudioKeepalive() {
   try {
     keepAliveCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // Resume context if suspended (required by some browsers)
     if (keepAliveCtx.state === 'suspended') keepAliveCtx.resume();
-
     const silentBuf = keepAliveCtx.createBuffer(1, 1, 22050);
     keepAliveInterval = setInterval(() => {
       if (!keepAliveCtx) return;
-      if (keepAliveCtx.state === 'suspended') keepAliveCtx.resume().catch(()=>{});
+      if (keepAliveCtx.state === 'suspended') keepAliveCtx.resume().catch(() => {});
       const src = keepAliveCtx.createBufferSource();
       src.buffer = silentBuf;
       src.connect(keepAliveCtx.destination);
       src.start(0);
-      // Toggle keepalive dot as heartbeat
       keepaliveDot.style.display = keepaliveDot.style.display === 'block' ? 'none' : 'block';
     }, 1000);
   } catch(e) {}
 }
 
-// ── VISIBILITY CHANGE ──────────────────────────────────────
-// When user returns to the tab/app, re-wake the stream
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible') {
-    // Re-request wake lock
     if (!wakeLock) await requestWakeLock();
-    // Resume audio context
-    if (keepAliveCtx && keepAliveCtx.state === 'suspended') {
-      keepAliveCtx.resume().catch(()=>{});
-    }
-    // Force video to play if paused
-    if (localVideo.srcObject && localVideo.paused) {
-      localVideo.play().catch(()=>{});
-    }
+    if (keepAliveCtx?.state === 'suspended') keepAliveCtx.resume().catch(() => {});
+    if (localVideo.srcObject && localVideo.paused) localVideo.play().catch(() => {});
   }
 });
 
-// ── VIDEO HEALTH MONITOR ───────────────────────────────────
-// Continuously checks the video track and reconnects if dead
+document.addEventListener('touchstart', () => {
+  if (keepAliveCtx?.state === 'suspended') keepAliveCtx.resume().catch(() => {});
+}, { passive: true });
+
+// ── VIDEO HEALTH MONITOR ──
 function startVideoHealthMonitor() {
   clearInterval(videoHealthInterval);
   videoHealthInterval = setInterval(async () => {
     if (!localStream) return;
-    // Force play if paused
-    if (localVideo.paused || localVideo.readyState < 2) {
-      localVideo.play().catch(()=>{});
-    }
-    // Check if video track is still alive
+    if (localVideo.paused || localVideo.readyState < 2) localVideo.play().catch(() => {});
     const tracks = localStream.getVideoTracks();
-    if (tracks.length > 0 && tracks[0].readyState === 'ended') {
-      await restartVideoTrack();
-    }
+    if (tracks.length > 0 && tracks[0].readyState === 'ended') await restartVideoTrack();
   }, 3000);
 }
 
 async function restartVideoTrack() {
   try {
     const newStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: {ideal: facingMode}, width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} },
+      video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
       audio: false
     });
     const newTrack = newStream.getVideoTracks()[0];
-    const oldTracks = localStream.getVideoTracks();
-    oldTracks.forEach(t => { localStream.removeTrack(t); t.stop(); });
+    localStream.getVideoTracks().forEach(t => { localStream.removeTrack(t); t.stop(); });
     localStream.addTrack(newTrack);
     localVideo.srcObject = localStream;
-    localVideo.play().catch(()=>{});
+    localVideo.play().catch(() => {});
     currentTrack = newTrack;
     torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
-    // Re-apply torch if it was on
-    if (torchOn && torchCapable) {
-      newTrack.applyConstraints({ advanced: [{torch: true}] }).catch(()=>{});
-    }
-    // Update all peer connections with new track
-    window._peerConns.forEach(pc => {
-      const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-      if (sender) sender.replaceTrack(newTrack).catch(()=>{});
+    if (torchOn && torchCapable) newTrack.applyConstraints({ advanced: [{ torch: true }] }).catch(() => {});
+    // Reemplazar track en todas las conexiones activas
+    Object.values(adminSessions).forEach(s => {
+      if (!s.pc) return;
+      const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
+      if (sender) sender.replaceTrack(newTrack).catch(() => {});
     });
   } catch(e) { showError('Error al recuperar la cámara.'); }
 }
 
-// ── DEVICE INFO ───────────────────────────────────────────
+// ── DEVICE INFO ──
 function detectBrowser(ua) {
-  if (/EdgA?\//.test(ua)) return 'Edge';
-  if (/OPR\/|Opera/.test(ua)) return 'Opera';
-  if (/SamsungBrowser/.test(ua)) return 'Samsung';
-  if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) return 'Chrome';
-  if (/Firefox\//.test(ua)) return 'Firefox';
-  if (/Safari\//.test(ua) && !/Chrome/.test(ua)) return 'Safari';
+  if (/EdgA?\//.test(ua))              return 'Edge';
+  if (/OPR\/|Opera/.test(ua))          return 'Opera';
+  if (/SamsungBrowser/.test(ua))       return 'Samsung';
+  if (/Chrome\//.test(ua))             return 'Chrome';
+  if (/Firefox\//.test(ua))            return 'Firefox';
+  if (/Safari\//.test(ua))             return 'Safari';
   return 'Unknown';
 }
 function detectOS(ua) {
-  if (/iPhone|iPad/.test(ua)) return 'iOS';
-  if (/Android/.test(ua)) return 'Android';
-  if (/Windows NT/.test(ua)) return 'Windows';
-  if (/Mac OS X/.test(ua)) return 'macOS';
-  if (/Linux/.test(ua)) return 'Linux';
+  if (/iPhone|iPad/.test(ua))          return 'iOS';
+  if (/Android/.test(ua))              return 'Android';
+  if (/Windows NT/.test(ua))           return 'Windows';
+  if (/Mac OS X/.test(ua))             return 'macOS';
+  if (/Linux/.test(ua))               return 'Linux';
   return 'Unknown';
 }
 function buildDeviceInfoPayload() {
-  const ua = navigator.userAgent;
+  const ua   = navigator.userAgent;
   const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   return {
     type:     'deviceInfo',
@@ -376,131 +378,130 @@ function buildDeviceInfoPayload() {
     tz:       Intl.DateTimeFormat().resolvedOptions().timeZone,
     online:   navigator.onLine,
     touch:    navigator.maxTouchPoints || 0,
-    conn:     conn ? `${conn.effectiveType||'—'} / ${conn.downlink ? conn.downlink+'Mbps' : '—'}` : null
+    conn:     conn ? `${conn.effectiveType || '—'} / ${conn.downlink ? conn.downlink + 'Mbps' : '—'}` : null
   };
 }
 
-// ── GPS ───────────────────────────────────────────────────
+// ── GPS ──
 function startGPS() {
-  if (!('geolocation' in navigator)) return;
-  if (gpsWatchId !== null) return; // already running
+  if (!('geolocation' in navigator) || gpsWatchId !== null) return;
   gpsWatchId = navigator.geolocation.watchPosition(pos => {
     const c = pos.coords;
     lastGpsData = {
-      lat: c.latitude, lng: c.longitude,
-      acc: c.accuracy, alt: c.altitude,
-      spd: c.speed,    head: c.heading,
-      ts:  pos.timestamp
+      type: 'gps',
+      lat:  c.latitude,   lng:  c.longitude,
+      acc:  c.accuracy,   alt:  c.altitude,
+      spd:  c.speed,      head: c.heading,
+      ts:   pos.timestamp
     };
-    broadcastData({ type: 'gps', ...lastGpsData });
+    broadcastToAll(lastGpsData);
   }, err => {
-    broadcastData({ type: 'gps', active: false, error: err.message });
+    broadcastToAll({ type: 'gps', active: false, error: err.message });
   }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 });
 }
 
 function stopGPS() {
   if (gpsWatchId !== null) {
     navigator.geolocation.clearWatch(gpsWatchId);
-    gpsWatchId = null;
+    gpsWatchId  = null;
     lastGpsData = null;
-    broadcastData({ type: 'gps', active: false });
+    broadcastToAll({ type: 'gps', active: false });
   }
 }
 
-// ── BROADCAST DATA ────────────────────────────────────────
-function broadcastData(obj) {
-  const msg = JSON.stringify(obj);
-  viewerDataChannels.forEach(dc => {
-    if (dc.readyState === 'open') {
-      try { dc.send(msg); } catch(e) {}
-    }
-  });
-}
-
-// ── HANDLE ADMIN COMMANDS ─────────────────────────────────
-async function handleAdminCommand(msg) {
+// ── MANEJAR COMANDOS DEL ADMIN ──────────────────────────────
+// adminId es el peer ID del admin que mandó el comando
+// así el ack vuelve exactamente por el canal correcto
+async function handleAdminCommand(adminId, msg) {
   switch (msg.action) {
 
+    // ── VOLTEAR CÁMARA ──
     case 'flip': {
       facingMode = facingMode === 'environment' ? 'user' : 'environment';
       try {
         const oldTrack = localStream.getVideoTracks()[0];
         oldTrack.stop();
         const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: {ideal: facingMode}, width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} },
+          video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
           audio: false
         });
         const newTrack = newStream.getVideoTracks()[0];
         localStream.removeTrack(oldTrack);
         localStream.addTrack(newTrack);
         localVideo.srcObject = localStream;
-        localVideo.play().catch(()=>{});
+        localVideo.play().catch(() => {});
         currentTrack = newTrack;
-        torchOn = false;
+        torchOn      = false;
         torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
         torchIndicator.style.display = 'none';
-        window._peerConns.forEach(pc => {
-          const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-          if (sender) sender.replaceTrack(newTrack).catch(()=>{});
+        // Reemplazar track en todas las conexiones activas
+        Object.values(adminSessions).forEach(s => {
+          if (!s.pc) return;
+          const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
+          if (sender) sender.replaceTrack(newTrack).catch(() => {});
         });
-        // Ack
-        broadcastData({ type: 'cmdAck', action: 'flip', facingMode });
-      } catch(e) { broadcastData({ type: 'cmdAck', action: 'flip', error: e.message }); }
+        sendAck(adminId, { type: 'cmdAck', action: 'flip', facingMode });
+      } catch(e) {
+        sendAck(adminId, { type: 'cmdAck', action: 'flip', error: e.message });
+      }
       break;
     }
 
+    // ── FLASH / TORCH ──
     case 'torch': {
       const wantTorch = !!msg.value;
-      if (!currentTrack) break;
-      let caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
+      if (!currentTrack) { sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Sin track de video' }); break; }
+      const caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
+
       if (caps.torch) {
+        // El track actual soporta torch nativamente
         try {
-          await currentTrack.applyConstraints({ advanced: [{torch: wantTorch}] });
+          await currentTrack.applyConstraints({ advanced: [{ torch: wantTorch }] });
           torchOn = wantTorch;
           torchIndicator.style.display = torchOn ? 'block' : 'none';
-          broadcastData({ type: 'cmdAck', action: 'torch', value: torchOn });
+          sendAck(adminId, { type: 'cmdAck', action: 'torch', value: torchOn });
         } catch(e) {
-          broadcastData({ type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
+          sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
         }
       } else {
-        // Try re-acquiring with torch in getUserMedia
+        // Intentar re-adquirir la cámara con torch si se quiere encender
         if (wantTorch) {
           try {
             const newStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: {ideal: facingMode}, width:{ideal:1920}, height:{ideal:1080},
-                       frameRate:{ideal:30}, advanced: [{torch: true}] },
+              video: { facingMode: { ideal: facingMode }, advanced: [{ torch: true }] },
               audio: false
             });
             const newTrack = newStream.getVideoTracks()[0];
             const newCaps  = newTrack.getCapabilities ? newTrack.getCapabilities() : {};
             if (!newCaps.torch) {
               newTrack.stop();
-              broadcastData({ type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
+              sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible en este dispositivo' });
               break;
             }
             const oldTrack = currentTrack;
             localStream.removeTrack(oldTrack);
             localStream.addTrack(newTrack);
             localVideo.srcObject = localStream;
-            localVideo.play().catch(()=>{});
+            localVideo.play().catch(() => {});
             currentTrack = newTrack;
             torchCapable = true;
-            torchOn = true;
+            torchOn      = true;
             oldTrack.stop();
             torchIndicator.style.display = 'block';
-            window._peerConns.forEach(pc => {
-              const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-              if (sender) sender.replaceTrack(newTrack).catch(()=>{});
+            Object.values(adminSessions).forEach(s => {
+              if (!s.pc) return;
+              const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
+              if (sender) sender.replaceTrack(newTrack).catch(() => {});
             });
-            broadcastData({ type: 'cmdAck', action: 'torch', value: true });
+            sendAck(adminId, { type: 'cmdAck', action: 'torch', value: true });
           } catch(e) {
-            broadcastData({ type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
+            sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
           }
         } else {
-          // Turning off — just re-acquire normally
+          // Apagar: re-adquirir normalmente
           try {
             const newStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: {ideal: facingMode}, width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} },
+              video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
               audio: false
             });
             const newTrack = newStream.getVideoTracks()[0];
@@ -508,65 +509,77 @@ async function handleAdminCommand(msg) {
             localStream.removeTrack(oldTrack);
             localStream.addTrack(newTrack);
             localVideo.srcObject = localStream;
-            localVideo.play().catch(()=>{});
+            localVideo.play().catch(() => {});
             currentTrack = newTrack;
-            torchOn = false;
+            torchOn      = false;
             oldTrack.stop();
             torchIndicator.style.display = 'none';
-            window._peerConns.forEach(pc => {
-              const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-              if (sender) sender.replaceTrack(newTrack).catch(()=>{});
+            Object.values(adminSessions).forEach(s => {
+              if (!s.pc) return;
+              const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
+              if (sender) sender.replaceTrack(newTrack).catch(() => {});
             });
-            broadcastData({ type: 'cmdAck', action: 'torch', value: false });
-          } catch(e) {}
+            sendAck(adminId, { type: 'cmdAck', action: 'torch', value: false });
+          } catch(e) {
+            sendAck(adminId, { type: 'cmdAck', action: 'torch', error: e.message });
+          }
         }
       }
       break;
     }
 
+    // ── ZOOM ──
     case 'zoom': {
       const val = parseFloat(msg.value) || 1;
       if (!currentTrack) break;
       const caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
       if (caps.zoom) {
-        const clamped = Math.min(Math.max(val, caps.zoom.min||1), caps.zoom.max||10);
-        currentTrack.applyConstraints({ advanced: [{zoom: clamped}] }).catch(()=>{});
+        const clamped = Math.min(Math.max(val, caps.zoom.min || 1), caps.zoom.max || 10);
+        try {
+          await currentTrack.applyConstraints({ advanced: [{ zoom: clamped }] });
+        } catch(e) {
+          // Fallback CSS (solo visual en la cam, el admin ve el stream nativo)
+          localVideo.style.transform = `scale(${val})`;
+        }
       } else {
-        // CSS fallback (visual only on cam side — viewer sees native)
-        localVideo.style.transform = isMirrored ? `scaleX(-1) scale(${val})` : `scale(${val})`;
+        localVideo.style.transform = `scale(${val})`;
       }
+      // No necesita ack — es continuo (slider)
       break;
     }
 
+    // ── BRILLO ──
     case 'brightness': {
       const val = parseFloat(msg.value) || 1;
       localVideo.style.filter = `brightness(${val})`;
+      // No necesita ack — es continuo (slider)
       break;
     }
 
+    // ── GPS START ──
     case 'gps_start': {
       startGPS();
-      broadcastData({ type: 'cmdAck', action: 'gps_start', active: gpsWatchId !== null });
+      // Enviar datos GPS actuales si ya los tenemos
+      if (lastGpsData) sendAck(adminId, lastGpsData);
+      sendAck(adminId, { type: 'cmdAck', action: 'gps_start', active: gpsWatchId !== null });
       break;
     }
 
+    // ── GPS STOP ──
     case 'gps_stop': {
       stopGPS();
+      sendAck(adminId, { type: 'cmdAck', action: 'gps_stop', active: false });
       break;
     }
 
+    // ── SNAPSHOT (solicitado por admin) ──
     case 'screenshot': {
-      // Admin requests a snapshot from cam
       const canvas = document.createElement('canvas');
       canvas.width  = localVideo.videoWidth  || 1280;
       canvas.height = localVideo.videoHeight || 720;
-      const ctx = canvas.getContext('2d');
-      if (isMirrored) { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
-      ctx.drawImage(localVideo, 0, 0);
-      // Flash effect
+      canvas.getContext('2d').drawImage(localVideo, 0, 0);
       flashEffect.style.opacity = '0.7';
       setTimeout(() => { flashEffect.style.opacity = '0'; }, 250);
-      // Download on cam side too
       canvas.toBlob(blob => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -577,17 +590,24 @@ async function handleAdminCommand(msg) {
       break;
     }
 
+    // ── GRABAR START ──
     case 'record_start': {
-      if (!localStream || isRecording) break;
+      if (!localStream || isRecording) {
+        sendAck(adminId, { type: 'cmdAck', action: 'record_start', error: isRecording ? 'Ya grabando' : 'Sin stream' });
+        break;
+      }
       recordedChunks = [];
       const opts = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-        ? { mimeType:'video/webm;codecs=vp9', videoBitsPerSecond:4000000 }
-        : { mimeType:'video/webm', videoBitsPerSecond:4000000 };
-      try { mediaRecorder = new MediaRecorder(localStream, opts); }
-      catch { mediaRecorder = new MediaRecorder(localStream); }
-      mediaRecorder.ondataavailable = e => { if(e.data.size>0) recordedChunks.push(e.data); };
+        ? { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 4_000_000 }
+        : { mimeType: 'video/webm', videoBitsPerSecond: 4_000_000 };
+      try {
+        mediaRecorder = new MediaRecorder(localStream, opts);
+      } catch {
+        mediaRecorder = new MediaRecorder(localStream);
+      }
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
       mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, {type:'video/webm'});
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `streamlink-rec-${Date.now()}.webm`;
@@ -596,89 +616,69 @@ async function handleAdminCommand(msg) {
         recordedChunks = [];
         isRecording = false;
         recIndicator.style.display = 'none';
+        broadcastToAll({ type: 'cmdAck', action: 'record_stop' });
       };
       mediaRecorder.start(1000);
       isRecording = true;
       recIndicator.style.display = 'flex';
-      broadcastData({ type: 'cmdAck', action: 'record_start' });
+      sendAck(adminId, { type: 'cmdAck', action: 'record_start' });
       break;
     }
 
+    // ── GRABAR STOP ──
     case 'record_stop': {
-      if (!isRecording || !mediaRecorder) break;
-      mediaRecorder.stop();
-      broadcastData({ type: 'cmdAck', action: 'record_stop' });
+      if (!isRecording || !mediaRecorder) {
+        sendAck(adminId, { type: 'cmdAck', action: 'record_stop', error: 'No estaba grabando' });
+        break;
+      }
+      mediaRecorder.stop(); // onstop enviará el ack
       break;
     }
   }
 }
 
-// ── VIEWERS ───────────────────────────────────────────────
-function addViewer(callId, dc) {
-  const id = ++viewerIdCounter;
-  viewerMap[callId] = id;
-  viewers++;
-  if (dc) viewerDataChannels.push(dc);
-  updateViewerUI();
-}
-function removeViewer(callId, dc) {
-  delete viewerMap[callId];
-  viewers = Math.max(0, viewers - 1);
-  if (dc) viewerDataChannels = viewerDataChannels.filter(x => x !== dc);
-  updateViewerUI();
-}
-function updateViewerUI() {
-  viewerCount.textContent = viewers;
-  vidViewers.style.display = viewers > 0 ? 'block' : 'none';
-  liveBadge.style.display  = viewers > 0 ? 'block' : 'none';
-  if (viewers > 0) setStatus(`EN VIVO · ${viewers}`, 'badge-live');
-  else setStatus('LISTA · ESPERANDO', 'badge-wait');
-}
-
-// ── CAMERA START ──────────────────────────────────────────
+// ── INICIAR CÁMARA ──
 async function startCamera() {
   startBtn.disabled = true;
   startBtn.textContent = 'Accediendo…';
   try {
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: {ideal: facingMode}, width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} },
+      video: {
+        facingMode: { ideal: facingMode },
+        width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 }
+      },
       audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000 }
     });
     currentTrack = localStream.getVideoTracks()[0];
-    if (currentTrack && currentTrack.getCapabilities) {
-      torchCapable = !!(currentTrack.getCapabilities().torch);
-    }
+    if (currentTrack?.getCapabilities) torchCapable = !!(currentTrack.getCapabilities().torch);
     localVideo.srcObject = localStream;
-    localVideo.play().catch(()=>{});
+    localVideo.play().catch(() => {});
 
     startOverlay.style.display = 'none';
     setStatus('CONECTANDO…', 'badge-wait');
 
-    // Wake lock + keepalive
     await requestWakeLock();
     startAudioKeepalive();
     startVideoHealthMonitor();
-
     initPeer();
+
   } catch(err) {
     startBtn.disabled = false;
     startBtn.textContent = 'Reintentar';
-    if (err.name === 'NotAllowedError') showError('Permiso de cámara denegado.');
+    if (err.name === 'NotAllowedError')  showError('Permiso de cámara denegado.');
     else if (err.name === 'NotFoundError') showError('No se encontró ninguna cámara.');
     else showError('Error al acceder a la cámara: ' + err.message);
   }
 }
 
-// ── PEERJS ────────────────────────────────────────────────
-window._peerConns = [];
-window._pendingDataConns = {};
-
+// ── PEERJS ─────────────────────────────────────────────────
 function initPeer() {
   const roomId = Math.floor(10000 + Math.random() * 90000).toString();
+
   peer = new Peer(roomId, {
     config: {
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun.l.google.com:19302'  },
         { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'stun:stun2.l.google.com:19302' },
       ]
@@ -691,51 +691,87 @@ function initPeer() {
     setStatus('LISTA · ESPERANDO', 'badge-wait');
   });
 
-  // Admin opens data channel → handle commands from admin
+  // ── EL ADMIN ABRE CANAL DE DATOS (siempre antes de la llamada) ──
   peer.on('connection', dataConn => {
+    const adminId = dataConn.peer;
+    const session = getSession(adminId);
+    session.dc = dataConn;
+
     dataConn.on('open', () => {
-      // Send device info + current state to admin immediately
+      // Mandar info del dispositivo y estado actual al admin
       try { dataConn.send(JSON.stringify(buildDeviceInfoPayload())); } catch(e) {}
       if (lastGpsData) {
-        try { dataConn.send(JSON.stringify({ type: 'gps', ...lastGpsData })); } catch(e) {}
+        try { dataConn.send(JSON.stringify(lastGpsData)); } catch(e) {}
       }
     });
-    // Receive commands from admin
+
+    // ── RECIBIR COMANDOS DEL ADMIN ──
+    // Todos los comandos vienen por este data channel
     dataConn.on('data', raw => {
       try {
         const msg = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (msg.type === 'cmd') handleAdminCommand(msg);
+        if (msg.type === 'cmd') handleAdminCommand(adminId, msg);
       } catch(e) {}
     });
-    // Store for matching with call
-    window._pendingDataConns[dataConn.peer] = dataConn;
+
+    dataConn.on('close', () => {
+      if (adminSessions[adminId]) adminSessions[adminId].dc = null;
+    });
+    dataConn.on('error', () => {
+      if (adminSessions[adminId]) adminSessions[adminId].dc = null;
+    });
   });
 
-  // Admin calls → answer with our stream
+  // ── EL ADMIN LLAMA (siempre después del data channel) ──
   peer.on('call', call => {
-    const pc = call.peerConnection;
-    if (pc) window._peerConns.push(pc);
+    const adminId = call.peer;
+    const session = getSession(adminId);
+
+    // Guardar referencia al RTCPeerConnection para replaceTrack
+    // El peerConnection no está disponible inmediatamente, se accede después de answer
     call.answer(localStream);
 
-    const callId = call.peer + '_' + Date.now();
-    const dc = window._pendingDataConns[call.peer] || null;
-    if (dc) delete window._pendingDataConns[call.peer];
+    session.callActive = true;
+    updateViewerUI();
 
-    addViewer(callId, dc);
+    // Acceder al pc después de que la conexión esté establecida
+    // PeerJS expone call.peerConnection directamente
+    const checkPc = setInterval(() => {
+      if (call.peerConnection) {
+        session.pc = call.peerConnection;
+        clearInterval(checkPc);
+      }
+    }, 100);
+
+    call.on('stream', () => {
+      // Stream remoto recibido (dummy del admin) — solo confirmar
+    });
 
     call.on('close', () => {
-      removeViewer(callId, dc);
-      window._peerConns = window._peerConns.filter(c => c !== pc);
+      clearInterval(checkPc);
+      if (adminSessions[adminId]) {
+        adminSessions[adminId].callActive = false;
+        adminSessions[adminId].pc = null;
+      }
+      updateViewerUI();
     });
+
     call.on('error', () => {
-      removeViewer(callId, dc);
-      window._peerConns = window._peerConns.filter(c => c !== pc);
+      clearInterval(checkPc);
+      if (adminSessions[adminId]) {
+        adminSessions[adminId].callActive = false;
+        adminSessions[adminId].pc = null;
+      }
+      updateViewerUI();
     });
   });
 
   peer.on('error', err => {
     if (err.type === 'unavailable-id') {
-      setTimeout(initPeer, 500); // retry with new ID
+      // ID ocupado: reintentar con otro
+      setTimeout(initPeer, 500);
+    } else if (err.type === 'peer-unavailable') {
+      // Ignorar — pasa durante el escaneo del admin
     } else {
       showError('Error de red: ' + (err.message || err.type));
       setStatus('ERROR', 'badge-idle');
@@ -743,7 +779,7 @@ function initPeer() {
   });
 }
 
-// ── COPY CODE ─────────────────────────────────────────────
+// ── COPIAR CÓDIGO ──
 copyBtn.addEventListener('click', () => {
   const code = peerIdDisplay.textContent;
   if (code === '·····') return;
@@ -752,18 +788,10 @@ copyBtn.addEventListener('click', () => {
     setTimeout(() => {
       copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
     }, 1800);
-  }).catch(()=>{});
+  }).catch(() => {});
 });
 
-// ── START ─────────────────────────────────────────────────
 startBtn.addEventListener('click', startCamera);
-
-// Prevent screen sleep with interaction trick (iOS Safari fallback)
-document.addEventListener('touchstart', () => {
-  if (keepAliveCtx && keepAliveCtx.state === 'suspended') {
-    keepAliveCtx.resume().catch(()=>{});
-  }
-}, { passive: true });
 </script>
 </body>
 </html>
