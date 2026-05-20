@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>StreamLink · Cámara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080810;--s1:#0d0d1a;--s2:#12121f;--s3:#1a1a2e;
+  --border:#ffffff0f;--border2:#ffffff18;
+  --accent:#e63946;--accent2:#ff6b6b;--accent-dim:#e6394615;
+  --blue:#3a86ff;--blue-dim:#3a86ff12;
+  --green:#2dc653;--green-dim:#2dc65312;
+  --yellow:#ffd60a;--yellow-dim:#ffd60a12;
+  --text:#f0f0f8;--text2:#9898b8;--text3:#5a5a7a;
+  --radius:14px;--radius-sm:8px;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Syne',sans-serif;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+/* Animated BG */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 0%,#e6394608 0%,transparent 70%),
+    radial-gradient(ellipse 50% 60% at 80% 100%,#3a86ff06 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+/* ═══ TOPBAR ═══ */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;
+  background:rgba(8,8,16,.9);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  position:relative;z-index:10;
+  flex-shrink:0;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-size:.8rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);
+}
+.brand-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--accent),0 0 24px #e6394640;
+}
+.topbar-right{display:flex;align-items:center;gap:8px}
+
+/* Status badge */
+.badge{
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:500;
+  padding:4px 10px;border-radius:999px;
+  border:1px solid transparent;letter-spacing:.05em;
+  transition:all .3s;
+}
+.badge-idle{color:var(--text3);border-color:var(--border2)}
+.badge-wait{color:var(--yellow);border-color:#ffd60a30;background:var(--yellow-dim);animation:blink 2s infinite}
+.badge-live{color:var(--accent);border-color:#e6394630;background:var(--accent-dim);animation:blink 1.5s infinite}
+.badge-conn{color:var(--green);border-color:#2dc65330;background:var(--green-dim)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ═══ MAIN LAYOUT ═══ */
+.main{
+  flex:1;display:grid;
+  grid-template-columns:1fr 280px;
+  grid-template-rows:1fr auto;
+  overflow:hidden;position:relative;z-index:1;
+  min-height:0;
+}
+
+/* ═══ VIDEO ZONE ═══ */
+.video-zone{
+  grid-column:1;grid-row:1;
+  position:relative;background:#000;
+  overflow:hidden;
+}
+#localVideo{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:filter .3s;
+}
+#localVideo.mirror{transform:scaleX(-1)}
+
+/* ON-VIDEO overlays */
+.vid-badge-live{
+  position:absolute;top:14px;left:14px;
+  background:var(--accent);color:#fff;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:600;
+  padding:4px 10px;border-radius:4px;letter-spacing:.1em;
+  display:none;z-index:5;
+  box-shadow:0 0 20px #e6394650;
+}
+.vid-stats-overlay{
+  position:absolute;top:14px;right:14px;
+  background:rgba(0,0,0,.75);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:8px 12px;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;
+  color:var(--text2);line-height:1.8;
+  display:none;z-index:5;backdrop-filter:blur(8px);
+  min-width:160px;
+}
+.stat-row{display:flex;justify-content:space-between;gap:16px}
+.stat-val{color:var(--text);font-weight:600}
+.stat-val.good{color:var(--green)}
+.stat-val.ok{color:var(--yellow)}
+.stat-val.bad{color:var(--accent)}
+
+/* viewer count on video */
+.vid-viewers{
+  position:absolute;bottom:14px;left:14px;
+  background:rgba(0,0,0,.7);border:1px solid var(--border2);
+  border-radius:999px;padding:4px 12px;
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  color:var(--green);display:none;z-index:5;
+  backdrop-filter:blur(6px);
+}
+
+/* rec indicator */
+.rec-indicator{
+  position:absolute;bottom:14px;right:14px;
+  display:none;align-items:center;gap:6px;
+  background:rgba(230,57,70,.9);color:#fff;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;
+  padding:5px 12px;border-radius:999px;z-index:5;
+  animation:blink 1s infinite;
+}
+.rec-dot{width:7px;height:7px;background:#fff;border-radius:50%}
+
+/* Start overlay */
+.start-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#080810 0%,#0d0d1a 100%);
+  z-index:20;gap:20px;padding:32px;text-align:center;
+}
+.start-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--accent-dim);border:1px solid #e6394630;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:4px;
+}
+.start-overlay h2{font-size:1.3rem;font-weight:800;letter-spacing:-.01em}
+.start-overlay p{font-size:.82rem;color:var(--text2);max-width:260px;line-height:1.6}
+.btn-primary{
+  background:var(--accent);color:#fff;border:none;
+  border-radius:var(--radius-sm);padding:14px 36px;
+  font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:.02em;
+  box-shadow:0 0 32px #e6394640;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 48px #e6394660}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{
+  grid-column:2;grid-row:1/3;
+  background:var(--s1);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+}
+
+/* Room code card */
+.code-card{
+  padding:18px;border-bottom:1px solid var(--border);
+}
+.code-card-label{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text3);
+  margin-bottom:10px;
+}
+.code-display{
+  background:var(--s2);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:14px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.code-number{
+  font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:600;
+  letter-spacing:.22em;color:var(--blue);
+  min-width:0;flex:1;
+}
+.icon-btn{
+  background:none;border:1px solid var(--border2);color:var(--text2);
+  border-radius:var(--radius-sm);width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.icon-btn:hover{background:var(--border2);color:var(--text)}
+.icon-btn svg{width:16px;height:16px}
+
+/* Section */
+.section{padding:14px 18px;border-bottom:1px solid var(--border)}
+.section-title{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--text3);
+  margin-bottom:12px;
+}
+
+/* Control grid */
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ctrl-btn{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--text2);border-radius:var(--radius-sm);
+  padding:10px 8px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;
+  cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;
+  font-size:.68rem;font-weight:600;letter-spacing:.02em;
+}
+.ctrl-btn svg{width:18px;height:18px}
+.ctrl-btn:hover{background:var(--s3);border-color:var(--border2);color:var(--text);transform:translateY(-1px)}
+.ctrl-btn:active{transform:translateY(0)}
+.ctrl-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.ctrl-btn.active-blue{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+.ctrl-btn.active-green{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.ctrl-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+/* Full-width btn */
+.ctrl-btn-full{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--text2);border-radius:var(--radius-sm);
+  padding:10px 14px;display:flex;
+  align-items:center;justify-content:flex-start;gap:10px;
+  cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;
+  font-size:.75rem;font-weight:600;width:100%;margin-bottom:8px;
+}
+.ctrl-btn-full svg{width:16px;height:16px;flex-shrink:0}
+.ctrl-btn-full:hover{background:var(--s3);border-color:var(--border2);color:var(--text)}
+.ctrl-btn-full.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.ctrl-btn-full.rec-active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);animation:blink 1s infinite}
+
+/* Slider */
+.slider-row{display:flex;align-items:center;gap:10px;margin-top:8px}
+.slider-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);flex-shrink:0;width:36px}
+.slider-val{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--blue);flex-shrink:0;width:28px;text-align:right}
+input[type=range]{
+  flex:1;height:3px;background:var(--s3);
+  border-radius:999px;outline:none;-webkit-appearance:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  background:var(--blue);border-radius:50%;cursor:pointer;
+  box-shadow:0 0 8px var(--blue);transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stat-card{
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px;
+}
+.stat-card-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.stat-card-val{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--text)}
+.stat-card-val.g{color:var(--green)}
+.stat-card-val.y{color:var(--yellow)}
+.stat-card-val.r{color:var(--accent)}
+
+/* Viewers list */
+.viewers-list{display:flex;flex-direction:column;gap:4px}
+.viewer-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;background:var(--s2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text2);
+}
+.viewer-dot{width:6px;height:6px;background:var(--green);border-radius:50%;flex-shrink:0;box-shadow:0 0 6px var(--green)}
+.no-viewers{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text3);text-align:center;padding:12px 0}
+
+/* ═══ BOTTOM BAR ═══ */
+.bottombar{
+  grid-column:1;grid-row:2;
+  background:rgba(8,8,16,.9);border-top:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  flex-shrink:0;
+}
+.bottom-group{display:flex;align-items:center;gap:8px}
+.bottom-btn{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--text2);border-radius:var(--radius-sm);
+  padding:8px 14px;display:flex;align-items:center;gap:7px;
+  cursor:pointer;transition:all .15s;
+  font-family:'Syne',sans-serif;font-size:.75rem;font-weight:600;
+}
+.bottom-btn svg{width:15px;height:15px}
+.bottom-btn:hover{background:var(--s3);color:var(--text)}
+.bottom-btn.danger{border-color:#e6394630;color:var(--accent);background:var(--accent-dim)}
+.bottom-btn.danger:hover{background:var(--accent);color:#fff;box-shadow:0 0 20px #e6394650}
+.bottom-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Timer */
+.rec-timer{
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  color:var(--accent);display:none;align-items:center;gap:6px;
+}
+.rec-timer-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink .8s infinite}
+
+/* Error */
+.error-bar{
+  display:none;padding:9px 20px;
+  background:rgba(230,57,70,.08);border-top:1px solid rgba(230,57,70,.2);
+  font-size:.75rem;color:#ff8a8a;text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  position:relative;z-index:10;flex-shrink:0;
+}
+
+/* Tooltip */
+.tooltip{position:relative}
+.tooltip::after{
+  content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:#1a1a2e;border:1px solid var(--border2);color:var(--text2);
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  padding:4px 10px;border-radius:6px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .15s;
+}
+.tooltip:hover::after{opacity:1}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    StreamLink <span style="color:var(--accent);margin-left:2px">CAM</span>
+  </div>
+  <div class="topbar-right">
+    <div id="statusBadge" class="badge badge-idle">OFFLINE</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainLayout" style="display:none">
+
+  <!-- VIDEO -->
+  <div class="video-zone">
+    <video id="localVideo" autoplay playsinline muted></video>
+    <div class="vid-badge-live" id="liveBadge">● EN VIVO</div>
+    <div class="vid-stats-overlay" id="vidStats">
+      <div class="stat-row"><span>FPS</span><span class="stat-val" id="sv-fps">—</span></div>
+      <div class="stat-row"><span>Res</span><span class="stat-val" id="sv-res">—</span></div>
+      <div class="stat-row"><span>Visores</span><span class="stat-val" id="sv-viewers">0</span></div>
+      <div class="stat-row"><span>Uptime</span><span class="stat-val" id="sv-uptime">00:00</span></div>
+    </div>
+    <div class="vid-viewers" id="vidViewers">
+      <span id="viewerCount">0</span> visor(es)
+    </div>
+    <div class="rec-indicator" id="recIndicator">
+      <div class="rec-dot"></div> REC
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Código -->
+    <div class="code-card">
+      <div class="code-card-label">Tu código de cámara</div>
+      <div class="code-display">
+        <div class="code-number" id="peerIdDisplay">·····</div>
+        <button class="icon-btn tooltip" id="copyBtn" data-tip="Copiar" title="Copiar código">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Controles de cámara -->
+    <div class="section">
+      <div class="section-title">Controles de Cámara</div>
+      <div class="ctrl-grid">
+        <button class="ctrl-btn" id="flipBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+          </svg>
+          Voltear Cam
+        </button>
+        <button class="ctrl-btn" id="mirrorBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v18M5 7l-2 2 2 2M19 7l2 2-2 2M5 15l-2 2 2 2M19 15l2 2-2 2"/>
+          </svg>
+          Espejo
+        </button>
+        <button class="ctrl-btn" id="torchBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m1.343-5.657l-.707-.707M12 21v-1"/><circle cx="12" cy="12" r="4"/>
+          </svg>
+          Flash
+        </button>
+        <button class="ctrl-btn" id="statsToggleBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          Stats HUD
+        </button>
+      </div>
+
+      <!-- Zoom -->
+      <div class="slider-row" style="margin-top:12px">
+        <span class="slider-label">ZOOM</span>
+        <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1">
+        <span class="slider-val" id="zoomVal">1×</span>
+      </div>
+      <!-- Brillo -->
+      <div class="slider-row">
+        <span class="slider-label">LUZ</span>
+        <input type="range" id="brightnessSlider" min="0.5" max="2" step="0.05" value="1">
+        <span class="slider-val" id="brightnessVal">1×</span>
+      </div>
+    </div>
+
+    <!-- Grabación -->
+    <div class="section">
+      <div class="section-title">Grabación Local</div>
+      <button class="ctrl-btn-full" id="recordBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
+        </svg>
+        Iniciar Grabación
+      </button>
+      <button class="ctrl-btn-full" id="screenshotBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
+        </svg>
+        Captura de Pantalla
+      </button>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="section">
+      <div class="section-title">Estadísticas en Vivo</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-label">FPS</div>
+          <div class="stat-card-val g" id="st-fps">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Resolución</div>
+          <div class="stat-card-val" id="st-res">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Visores</div>
+          <div class="stat-card-val g" id="st-viewers">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Bitrate</div>
+          <div class="stat-card-val" id="st-bitrate">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Estado Red</div>
+          <div class="stat-card-val g" id="st-net">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Uptime</div>
+          <div class="stat-card-val" id="st-uptime">00:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visores conectados -->
+    <div class="section" style="flex:1">
+      <div class="section-title">Visores Conectados</div>
+      <div class="viewers-list" id="viewersList">
+        <div class="no-viewers" id="noViewers">Sin visores activos</div>
+      </div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- BOTTOM BAR -->
+  <div class="bottombar">
+    <div class="bottom-group">
+      <div class="rec-timer" id="recTimer">
+        <div class="rec-timer-dot"></div>
+        <span id="recTimerVal">00:00</span>
+      </div>
+    </div>
+    <div class="bottom-group">
+      <button class="bottom-btn tooltip" id="screenshotBtnBot" data-tip="Captura rápida">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
+        </svg>
+        Captura
+      </button>
+      <button class="bottom-btn tooltip" id="recordBtnBot" data-tip="Grabar video">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="recIcon">
+          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
+        </svg>
+        <span id="recLabel">Grabar</span>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- START OVERLAY (fuera del main) -->
+<div class="start-overlay" id="startOverlay">
+  <div class="start-icon">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8">
+      <path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+    </svg>
+  </div>
+  <h2>StreamLink · Cámara</h2>
+  <p>Activá la cámara, compartí el código de 5 dígitos y alguien puede verte al instante.</p>
+  <button class="btn-primary" id="startBtn">Encender Cámara</button>
+</div>
+
+<div class="error-bar" id="errorBar"></div>
+
+<script>
+// ─── ELEMENTS ───
+const localVideo      = document.getElementById('localVideo');
+const startBtn        = document.getElementById('startBtn');
+const startOverlay    = document.getElementById('startOverlay');
+const mainLayout      = document.getElementById('mainLayout');
+const statusBadge     = document.getElementById('statusBadge');
+const peerIdDisplay   = document.getElementById('peerIdDisplay');
+const copyBtn         = document.getElementById('copyBtn');
+const liveBadge       = document.getElementById('liveBadge');
+const vidStats        = document.getElementById('vidStats');
+const vidViewers      = document.getElementById('vidViewers');
+const viewerCount     = document.getElementById('viewerCount');
+const recIndicator    = document.getElementById('recIndicator');
+const errorBar        = document.getElementById('errorBar');
+
+// sidebar
+const flipBtn         = document.getElementById('flipBtn');
+const mirrorBtn       = document.getElementById('mirrorBtn');
+const torchBtn        = document.getElementById('torchBtn');
+const statsToggleBtn  = document.getElementById('statsToggleBtn');
+const zoomSlider      = document.getElementById('zoomSlider');
+const zoomVal         = document.getElementById('zoomVal');
+const brightnessSlider= document.getElementById('brightnessSlider');
+const brightnessVal   = document.getElementById('brightnessVal');
+const recordBtn       = document.getElementById('recordBtn');
+const screenshotBtn   = document.getElementById('screenshotBtn');
+
+// bottom
+const screenshotBtnBot= document.getElementById('screenshotBtnBot');
+const recordBtnBot    = document.getElementById('recordBtnBot');
+const recLabel        = document.getElementById('recLabel');
+const recTimer        = document.getElementById('recTimer');
+const recTimerVal     = document.getElementById('recTimerVal');
+
+// stats
+const stFps    = document.getElementById('st-fps');
+const stRes    = document.getElementById('st-res');
+const stView   = document.getElementById('st-viewers');
+const stBit    = document.getElementById('st-bitrate');
+const stNet    = document.getElementById('st-net');
+const stUptime = document.getElementById('st-uptime');
+const svFps    = document.getElementById('sv-fps');
+const svRes    = document.getElementById('sv-res');
+const svView   = document.getElementById('sv-viewers');
+const svUptime = document.getElementById('sv-uptime');
+
+const viewersList = document.getElementById('viewersList');
+const noViewers   = document.getElementById('noViewers');
+
+// ─── STATE ───
+let peer, localStream;
+let viewers = 0;
+let viewerMap = {};
+let viewerIdCounter = 0;
+let facingMode = 'environment';
+let isMirrored = false;
+let torchOn = false;
+let statsHudOn = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecording = false;
+let recStartTime = null;
+let recInterval = null;
+let startTime = null;
+let uptimeInterval = null;
+let prevBytes = 0;
+let statsInterval = null;
+let currentTrack = null;
+
+// ─── UTILS ───
+function setStatus(text, cls) {
+  statusBadge.textContent = text;
+  statusBadge.className = 'badge ' + cls;
+}
+
+function showError(msg) {
+  errorBar.textContent = '⚠ ' + msg;
+  errorBar.style.display = 'block';
+  setTimeout(() => errorBar.style.display = 'none', 5000);
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60).toString().padStart(2,'0');
+  const s = (sec % 60).toString().padStart(2,'0');
+  return m + ':' + s;
+}
+
+// ─── UPTIME ───
+function startUptime() {
+  startTime = Date.now();
+  clearInterval(uptimeInterval);
+  uptimeInterval = setInterval(() => {
+    const sec = Math.floor((Date.now() - startTime) / 1000);
+    const t = fmtTime(sec);
+    stUptime.textContent = t;
+    svUptime.textContent = t;
+  }, 1000);
+}
+
+// ─── STATS ───
+async function updateStats() {
+  if (!localStream) return;
+  const vt = localStream.getVideoTracks()[0];
+  if (!vt) return;
+  const settings = vt.getSettings();
+  const fps = settings.frameRate ? Math.round(settings.frameRate) : '—';
+  const res = settings.width && settings.height ? `${settings.width}×${settings.height}` : '—';
+
+  stFps.textContent = fps !== '—' ? fps + ' fps' : '—';
+  stRes.textContent = res;
+  stView.textContent = viewers;
+  svFps.textContent  = fps !== '—' ? fps + ' fps' : '—';
+  svRes.textContent  = res;
+  svView.textContent = viewers;
+  viewerCount.textContent = viewers;
+
+  // FPS quality color
+  if (typeof fps === 'number') {
+    stFps.className = fps >= 25 ? 'stat-card-val g' : fps >= 15 ? 'stat-card-val y' : 'stat-card-val r';
+  }
+
+  // Estimate bitrate via PeerJS connections (basic)
+  let totalBytesOut = 0;
+  // Fallback bitrate from stream
+  stNet.textContent = navigator.onLine ? 'Online' : 'Offline';
+  stNet.className   = navigator.onLine ? 'stat-card-val g' : 'stat-card-val r';
+
+  // Try to get bitrate from RTCPeerConnection if available
+  if (window._peerConns && window._peerConns.length) {
+    try {
+      const pc = window._peerConns[0];
+      const reports = await pc.getStats();
+      reports.forEach(r => {
+        if (r.type === 'outbound-rtp' && r.kind === 'video') {
+          const bytes = r.bytesSent || 0;
+          const diff = bytes - prevBytes;
+          prevBytes = bytes;
+          const kbps = Math.round((diff * 8) / 1024);
+          stBit.textContent = kbps > 0 ? kbps + ' kbps' : '—';
+          stBit.className = kbps > 500 ? 'stat-card-val g' : kbps > 100 ? 'stat-card-val y' : 'stat-card-val';
+        }
+      });
+    } catch(e) {}
+  }
+}
+
+// ─── VIEWERS ───
+function addViewer(callId) {
+  const id = ++viewerIdCounter;
+  viewerMap[callId] = id;
+  viewers++;
+  updateViewerUI();
+}
+
+function removeViewer(callId) {
+  delete viewerMap[callId];
+  viewers = Math.max(0, viewers - 1);
+  updateViewerUI();
+}
+
+function updateViewerUI() {
+  stView.textContent = viewers;
+  svView.textContent = viewers;
+  viewerCount.textContent = viewers;
+  vidViewers.style.display = viewers > 0 ? 'block' : 'none';
+  liveBadge.style.display  = viewers > 0 ? 'block' : 'none';
+  setStatus(viewers > 0 ? `EN VIVO · ${viewers}` : 'LISTA', viewers > 0 ? 'badge-live' : 'badge-wait');
+
+  // Rebuild viewer list
+  while (viewersList.firstChild) viewersList.removeChild(viewersList.firstChild);
+  const ids = Object.values(viewerMap);
+  if (ids.length === 0) {
+    viewersList.appendChild(noViewers);
+    noViewers.style.display = 'block';
+  } else {
+    noViewers.style.display = 'none';
+    ids.forEach(vid => {
+      const el = document.createElement('div');
+      el.className = 'viewer-item';
+      el.innerHTML = `<div class="viewer-dot"></div>Visor #${vid} conectado`;
+      viewersList.appendChild(el);
+    });
+  }
+}
+
+// ─── CAMERA ───
+async function startCamera() {
+  startBtn.disabled = true;
+  startBtn.textContent = 'Accediendo...';
+  try {
+    const constraints = {
+      video: {
+        facingMode: { ideal: facingMode },
+        width: { ideal: 1920 }, height: { ideal: 1080 },
+        frameRate: { ideal: 30 }
+      },
+      audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000 }
+    };
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    currentTrack = localStream.getVideoTracks()[0];
+    localVideo.srcObject = localStream;
+    startOverlay.style.display = 'none';
+    mainLayout.style.display   = 'grid';
+    setStatus('CONECTANDO...', 'badge-wait');
+    startUptime();
+    statsInterval = setInterval(updateStats, 2000);
+    initPeer();
+  } catch(err) {
+    startBtn.disabled = false;
+    startBtn.textContent = 'Reintentar';
+    if (err.name === 'NotAllowedError') showError('Permiso de cámara denegado. Habilitalo en el navegador.');
+    else if (err.name === 'NotFoundError') showError('No se encontró ninguna cámara.');
+    else showError('Error al acceder a la cámara: ' + err.message);
+  }
+}
+
+// ─── PEERJS ───
+window._peerConns = [];
+
+function initPeer() {
+  const roomId = Math.floor(10000 + Math.random() * 90000).toString();
+  peer = new Peer(roomId, {
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+      ]
+    },
+    debug: 0
+  });
+
+  peer.on('open', id => {
+    peerIdDisplay.textContent = id;
+    setStatus('LISTA · ESPERANDO', 'badge-wait');
+  });
+
+  peer.on('call', call => {
+    // Capturar la RTCPeerConnection subyacente para stats
+    const pc = call.peerConnection;
+    if (pc) window._peerConns.push(pc);
+
+    call.answer(localStream);
+    const callId = call.peer + '_' + Date.now();
+    addViewer(callId);
+
+    call.on('close', () => {
+      removeViewer(callId);
+      window._peerConns = window._peerConns.filter(c => c !== pc);
+    });
+    call.on('error', () => {
+      removeViewer(callId);
+      window._peerConns = window._peerConns.filter(c => c !== pc);
+    });
+  });
+
+  peer.on('error', err => {
+    if (err.type === 'unavailable-id') {
+      // reintento automático
+      setTimeout(initPeer, 500);
+    } else {
+      showError('Error de red: ' + err.message);
+      setStatus('ERROR', 'badge-idle');
+    }
+  });
+}
+
+startBtn.addEventListener('click', startCamera);
+
+// ─── COPY ───
+copyBtn.addEventListener('click', () => {
+  const code = peerIdDisplay.textContent;
+  if (code === '·····') return;
+  navigator.clipboard.writeText(code).then(() => {
+    copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+    setTimeout(() => {
+      copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+    }, 1500);
+  });
+});
+
+// ─── FLIP CAMERA ───
+flipBtn.addEventListener('click', async () => {
+  if (!localStream) return;
+  facingMode = facingMode === 'environment' ? 'user' : 'environment';
+  flipBtn.classList.add('active-blue');
+  try {
+    const oldTrack = localStream.getVideoTracks()[0];
+    oldTrack.stop();
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: facingMode }, width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} },
+      audio: false
+    });
+    const newTrack = newStream.getVideoTracks()[0];
+    localStream.removeTrack(oldTrack);
+    localStream.addTrack(newTrack);
+    localVideo.srcObject = localStream;
+    currentTrack = newTrack;
+    // Replace track en todas las conexiones activas
+    window._peerConns.forEach(pc => {
+      const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+      if (sender) sender.replaceTrack(newTrack).catch(()=>{});
+    });
+  } catch(e) { showError('No se pudo cambiar la cámara.'); }
+  setTimeout(() => flipBtn.classList.remove('active-blue'), 600);
+});
+
+// ─── MIRROR ───
+mirrorBtn.addEventListener('click', () => {
+  isMirrored = !isMirrored;
+  localVideo.classList.toggle('mirror', isMirrored);
+  mirrorBtn.classList.toggle('active-blue', isMirrored);
+});
+
+// ─── TORCH / FLASH ───
+torchBtn.addEventListener('click', async () => {
+  if (!currentTrack) return;
+  const caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
+  if (!caps.torch) { showError('Este dispositivo no tiene flash.'); return; }
+  torchOn = !torchOn;
+  try {
+    await currentTrack.applyConstraints({ advanced: [{ torch: torchOn }] });
+    torchBtn.classList.toggle('active', torchOn);
+  } catch(e) { showError('No se pudo controlar el flash.'); }
+});
+
+// ─── ZOOM ───
+zoomSlider.addEventListener('input', async () => {
+  const val = parseFloat(zoomSlider.value);
+  zoomVal.textContent = val.toFixed(1) + '×';
+  if (!currentTrack) return;
+  const caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
+  if (caps.zoom) {
+    try { await currentTrack.applyConstraints({ advanced: [{ zoom: val }] }); } catch(e) {}
+  } else {
+    // CSS zoom fallback (solo visual)
+    localVideo.style.transform = isMirrored ? `scaleX(-1) scale(${val})` : `scale(${val})`;
+  }
+});
+
+// ─── BRIGHTNESS (CSS filter) ───
+brightnessSlider.addEventListener('input', () => {
+  const val = parseFloat(brightnessSlider.value);
+  brightnessVal.textContent = val.toFixed(2) + '×';
+  localVideo.style.filter = `brightness(${val})`;
+});
+
+// ─── STATS HUD ───
+statsToggleBtn.addEventListener('click', () => {
+  statsHudOn = !statsHudOn;
+  vidStats.style.display = statsHudOn ? 'block' : 'none';
+  statsToggleBtn.classList.toggle('active-blue', statsHudOn);
+});
+
+// ─── SCREENSHOT ───
+function takeScreenshot() {
+  if (!localStream) return;
+  const canvas = document.createElement('canvas');
+  const vt = localVideo;
+  canvas.width  = vt.videoWidth  || 1280;
+  canvas.height = vt.videoHeight || 720;
+  const ctx = canvas.getContext('2d');
+  if (isMirrored) {
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(vt, 0, 0);
+  const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,-5);
+  canvas.toBlob(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `streamlink-cap-${ts}.png`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }, 'image/png');
+
+  // Flash effect
+  const flash = document.createElement('div');
+  flash.style.cssText = 'position:absolute;inset:0;background:#fff;z-index:99;opacity:.8;pointer-events:none;transition:opacity .3s';
+  localVideo.parentElement.appendChild(flash);
+  setTimeout(() => { flash.style.opacity = '0'; setTimeout(() => flash.remove(), 300); }, 50);
+}
+
+screenshotBtn.addEventListener('click', takeScreenshot);
+screenshotBtnBot.addEventListener('click', takeScreenshot);
+
+// ─── RECORDING ───
+function startRecording() {
+  if (!localStream || isRecording) return;
+  recordedChunks = [];
+  const opts = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+    ? { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 4000000 }
+    : { mimeType: 'video/webm', videoBitsPerSecond: 4000000 };
+  try {
+    mediaRecorder = new MediaRecorder(localStream, opts);
+  } catch(e) {
+    mediaRecorder = new MediaRecorder(localStream);
+  }
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+  mediaRecorder.onstop = saveRecording;
+  mediaRecorder.start(1000); // chunk cada 1s para fluidez
+  isRecording = true;
+  recStartTime = Date.now();
+  recIndicator.style.display = 'flex';
+  recTimer.style.display = 'flex';
+  recordBtn.classList.add('rec-active');
+  recordBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor"/></svg> Detener Grabación`;
+  recordBtnBot.classList.add('danger');
+  recLabel.textContent = 'Detener';
+  recInterval = setInterval(() => {
+    const sec = Math.floor((Date.now() - recStartTime) / 1000);
+    recTimerVal.textContent = fmtTime(sec);
+  }, 1000);
+}
+
+function stopRecording() {
+  if (!isRecording || !mediaRecorder) return;
+  mediaRecorder.stop();
+  isRecording = false;
+  clearInterval(recInterval);
+  recIndicator.style.display = 'none';
+  recTimer.style.display = 'none';
+  recordBtn.classList.remove('rec-active');
+  recordBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg> Iniciar Grabación`;
+  recordBtnBot.classList.remove('danger');
+  recLabel.textContent = 'Grabar';
+}
+
+function saveRecording() {
+  const blob = new Blob(recordedChunks, { type: 'video/webm' });
+  const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,-5);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `streamlink-rec-${ts}.webm`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  recordedChunks = [];
+}
+
+recordBtn.addEventListener('click', () => { isRecording ? stopRecording() : startRecording(); });
+recordBtnBot.addEventListener('click', () => { isRecording ? stopRecording() : startRecording(); });
+</script>
+</body>
+</html>
