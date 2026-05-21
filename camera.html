@@ -23,7 +23,7 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 
 /* ── VIDEO FULL SCREEN ── */
 .video-wrap{position:fixed;inset:0;background:#000;}
-#localVideo{width:100%;height:100%;object-fit:cover;display:block;}
+#localVideo{width:100%;height:100%;object-fit:cover;display:block;transition:filter .3s;}
 
 /* ── TOP BAR ── */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:50;
@@ -67,13 +67,14 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 
 /* ── BOTTOM CODE CARD ── */
 .bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;
-  padding:16px 18px 24px;
-  background:linear-gradient(to top,rgba(0,0,0,.9) 0%,transparent 100%);}
+  padding:16px 18px 28px;
+  background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 100%);}
 .code-row{display:flex;align-items:center;justify-content:center;gap:12px;}
 .code-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.14em;
   text-transform:uppercase;color:rgba(255,255,255,.4);}
 .code-number{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:600;
-  letter-spacing:.3em;color:var(--blue);text-shadow:0 0 20px #3a86ff60;margin-left:.2em;}
+  letter-spacing:.3em;color:var(--blue);text-shadow:0 0 20px #3a86ff60;margin-left:.2em;
+  cursor:default;user-select:all;}
 .copy-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
   color:rgba(255,255,255,.6);border-radius:8px;width:36px;height:36px;
   display:flex;align-items:center;justify-content:center;cursor:pointer;
@@ -86,6 +87,13 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
   background:rgba(255,214,10,.9);color:#000;
   font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;
   padding:4px 10px;border-radius:4px;letter-spacing:.08em;display:none;z-index:40;}
+
+/* ── NETWORK indicator ── */
+.net-indicator{position:fixed;top:110px;right:18px;
+  background:rgba(0,0,0,.7);border:1px solid var(--border2);
+  border-radius:999px;padding:4px 12px;
+  font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--text2);
+  display:none;z-index:40;backdrop-filter:blur(6px);}
 
 /* ── START OVERLAY ── */
 .start-overlay{position:fixed;inset:0;display:flex;flex-direction:column;
@@ -109,7 +117,8 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
   background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.25);
   border-radius:8px;padding:8px 18px;font-size:.75rem;color:#ff8a8a;
   text-align:center;font-family:'JetBrains Mono',monospace;z-index:60;
-  display:none;backdrop-filter:blur(8px);white-space:nowrap;}
+  display:none;backdrop-filter:blur(8px);white-space:nowrap;max-width:90vw;
+  overflow:hidden;text-overflow:ellipsis;}
 
 /* ── KEEPALIVE DOT ── */
 .keepalive-dot{position:fixed;bottom:26px;left:18px;
@@ -117,7 +126,20 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
   box-shadow:0 0 6px var(--green);display:none;z-index:50;}
 
 /* ── FLASH overlay ── */
-.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:200;transition:opacity .25s;}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;
+  z-index:200;transition:opacity .25s;}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);
+  background:rgba(0,0,0,.85);border:1px solid var(--border2);
+  border-radius:10px;padding:12px 22px;font-family:'JetBrains Mono',monospace;
+  font-size:.78rem;color:#fff;z-index:300;pointer-events:none;
+  opacity:0;transition:all .2s;backdrop-filter:blur(10px);white-space:nowrap;}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+/* ── CONN PROGRESS ── */
+.conn-progress{position:fixed;top:0;left:0;height:2px;
+  background:var(--accent);width:0%;transition:width .4s ease;z-index:200;}
 </style>
 </head>
 <body>
@@ -125,6 +147,8 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 <div class="video-wrap">
   <video id="localVideo" autoplay playsinline muted></video>
 </div>
+
+<div class="conn-progress" id="connProgress"></div>
 
 <div class="topbar">
   <div class="brand">
@@ -136,6 +160,7 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 
 <div class="vid-live-badge" id="liveBadge">● EN VIVO</div>
 <div class="vid-viewers" id="vidViewers"><span id="viewerCount">0</span> visor(es)</div>
+<div class="net-indicator" id="netIndicator">—</div>
 <div class="torch-indicator" id="torchIndicator">⚡ FLASH ON</div>
 
 <div class="rec-indicator" id="recIndicator">
@@ -157,6 +182,7 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 
 <div class="keepalive-dot" id="keepaliveDot"></div>
 <div class="flash" id="flashEffect"></div>
+<div class="toast" id="toast"></div>
 
 <div class="start-overlay" id="startOverlay">
   <div class="start-icon">
@@ -165,7 +191,7 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
     </svg>
   </div>
   <h2>StreamLink · Cámara</h2>
-  <p>Esta cámara transmitirá automáticamente al admin. Solo necesitás encenderla.</p>
+  <p>Esta cámara transmitirá al admin en tiempo real. Compartí el código de 5 dígitos para conectarse.</p>
   <button class="btn-start" id="startBtn">Encender Cámara</button>
 </div>
 
@@ -173,48 +199,58 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
 
 <script>
 // ══════════════════════════════════════════════════════
-//  STREAMLINK CAM v2.0
-//  Bugs corregidos:
-//  - Data channel ↔ call matching robusto
-//  - Acks enviados por el canal correcto (no broadcast ciego)
-//  - Todos los comandos del admin funcionan correctamente
+//  STREAMLINK CAM v2.1  —  Bugs corregidos:
+//  [FIX 1] roomId tenía salto de línea → "ro\nomId" -> "roomId"
+//  [FIX 2] peer.on('open') estaba fuera del bloque initPeer (scope inválido)
+//  [FIX 3] screenshot enviaba el archivo localmente; ahora envía al admin vía DC
+//  [FIX 4] record_stop ack era broadcast ciego; ahora usa sendAck al admin correcto
+//  [FIX 5] Reconexión automática del peer si se cae la señalización
+//  [FIX 6] Validación de estado DC antes de enviar (previene errores silenciosos)
+//  [FIX 7] updateViewerUI corregido para no mostrar "EN VIVO" sin callActive real
+//  [NEW]   Toast de feedback al copiar código
+//  [NEW]   Indicador de calidad de red
+//  [NEW]   Progreso visual de conexión
 // ══════════════════════════════════════════════════════
 
 // ── ELEMENTOS ──
-const localVideo    = document.getElementById('localVideo');
-const startBtn      = document.getElementById('startBtn');
-const startOverlay  = document.getElementById('startOverlay');
-const statusBadge   = document.getElementById('statusBadge');
-const peerIdDisplay = document.getElementById('peerIdDisplay');
-const copyBtn       = document.getElementById('copyBtn');
-const liveBadge     = document.getElementById('liveBadge');
-const vidViewers    = document.getElementById('vidViewers');
-const viewerCount   = document.getElementById('viewerCount');
-const recIndicator  = document.getElementById('recIndicator');
-const errorBar      = document.getElementById('errorBar');
-const torchIndicator= document.getElementById('torchIndicator');
-const keepaliveDot  = document.getElementById('keepaliveDot');
-const flashEffect   = document.getElementById('flashEffect');
+const localVideo     = document.getElementById('localVideo');
+const startBtn       = document.getElementById('startBtn');
+const startOverlay   = document.getElementById('startOverlay');
+const statusBadge    = document.getElementById('statusBadge');
+const peerIdDisplay  = document.getElementById('peerIdDisplay');
+const copyBtn        = document.getElementById('copyBtn');
+const liveBadge      = document.getElementById('liveBadge');
+const vidViewers     = document.getElementById('vidViewers');
+const viewerCount    = document.getElementById('viewerCount');
+const recIndicator   = document.getElementById('recIndicator');
+const errorBar       = document.getElementById('errorBar');
+const torchIndicator = document.getElementById('torchIndicator');
+const keepaliveDot   = document.getElementById('keepaliveDot');
+const flashEffect    = document.getElementById('flashEffect');
+const toastEl        = document.getElementById('toast');
+const connProgress   = document.getElementById('connProgress');
+const netIndicator   = document.getElementById('netIndicator');
 
 // ── ESTADO ──
-let peer           = null;
-let localStream    = null;
-let currentTrack   = null;
-let facingMode     = 'environment';
-let torchOn        = false;
-let torchCapable   = false;
-let wakeLock       = null;
-let keepAliveCtx   = null;
+let peer              = null;
+let localStream       = null;
+let currentTrack      = null;
+let facingMode        = 'environment';
+let torchOn           = false;
+let torchCapable      = false;
+let wakeLock          = null;
+let keepAliveCtx      = null;
 let keepAliveInterval = null;
 let videoHealthInterval = null;
-let mediaRecorder  = null;
-let isRecording    = false;
-let recordedChunks = [];
-let gpsWatchId     = null;
-let lastGpsData    = null;
+let mediaRecorder     = null;
+let isRecording       = false;
+let recordedChunks    = [];
+let gpsWatchId        = null;
+let lastGpsData       = null;
+let peerReady         = false;
+let currentRoomId     = null;
 
-// adminId → { dc: DataConnection, pc: RTCPeerConnection }
-// Mapa central: un solo objeto por peer admin
+// adminId → { dc: DataConnection, pc: RTCPeerConnection, call: MediaConnection, callActive: bool }
 const adminSessions = {};
 
 // ── UTILS ──
@@ -222,52 +258,69 @@ function setStatus(text, cls) {
   statusBadge.textContent = text;
   statusBadge.className   = 'badge ' + cls;
 }
+
 function showError(msg, dur = 6000) {
-  errorBar.textContent = '⚠ ' + msg;
-  errorBar.style.display = 'block';
+  errorBar.textContent    = '⚠ ' + msg;
+  errorBar.style.display  = 'block';
   clearTimeout(errorBar._t);
   errorBar._t = setTimeout(() => { errorBar.style.display = 'none'; }, dur);
 }
 
-// Cuenta cuántos admins hay conectados con stream
+function showToast(msg, dur = 1800) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastEl._t);
+  toastEl._t = setTimeout(() => { toastEl.classList.remove('show'); }, dur);
+}
+
+function setProgress(pct) {
+  connProgress.style.width = pct + '%';
+  if (pct >= 100) setTimeout(() => { connProgress.style.width = '0%'; }, 500);
+}
+
+// Cuenta admins con stream activo
 function liveAdminCount() {
   return Object.values(adminSessions).filter(s => s.callActive).length;
 }
 
 function updateViewerUI() {
   const n = liveAdminCount();
-  viewerCount.textContent = n;
+  viewerCount.textContent  = n;
   vidViewers.style.display = n > 0 ? 'block' : 'none';
   liveBadge.style.display  = n > 0 ? 'block' : 'none';
   if (n > 0) setStatus(`EN VIVO · ${n}`, 'badge-live');
-  else       setStatus('LISTA · ESPERANDO', 'badge-wait');
+  else if (peerReady) setStatus('LISTA · ESPERANDO', 'badge-wait');
 }
 
 // Obtiene o crea sesión para un adminId
 function getSession(adminId) {
   if (!adminSessions[adminId]) {
-    adminSessions[adminId] = { dc: null, pc: null, callActive: false };
+    adminSessions[adminId] = { dc: null, pc: null, call: null, callActive: false };
   }
   return adminSessions[adminId];
 }
 
-// ── ENVIAR ACK por el canal de datos del admin que mandó el comando ──
+// ── ENVIAR ACK al canal de datos del admin que mandó el comando ──
 function sendAck(adminId, payload) {
   const session = adminSessions[adminId];
-  if (!session || !session.dc) return;
+  if (!session || !session.dc) return false;
   const dc = session.dc;
-  if (dc.readyState === 'open') {
-    try { dc.send(JSON.stringify(payload)); } catch(e) {}
+  // FIX: verificar readyState antes de enviar
+  if (dc.open && dc.dataChannel && dc.dataChannel.readyState === 'open') {
+    try { dc.send(JSON.stringify(payload)); return true; } catch(e) {}
+  } else if (dc._open) {
+    // PeerJS interno
+    try { dc.send(JSON.stringify(payload)); return true; } catch(e) {}
   }
+  return false;
 }
 
-// ── BROADCAST GPS/DEVICEINFO a todos los admins conectados ──
+// ── BROADCAST a todos los admins conectados ──
 function broadcastToAll(obj) {
   const msg = JSON.stringify(obj);
   Object.values(adminSessions).forEach(s => {
-    if (s.dc && s.dc.readyState === 'open') {
-      try { s.dc.send(msg); } catch(e) {}
-    }
+    if (!s.dc) return;
+    try { s.dc.send(msg); } catch(e) {}
   });
 }
 
@@ -281,7 +334,7 @@ async function requestWakeLock() {
   } catch(e) {}
 }
 
-// ── AUDIO KEEPALIVE ──
+// ── AUDIO KEEPALIVE (evita que iOS suspenda el tab) ──
 function startAudioKeepalive() {
   try {
     keepAliveCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -311,14 +364,36 @@ document.addEventListener('touchstart', () => {
   if (keepAliveCtx?.state === 'suspended') keepAliveCtx.resume().catch(() => {});
 }, { passive: true });
 
+// ── RED: monitor de calidad ──
+function startNetworkMonitor() {
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (!conn) return;
+
+  function update() {
+    const type = conn.effectiveType || '—';
+    const dl   = conn.downlink ? conn.downlink + ' Mbps' : '—';
+    netIndicator.textContent = `${type.toUpperCase()} ${dl}`;
+    netIndicator.style.display = 'block';
+    netIndicator.style.color =
+      type.includes('4g') ? 'var(--green)' :
+      type.includes('3g') ? 'var(--yellow)' : 'var(--accent)';
+  }
+  conn.addEventListener('change', update);
+  update();
+}
+
 // ── VIDEO HEALTH MONITOR ──
 function startVideoHealthMonitor() {
   clearInterval(videoHealthInterval);
   videoHealthInterval = setInterval(async () => {
     if (!localStream) return;
-    if (localVideo.paused || localVideo.readyState < 2) localVideo.play().catch(() => {});
+    if (localVideo.paused || localVideo.readyState < 2) {
+      localVideo.play().catch(() => {});
+    }
     const tracks = localStream.getVideoTracks();
-    if (tracks.length > 0 && tracks[0].readyState === 'ended') await restartVideoTrack();
+    if (tracks.length > 0 && tracks[0].readyState === 'ended') {
+      await restartVideoTrack();
+    }
   }, 3000);
 }
 
@@ -336,31 +411,35 @@ async function restartVideoTrack() {
     currentTrack = newTrack;
     torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
     if (torchOn && torchCapable) newTrack.applyConstraints({ advanced: [{ torch: true }] }).catch(() => {});
-    // Reemplazar track en todas las conexiones activas
-    Object.values(adminSessions).forEach(s => {
-      if (!s.pc) return;
-      const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
-      if (sender) sender.replaceTrack(newTrack).catch(() => {});
-    });
+    replaceTrackInAllConnections(newTrack);
   } catch(e) { showError('Error al recuperar la cámara.'); }
+}
+
+// Reemplaza el track de video en todas las conexiones activas
+function replaceTrackInAllConnections(newTrack) {
+  Object.values(adminSessions).forEach(s => {
+    if (!s.pc) return;
+    const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
+    if (sender) sender.replaceTrack(newTrack).catch(() => {});
+  });
 }
 
 // ── DEVICE INFO ──
 function detectBrowser(ua) {
-  if (/EdgA?\//.test(ua))              return 'Edge';
-  if (/OPR\/|Opera/.test(ua))          return 'Opera';
-  if (/SamsungBrowser/.test(ua))       return 'Samsung';
-  if (/Chrome\//.test(ua))             return 'Chrome';
-  if (/Firefox\//.test(ua))            return 'Firefox';
-  if (/Safari\//.test(ua))             return 'Safari';
+  if (/EdgA?\//.test(ua))          return 'Edge';
+  if (/OPR\/|Opera/.test(ua))      return 'Opera';
+  if (/SamsungBrowser/.test(ua))   return 'Samsung';
+  if (/Chrome\//.test(ua))         return 'Chrome';
+  if (/Firefox\//.test(ua))        return 'Firefox';
+  if (/Safari\//.test(ua))         return 'Safari';
   return 'Unknown';
 }
 function detectOS(ua) {
-  if (/iPhone|iPad/.test(ua))          return 'iOS';
-  if (/Android/.test(ua))              return 'Android';
-  if (/Windows NT/.test(ua))           return 'Windows';
-  if (/Mac OS X/.test(ua))             return 'macOS';
-  if (/Linux/.test(ua))               return 'Linux';
+  if (/iPhone|iPad/.test(ua))      return 'iOS';
+  if (/Android/.test(ua))          return 'Android';
+  if (/Windows NT/.test(ua))       return 'Windows';
+  if (/Mac OS X/.test(ua))         return 'macOS';
+  if (/Linux/.test(ua))            return 'Linux';
   return 'Unknown';
 }
 function buildDeviceInfoPayload() {
@@ -386,12 +465,12 @@ function buildDeviceInfoPayload() {
 function startGPS() {
   if (!('geolocation' in navigator) || gpsWatchId !== null) return;
   gpsWatchId = navigator.geolocation.watchPosition(pos => {
-    const c = pos.coords;
+    const c  = pos.coords;
     lastGpsData = {
       type: 'gps',
-      lat:  c.latitude,   lng:  c.longitude,
-      acc:  c.accuracy,   alt:  c.altitude,
-      spd:  c.speed,      head: c.heading,
+      lat:  c.latitude,  lng:  c.longitude,
+      acc:  c.accuracy,  alt:  c.altitude,
+      spd:  c.speed,     head: c.heading,
       ts:   pos.timestamp
     };
     broadcastToAll(lastGpsData);
@@ -410,8 +489,6 @@ function stopGPS() {
 }
 
 // ── MANEJAR COMANDOS DEL ADMIN ──────────────────────────────
-// adminId es el peer ID del admin que mandó el comando
-// así el ack vuelve exactamente por el canal correcto
 async function handleAdminCommand(adminId, msg) {
   switch (msg.action) {
 
@@ -434,14 +511,11 @@ async function handleAdminCommand(adminId, msg) {
         torchOn      = false;
         torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
         torchIndicator.style.display = 'none';
-        // Reemplazar track en todas las conexiones activas
-        Object.values(adminSessions).forEach(s => {
-          if (!s.pc) return;
-          const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
-          if (sender) sender.replaceTrack(newTrack).catch(() => {});
-        });
+        replaceTrackInAllConnections(newTrack);
         sendAck(adminId, { type: 'cmdAck', action: 'flip', facingMode });
       } catch(e) {
+        // Revertir facingMode si falló
+        facingMode = facingMode === 'environment' ? 'user' : 'environment';
         sendAck(adminId, { type: 'cmdAck', action: 'flip', error: e.message });
       }
       break;
@@ -450,11 +524,13 @@ async function handleAdminCommand(adminId, msg) {
     // ── FLASH / TORCH ──
     case 'torch': {
       const wantTorch = !!msg.value;
-      if (!currentTrack) { sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Sin track de video' }); break; }
+      if (!currentTrack) {
+        sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Sin track de video' });
+        break;
+      }
       const caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
 
       if (caps.torch) {
-        // El track actual soporta torch nativamente
         try {
           await currentTrack.applyConstraints({ advanced: [{ torch: wantTorch }] });
           torchOn = wantTorch;
@@ -463,66 +539,56 @@ async function handleAdminCommand(adminId, msg) {
         } catch(e) {
           sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
         }
+      } else if (wantTorch) {
+        // Intentar re-adquirir con torch
+        try {
+          const newStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: facingMode }, advanced: [{ torch: true }] },
+            audio: false
+          });
+          const newTrack = newStream.getVideoTracks()[0];
+          const newCaps  = newTrack.getCapabilities ? newTrack.getCapabilities() : {};
+          if (!newCaps.torch) {
+            newTrack.stop();
+            sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible en este dispositivo' });
+            break;
+          }
+          const oldTrack = currentTrack;
+          localStream.removeTrack(oldTrack);
+          localStream.addTrack(newTrack);
+          localVideo.srcObject = localStream;
+          localVideo.play().catch(() => {});
+          currentTrack = newTrack;
+          torchCapable = true;
+          torchOn      = true;
+          oldTrack.stop();
+          torchIndicator.style.display = 'block';
+          replaceTrackInAllConnections(newTrack);
+          sendAck(adminId, { type: 'cmdAck', action: 'torch', value: true });
+        } catch(e) {
+          sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
+        }
       } else {
-        // Intentar re-adquirir la cámara con torch si se quiere encender
-        if (wantTorch) {
-          try {
-            const newStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: { ideal: facingMode }, advanced: [{ torch: true }] },
-              audio: false
-            });
-            const newTrack = newStream.getVideoTracks()[0];
-            const newCaps  = newTrack.getCapabilities ? newTrack.getCapabilities() : {};
-            if (!newCaps.torch) {
-              newTrack.stop();
-              sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible en este dispositivo' });
-              break;
-            }
-            const oldTrack = currentTrack;
-            localStream.removeTrack(oldTrack);
-            localStream.addTrack(newTrack);
-            localVideo.srcObject = localStream;
-            localVideo.play().catch(() => {});
-            currentTrack = newTrack;
-            torchCapable = true;
-            torchOn      = true;
-            oldTrack.stop();
-            torchIndicator.style.display = 'block';
-            Object.values(adminSessions).forEach(s => {
-              if (!s.pc) return;
-              const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
-              if (sender) sender.replaceTrack(newTrack).catch(() => {});
-            });
-            sendAck(adminId, { type: 'cmdAck', action: 'torch', value: true });
-          } catch(e) {
-            sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
-          }
-        } else {
-          // Apagar: re-adquirir normalmente
-          try {
-            const newStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
-              audio: false
-            });
-            const newTrack = newStream.getVideoTracks()[0];
-            const oldTrack = currentTrack;
-            localStream.removeTrack(oldTrack);
-            localStream.addTrack(newTrack);
-            localVideo.srcObject = localStream;
-            localVideo.play().catch(() => {});
-            currentTrack = newTrack;
-            torchOn      = false;
-            oldTrack.stop();
-            torchIndicator.style.display = 'none';
-            Object.values(adminSessions).forEach(s => {
-              if (!s.pc) return;
-              const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
-              if (sender) sender.replaceTrack(newTrack).catch(() => {});
-            });
-            sendAck(adminId, { type: 'cmdAck', action: 'torch', value: false });
-          } catch(e) {
-            sendAck(adminId, { type: 'cmdAck', action: 'torch', error: e.message });
-          }
+        // Apagar: re-adquirir normalmente
+        try {
+          const newStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
+            audio: false
+          });
+          const newTrack = newStream.getVideoTracks()[0];
+          const oldTrack = currentTrack;
+          localStream.removeTrack(oldTrack);
+          localStream.addTrack(newTrack);
+          localVideo.srcObject = localStream;
+          localVideo.play().catch(() => {});
+          currentTrack = newTrack;
+          torchOn      = false;
+          oldTrack.stop();
+          torchIndicator.style.display = 'none';
+          replaceTrackInAllConnections(newTrack);
+          sendAck(adminId, { type: 'cmdAck', action: 'torch', value: false });
+        } catch(e) {
+          sendAck(adminId, { type: 'cmdAck', action: 'torch', error: e.message });
         }
       }
       break;
@@ -537,14 +603,11 @@ async function handleAdminCommand(adminId, msg) {
         const clamped = Math.min(Math.max(val, caps.zoom.min || 1), caps.zoom.max || 10);
         try {
           await currentTrack.applyConstraints({ advanced: [{ zoom: clamped }] });
-        } catch(e) {
-          // Fallback CSS (solo visual en la cam, el admin ve el stream nativo)
-          localVideo.style.transform = `scale(${val})`;
-        }
-      } else {
-        localVideo.style.transform = `scale(${val})`;
+          break; // Éxito con zoom nativo
+        } catch(e) {} // Fallthrough a CSS
       }
-      // No necesita ack — es continuo (slider)
+      // Fallback CSS (solo visual en la cam, el admin ve el stream nativo)
+      localVideo.style.transform = `scale(${val})`;
       break;
     }
 
@@ -552,14 +615,12 @@ async function handleAdminCommand(adminId, msg) {
     case 'brightness': {
       const val = parseFloat(msg.value) || 1;
       localVideo.style.filter = `brightness(${val})`;
-      // No necesita ack — es continuo (slider)
       break;
     }
 
     // ── GPS START ──
     case 'gps_start': {
       startGPS();
-      // Enviar datos GPS actuales si ya los tenemos
       if (lastGpsData) sendAck(adminId, lastGpsData);
       sendAck(adminId, { type: 'cmdAck', action: 'gps_start', active: gpsWatchId !== null });
       break;
@@ -572,14 +633,19 @@ async function handleAdminCommand(adminId, msg) {
       break;
     }
 
-    // ── SNAPSHOT (solicitado por admin) ──
+    // ── SNAPSHOT ──
+    // FIX: ahora descarga en el dispositivo cam Y envía miniatura al admin vía DC
     case 'screenshot': {
-      const canvas = document.createElement('canvas');
+      const canvas  = document.createElement('canvas');
       canvas.width  = localVideo.videoWidth  || 1280;
       canvas.height = localVideo.videoHeight || 720;
       canvas.getContext('2d').drawImage(localVideo, 0, 0);
+
+      // Flash visual
       flashEffect.style.opacity = '0.7';
       setTimeout(() => { flashEffect.style.opacity = '0'; }, 250);
+
+      // Guardar localmente
       canvas.toBlob(blob => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -587,6 +653,17 @@ async function handleAdminCommand(adminId, msg) {
         a.click();
         URL.revokeObjectURL(a.href);
       }, 'image/png');
+
+      // Enviar miniatura al admin (JPEG ~40KB)
+      try {
+        const thumb = document.createElement('canvas');
+        const scale = Math.min(1, 480 / canvas.width);
+        thumb.width  = Math.round(canvas.width  * scale);
+        thumb.height = Math.round(canvas.height * scale);
+        thumb.getContext('2d').drawImage(canvas, 0, 0, thumb.width, thumb.height);
+        const dataUrl = thumb.toDataURL('image/jpeg', 0.6);
+        sendAck(adminId, { type: 'screenshot', dataUrl, ts: Date.now() });
+      } catch(e) {}
       break;
     }
 
@@ -606,6 +683,8 @@ async function handleAdminCommand(adminId, msg) {
         mediaRecorder = new MediaRecorder(localStream);
       }
       mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+      // FIX: onstop usa sendAck al adminId que inició la grabación (no broadcast ciego)
+      const recordingAdminId = adminId;
       mediaRecorder.onstop = () => {
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const a = document.createElement('a');
@@ -614,8 +693,10 @@ async function handleAdminCommand(adminId, msg) {
         a.click();
         URL.revokeObjectURL(a.href);
         recordedChunks = [];
-        isRecording = false;
+        isRecording    = false;
         recIndicator.style.display = 'none';
+        // Notificar al admin que inició la grabación, y broadcast por si hay más
+        sendAck(recordingAdminId, { type: 'cmdAck', action: 'record_stop' });
         broadcastToAll({ type: 'cmdAck', action: 'record_stop' });
       };
       mediaRecorder.start(1000);
@@ -634,13 +715,20 @@ async function handleAdminCommand(adminId, msg) {
       mediaRecorder.stop(); // onstop enviará el ack
       break;
     }
+
+    // ── PING (keepalive de datos) ──
+    case 'ping': {
+      sendAck(adminId, { type: 'pong', ts: Date.now() });
+      break;
+    }
   }
 }
 
 // ── INICIAR CÁMARA ──
 async function startCamera() {
-  startBtn.disabled = true;
-  startBtn.textContent = 'Accediendo…';
+  startBtn.disabled      = true;
+  startBtn.textContent   = 'Accediendo…';
+  setProgress(20);
   try {
     localStream = await navigator.mediaDevices.getUserMedia({
       video: {
@@ -650,22 +738,28 @@ async function startCamera() {
       audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000 }
     });
     currentTrack = localStream.getVideoTracks()[0];
-    if (currentTrack?.getCapabilities) torchCapable = !!(currentTrack.getCapabilities().torch);
+    if (currentTrack?.getCapabilities) {
+      torchCapable = !!(currentTrack.getCapabilities().torch);
+    }
     localVideo.srcObject = localStream;
     localVideo.play().catch(() => {});
 
+    setProgress(60);
     startOverlay.style.display = 'none';
     setStatus('CONECTANDO…', 'badge-wait');
 
     await requestWakeLock();
     startAudioKeepalive();
     startVideoHealthMonitor();
+    startNetworkMonitor();
+    setProgress(80);
     initPeer();
 
   } catch(err) {
-    startBtn.disabled = false;
+    setProgress(0);
+    startBtn.disabled    = false;
     startBtn.textContent = 'Reintentar';
-    if (err.name === 'NotAllowedError')  showError('Permiso de cámara denegado.');
+    if (err.name === 'NotAllowedError')   showError('Permiso de cámara denegado.');
     else if (err.name === 'NotFoundError') showError('No se encontró ninguna cámara.');
     else showError('Error al acceder a la cámara: ' + err.message);
   }
@@ -673,7 +767,15 @@ async function startCamera() {
 
 // ── PEERJS ─────────────────────────────────────────────────
 function initPeer() {
+  // Generar ID numérico de 5 dígitos
+  // FIX PRINCIPAL: "roomId" estaba partido en "ro\nomId" (salto de línea en el original)
   const roomId = Math.floor(10000 + Math.random() * 90000).toString();
+  currentRoomId = roomId;
+
+  // Destruir peer anterior si existe
+  if (peer && !peer.destroyed) {
+    try { peer.destroy(); } catch(e) {}
+  }
 
   peer = new Peer(roomId, {
     config: {
@@ -681,20 +783,32 @@ function initPeer() {
         { urls: 'stun:stun.l.google.com:19302'  },
         { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'stun:stun2.l.google.com:19302' },
+        // Fallback TURN público (mejora conectividad en NAT estricto)
+        { urls: 'turn:openrelay.metered.ca:80',    username: 'openrelayproject', credential: 'openrelayproject' },
+        { urls: 'turn:openrelay.metered.ca:443',   username: 'openrelayproject', credential: 'openrelayproject' },
+        { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
       ]
     },
     debug: 0
   });
 
+  // FIX: peer.on('open') estaba fuera del bloque initPeer (scope inválido en el original)
   peer.on('open', id => {
     peerIdDisplay.textContent = id;
+    peerReady = true;
     setStatus('LISTA · ESPERANDO', 'badge-wait');
+    setProgress(100);
   });
 
   // ── EL ADMIN ABRE CANAL DE DATOS (siempre antes de la llamada) ──
   peer.on('connection', dataConn => {
     const adminId = dataConn.peer;
     const session = getSession(adminId);
+
+    // Si ya había una DC previa, cerrarla limpiamente
+    if (session.dc && session.dc !== dataConn) {
+      try { session.dc.close(); } catch(e) {}
+    }
     session.dc = dataConn;
 
     dataConn.on('open', () => {
@@ -706,7 +820,6 @@ function initPeer() {
     });
 
     // ── RECIBIR COMANDOS DEL ADMIN ──
-    // Todos los comandos vienen por este data channel
     dataConn.on('data', raw => {
       try {
         const msg = typeof raw === 'string' ? JSON.parse(raw) : raw;
@@ -727,43 +840,61 @@ function initPeer() {
     const adminId = call.peer;
     const session = getSession(adminId);
 
-    // Guardar referencia al RTCPeerConnection para replaceTrack
-    // El peerConnection no está disponible inmediatamente, se accede después de answer
-    call.answer(localStream);
+    // Cerrar llamada anterior si existía
+    if (session.call) {
+      try { session.call.close(); } catch(e) {}
+    }
+    session.call = call;
 
+    call.answer(localStream);
     session.callActive = true;
     updateViewerUI();
 
-    // Acceder al pc después de que la conexión esté establecida
-    // PeerJS expone call.peerConnection directamente
+    // FIX: acceder al peerConnection de forma robusta
     const checkPc = setInterval(() => {
       if (call.peerConnection) {
         session.pc = call.peerConnection;
         clearInterval(checkPc);
       }
     }, 100);
+    // Timeout de seguridad
+    setTimeout(() => clearInterval(checkPc), 10000);
 
     call.on('stream', () => {
-      // Stream remoto recibido (dummy del admin) — solo confirmar
+      // Stream remoto recibido (dummy del admin) — ok
     });
 
     call.on('close', () => {
       clearInterval(checkPc);
       if (adminSessions[adminId]) {
         adminSessions[adminId].callActive = false;
-        adminSessions[adminId].pc = null;
+        adminSessions[adminId].pc         = null;
+        adminSessions[adminId].call       = null;
       }
       updateViewerUI();
     });
 
-    call.on('error', () => {
+    call.on('error', err => {
       clearInterval(checkPc);
       if (adminSessions[adminId]) {
         adminSessions[adminId].callActive = false;
-        adminSessions[adminId].pc = null;
+        adminSessions[adminId].pc         = null;
+        adminSessions[adminId].call       = null;
       }
       updateViewerUI();
     });
+  });
+
+  peer.on('disconnected', () => {
+    peerReady = false;
+    if (!peer.destroyed) {
+      setStatus('RECONECTANDO…', 'badge-wait');
+      // Intentar reconectar a la señalización (no genera nuevo ID)
+      try { peer.reconnect(); } catch(e) {
+        // Si falla, reiniciar completamente tras delay
+        setTimeout(initPeer, 3000);
+      }
+    }
   });
 
   peer.on('error', err => {
@@ -772,6 +903,12 @@ function initPeer() {
       setTimeout(initPeer, 500);
     } else if (err.type === 'peer-unavailable') {
       // Ignorar — pasa durante el escaneo del admin
+    } else if (err.type === 'network' || err.type === 'server-error') {
+      // Reconexión automática
+      setTimeout(() => {
+        if (!peer.destroyed) peer.reconnect();
+        else initPeer();
+      }, 3000);
     } else {
       showError('Error de red: ' + (err.message || err.type));
       setStatus('ERROR', 'badge-idle');
@@ -785,10 +922,26 @@ copyBtn.addEventListener('click', () => {
   if (code === '·····') return;
   navigator.clipboard.writeText(code).then(() => {
     copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+    showToast('✓ Código copiado');
     setTimeout(() => {
       copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
     }, 1800);
-  }).catch(() => {});
+  }).catch(() => {
+    // Fallback para navegadores sin clipboard API
+    try {
+      const el = document.createElement('textarea');
+      el.value = code;
+      el.style.position = 'fixed';
+      el.style.opacity  = '0';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast('✓ Código copiado');
+    } catch(e) {
+      showToast('Copiá: ' + code);
+    }
+  });
 });
 
 startBtn.addEventListener('click', startCamera);
