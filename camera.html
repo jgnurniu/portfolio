@@ -191,27 +191,13 @@ html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-fam
     </svg>
   </div>
   <h2>StreamLink · Cámara</h2>
-  <p>Esta cámara transmitirá al admin en tiempo real. Compartí el código de 5 dígitos para conectarse.</p>
+  <p>Esta cámara transmitirá al admin en tiempo real procesada por Javascript. Compartí el código de 5 dígitos para conectarse.</p>
   <button class="btn-start" id="startBtn">Encender Cámara</button>
 </div>
 
 <div class="error-bar" id="errorBar"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  STREAMLINK CAM v2.1  —  Bugs corregidos:
-//  [FIX 1] roomId tenía salto de línea → "ro\nomId" -> "roomId"
-//  [FIX 2] peer.on('open') estaba fuera del bloque initPeer (scope inválido)
-//  [FIX 3] screenshot enviaba el archivo localmente; ahora envía al admin vía DC
-//  [FIX 4] record_stop ack era broadcast ciego; ahora usa sendAck al admin correcto
-//  [FIX 5] Reconexión automática del peer si se cae la señalización
-//  [FIX 6] Validación de estado DC antes de enviar (previene errores silenciosos)
-//  [FIX 7] updateViewerUI corregido para no mostrar "EN VIVO" sin callActive real
-//  [NEW]   Toast de feedback al copiar código
-//  [NEW]   Indicador de calidad de red
-//  [NEW]   Progreso visual de conexión
-// ══════════════════════════════════════════════════════
-
 // ── ELEMENTOS ──
 const localVideo     = document.getElementById('localVideo');
 const startBtn       = document.getElementById('startBtn');
@@ -250,6 +236,12 @@ let lastGpsData       = null;
 let peerReady         = false;
 let currentRoomId     = null;
 
+// ── NUEVAS VARIABLES PARA INTERCEPTAR VIDEO CON CANVAS ──
+let processedStream = null;
+const hiddenCanvas = document.createElement('canvas');
+const ctx = hiddenCanvas.getContext('2d', { willReadFrequently: true });
+let animationId = null;
+
 // adminId → { dc: DataConnection, pc: RTCPeerConnection, call: MediaConnection, callActive: bool }
 const adminSessions = {};
 
@@ -278,7 +270,6 @@ function setProgress(pct) {
   if (pct >= 100) setTimeout(() => { connProgress.style.width = '0%'; }, 500);
 }
 
-// Cuenta admins con stream activo
 function liveAdminCount() {
   return Object.values(adminSessions).filter(s => s.callActive).length;
 }
@@ -292,7 +283,6 @@ function updateViewerUI() {
   else if (peerReady) setStatus('LISTA · ESPERANDO', 'badge-wait');
 }
 
-// Obtiene o crea sesión para un adminId
 function getSession(adminId) {
   if (!adminSessions[adminId]) {
     adminSessions[adminId] = { dc: null, pc: null, call: null, callActive: false };
@@ -300,28 +290,45 @@ function getSession(adminId) {
   return adminSessions[adminId];
 }
 
-// ── ENVIAR ACK al canal de datos del admin que mandó el comando ──
 function sendAck(adminId, payload) {
   const session = adminSessions[adminId];
   if (!session || !session.dc) return false;
   const dc = session.dc;
-  // FIX: verificar readyState antes de enviar
   if (dc.open && dc.dataChannel && dc.dataChannel.readyState === 'open') {
     try { dc.send(JSON.stringify(payload)); return true; } catch(e) {}
   } else if (dc._open) {
-    // PeerJS interno
     try { dc.send(JSON.stringify(payload)); return true; } catch(e) {}
   }
   return false;
 }
 
-// ── BROADCAST a todos los admins conectados ──
 function broadcastToAll(obj) {
   const msg = JSON.stringify(obj);
   Object.values(adminSessions).forEach(s => {
     if (!s.dc) return;
     try { s.dc.send(msg); } catch(e) {}
   });
+}
+
+// ── BUCLE DE PROCESAMIENTO DE VIDEO ──
+function processVideoFrames() {
+  if (localVideo.videoWidth === 0) {
+    animationId = requestAnimationFrame(processVideoFrames);
+    return;
+  }
+  
+  if (hiddenCanvas.width !== localVideo.videoWidth) {
+    hiddenCanvas.width = localVideo.videoWidth;
+    hiddenCanvas.height = localVideo.videoHeight;
+  }
+
+  // Se dibuja el frame actual de la cámara
+  ctx.drawImage(localVideo, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+  // AQUÍ LOS DATOS YA PASAN POR JAVASCRIPT
+  // Si querés modificar píxeles, usá ctx.getImageData y ctx.putImageData aquí.
+
+  animationId = requestAnimationFrame(processVideoFrames);
 }
 
 // ── WAKE LOCK ──
@@ -334,7 +341,7 @@ async function requestWakeLock() {
   } catch(e) {}
 }
 
-// ── AUDIO KEEPALIVE (evita que iOS suspenda el tab) ──
+// ── AUDIO KEEPALIVE ──
 function startAudioKeepalive() {
   try {
     keepAliveCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -364,7 +371,7 @@ document.addEventListener('touchstart', () => {
   if (keepAliveCtx?.state === 'suspended') keepAliveCtx.resume().catch(() => {});
 }, { passive: true });
 
-// ── RED: monitor de calidad ──
+// ── RED ──
 function startNetworkMonitor() {
   const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   if (!conn) return;
@@ -411,17 +418,8 @@ async function restartVideoTrack() {
     currentTrack = newTrack;
     torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
     if (torchOn && torchCapable) newTrack.applyConstraints({ advanced: [{ torch: true }] }).catch(() => {});
-    replaceTrackInAllConnections(newTrack);
+    // No hace falta reemplazar tracks en WebRTC porque el canvas ya gestiona el streaming
   } catch(e) { showError('Error al recuperar la cámara.'); }
-}
-
-// Reemplaza el track de video en todas las conexiones activas
-function replaceTrackInAllConnections(newTrack) {
-  Object.values(adminSessions).forEach(s => {
-    if (!s.pc) return;
-    const sender = s.pc.getSenders().find(se => se.track?.kind === 'video');
-    if (sender) sender.replaceTrack(newTrack).catch(() => {});
-  });
 }
 
 // ── DEVICE INFO ──
@@ -491,7 +489,6 @@ function stopGPS() {
 // ── MANEJAR COMANDOS DEL ADMIN ──────────────────────────────
 async function handleAdminCommand(adminId, msg) {
   switch (msg.action) {
-
     // ── VOLTEAR CÁMARA ──
     case 'flip': {
       facingMode = facingMode === 'environment' ? 'user' : 'environment';
@@ -511,10 +508,9 @@ async function handleAdminCommand(adminId, msg) {
         torchOn      = false;
         torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
         torchIndicator.style.display = 'none';
-        replaceTrackInAllConnections(newTrack);
+        // No reemplazamos en WebRTC, el canvas se actualiza solo
         sendAck(adminId, { type: 'cmdAck', action: 'flip', facingMode });
       } catch(e) {
-        // Revertir facingMode si falló
         facingMode = facingMode === 'environment' ? 'user' : 'environment';
         sendAck(adminId, { type: 'cmdAck', action: 'flip', error: e.message });
       }
@@ -540,7 +536,6 @@ async function handleAdminCommand(adminId, msg) {
           sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
         }
       } else if (wantTorch) {
-        // Intentar re-adquirir con torch
         try {
           const newStream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: { ideal: facingMode }, advanced: [{ torch: true }] },
@@ -563,13 +558,11 @@ async function handleAdminCommand(adminId, msg) {
           torchOn      = true;
           oldTrack.stop();
           torchIndicator.style.display = 'block';
-          replaceTrackInAllConnections(newTrack);
           sendAck(adminId, { type: 'cmdAck', action: 'torch', value: true });
         } catch(e) {
           sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
         }
       } else {
-        // Apagar: re-adquirir normalmente
         try {
           const newStream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
@@ -585,7 +578,6 @@ async function handleAdminCommand(adminId, msg) {
           torchOn      = false;
           oldTrack.stop();
           torchIndicator.style.display = 'none';
-          replaceTrackInAllConnections(newTrack);
           sendAck(adminId, { type: 'cmdAck', action: 'torch', value: false });
         } catch(e) {
           sendAck(adminId, { type: 'cmdAck', action: 'torch', error: e.message });
@@ -603,10 +595,9 @@ async function handleAdminCommand(adminId, msg) {
         const clamped = Math.min(Math.max(val, caps.zoom.min || 1), caps.zoom.max || 10);
         try {
           await currentTrack.applyConstraints({ advanced: [{ zoom: clamped }] });
-          break; // Éxito con zoom nativo
-        } catch(e) {} // Fallthrough a CSS
+          break;
+        } catch(e) {}
       }
-      // Fallback CSS (solo visual en la cam, el admin ve el stream nativo)
       localVideo.style.transform = `scale(${val})`;
       break;
     }
@@ -634,18 +625,16 @@ async function handleAdminCommand(adminId, msg) {
     }
 
     // ── SNAPSHOT ──
-    // FIX: ahora descarga en el dispositivo cam Y envía miniatura al admin vía DC
     case 'screenshot': {
+      // Tomamos la captura directamente del hiddenCanvas
       const canvas  = document.createElement('canvas');
-      canvas.width  = localVideo.videoWidth  || 1280;
-      canvas.height = localVideo.videoHeight || 720;
-      canvas.getContext('2d').drawImage(localVideo, 0, 0);
+      canvas.width  = hiddenCanvas.width  || 1280;
+      canvas.height = hiddenCanvas.height || 720;
+      canvas.getContext('2d').drawImage(hiddenCanvas, 0, 0);
 
-      // Flash visual
       flashEffect.style.opacity = '0.7';
       setTimeout(() => { flashEffect.style.opacity = '0'; }, 250);
 
-      // Guardar localmente
       canvas.toBlob(blob => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -654,7 +643,6 @@ async function handleAdminCommand(adminId, msg) {
         URL.revokeObjectURL(a.href);
       }, 'image/png');
 
-      // Enviar miniatura al admin (JPEG ~40KB)
       try {
         const thumb = document.createElement('canvas');
         const scale = Math.min(1, 480 / canvas.width);
@@ -669,7 +657,7 @@ async function handleAdminCommand(adminId, msg) {
 
     // ── GRABAR START ──
     case 'record_start': {
-      if (!localStream || isRecording) {
+      if (!processedStream || isRecording) {
         sendAck(adminId, { type: 'cmdAck', action: 'record_start', error: isRecording ? 'Ya grabando' : 'Sin stream' });
         break;
       }
@@ -678,12 +666,13 @@ async function handleAdminCommand(adminId, msg) {
         ? { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 4_000_000 }
         : { mimeType: 'video/webm', videoBitsPerSecond: 4_000_000 };
       try {
-        mediaRecorder = new MediaRecorder(localStream, opts);
+        // Grabamos el stream procesado para incluir cualquier filtro del canvas
+        mediaRecorder = new MediaRecorder(processedStream, opts);
       } catch {
-        mediaRecorder = new MediaRecorder(localStream);
+        mediaRecorder = new MediaRecorder(processedStream);
       }
       mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
-      // FIX: onstop usa sendAck al adminId que inició la grabación (no broadcast ciego)
+      
       const recordingAdminId = adminId;
       mediaRecorder.onstop = () => {
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
@@ -695,7 +684,6 @@ async function handleAdminCommand(adminId, msg) {
         recordedChunks = [];
         isRecording    = false;
         recIndicator.style.display = 'none';
-        // Notificar al admin que inició la grabación, y broadcast por si hay más
         sendAck(recordingAdminId, { type: 'cmdAck', action: 'record_stop' });
         broadcastToAll({ type: 'cmdAck', action: 'record_stop' });
       };
@@ -712,11 +700,11 @@ async function handleAdminCommand(adminId, msg) {
         sendAck(adminId, { type: 'cmdAck', action: 'record_stop', error: 'No estaba grabando' });
         break;
       }
-      mediaRecorder.stop(); // onstop enviará el ack
+      mediaRecorder.stop();
       break;
     }
 
-    // ── PING (keepalive de datos) ──
+    // ── PING ──
     case 'ping': {
       sendAck(adminId, { type: 'pong', ts: Date.now() });
       break;
@@ -744,6 +732,17 @@ async function startCamera() {
     localVideo.srcObject = localStream;
     localVideo.play().catch(() => {});
 
+    // ── INICIAR INTERCEPCIÓN DE DATOS POR CANVAS ──
+    if (!animationId) {
+      processVideoFrames(); 
+      processedStream = hiddenCanvas.captureStream(30); 
+      
+      // Agregamos la pista de audio original al stream procesado (para no perder el micrófono)
+      if (localStream.getAudioTracks().length > 0) {
+        processedStream.addTrack(localStream.getAudioTracks()[0]);
+      }
+    }
+
     setProgress(60);
     startOverlay.style.display = 'none';
     setStatus('CONECTANDO…', 'badge-wait');
@@ -767,12 +766,9 @@ async function startCamera() {
 
 // ── PEERJS ─────────────────────────────────────────────────
 function initPeer() {
-  // Generar ID numérico de 5 dígitos
-  // FIX PRINCIPAL: "roomId" estaba partido en "ro\nomId" (salto de línea en el original)
   const roomId = Math.floor(10000 + Math.random() * 90000).toString();
   currentRoomId = roomId;
 
-  // Destruir peer anterior si existe
   if (peer && !peer.destroyed) {
     try { peer.destroy(); } catch(e) {}
   }
@@ -783,7 +779,6 @@ function initPeer() {
         { urls: 'stun:stun.l.google.com:19302'  },
         { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'stun:stun2.l.google.com:19302' },
-        // Fallback TURN público (mejora conectividad en NAT estricto)
         { urls: 'turn:openrelay.metered.ca:80',    username: 'openrelayproject', credential: 'openrelayproject' },
         { urls: 'turn:openrelay.metered.ca:443',   username: 'openrelayproject', credential: 'openrelayproject' },
         { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
@@ -792,7 +787,6 @@ function initPeer() {
     debug: 0
   });
 
-  // FIX: peer.on('open') estaba fuera del bloque initPeer (scope inválido en el original)
   peer.on('open', id => {
     peerIdDisplay.textContent = id;
     peerReady = true;
@@ -800,26 +794,22 @@ function initPeer() {
     setProgress(100);
   });
 
-  // ── EL ADMIN ABRE CANAL DE DATOS (siempre antes de la llamada) ──
   peer.on('connection', dataConn => {
     const adminId = dataConn.peer;
     const session = getSession(adminId);
 
-    // Si ya había una DC previa, cerrarla limpiamente
     if (session.dc && session.dc !== dataConn) {
       try { session.dc.close(); } catch(e) {}
     }
     session.dc = dataConn;
 
     dataConn.on('open', () => {
-      // Mandar info del dispositivo y estado actual al admin
       try { dataConn.send(JSON.stringify(buildDeviceInfoPayload())); } catch(e) {}
       if (lastGpsData) {
         try { dataConn.send(JSON.stringify(lastGpsData)); } catch(e) {}
       }
     });
 
-    // ── RECIBIR COMANDOS DEL ADMIN ──
     dataConn.on('data', raw => {
       try {
         const msg = typeof raw === 'string' ? JSON.parse(raw) : raw;
@@ -835,33 +825,30 @@ function initPeer() {
     });
   });
 
-  // ── EL ADMIN LLAMA (siempre después del data channel) ──
   peer.on('call', call => {
     const adminId = call.peer;
     const session = getSession(adminId);
 
-    // Cerrar llamada anterior si existía
     if (session.call) {
       try { session.call.close(); } catch(e) {}
     }
     session.call = call;
 
-    call.answer(localStream);
+    // RESPONDEMOS CON EL STREAM PROCESADO (CANVAS) EN LUGAR DEL ORIGINAL
+    call.answer(processedStream);
+    
     session.callActive = true;
     updateViewerUI();
 
-    // FIX: acceder al peerConnection de forma robusta
     const checkPc = setInterval(() => {
       if (call.peerConnection) {
         session.pc = call.peerConnection;
         clearInterval(checkPc);
       }
     }, 100);
-    // Timeout de seguridad
     setTimeout(() => clearInterval(checkPc), 10000);
 
     call.on('stream', () => {
-      // Stream remoto recibido (dummy del admin) — ok
     });
 
     call.on('close', () => {
@@ -889,9 +876,7 @@ function initPeer() {
     peerReady = false;
     if (!peer.destroyed) {
       setStatus('RECONECTANDO…', 'badge-wait');
-      // Intentar reconectar a la señalización (no genera nuevo ID)
       try { peer.reconnect(); } catch(e) {
-        // Si falla, reiniciar completamente tras delay
         setTimeout(initPeer, 3000);
       }
     }
@@ -899,12 +884,9 @@ function initPeer() {
 
   peer.on('error', err => {
     if (err.type === 'unavailable-id') {
-      // ID ocupado: reintentar con otro
       setTimeout(initPeer, 500);
     } else if (err.type === 'peer-unavailable') {
-      // Ignorar — pasa durante el escaneo del admin
     } else if (err.type === 'network' || err.type === 'server-error') {
-      // Reconexión automática
       setTimeout(() => {
         if (!peer.destroyed) peer.reconnect();
         else initPeer();
@@ -927,7 +909,6 @@ copyBtn.addEventListener('click', () => {
       copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
     }, 1800);
   }).catch(() => {
-    // Fallback para navegadores sin clipboard API
     try {
       const el = document.createElement('textarea');
       el.value = code;
