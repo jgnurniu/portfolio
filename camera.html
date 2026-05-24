@@ -3,929 +3,939 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>StreamLink · Cámara</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#080810;--s1:#0d0d1a;--s2:#12121f;
-  --border:#ffffff0f;--border2:#ffffff18;
-  --accent:#e63946;--accent2:#ff6b6b;--accent-dim:#e6394615;
-  --green:#2dc653;--green-dim:#2dc65312;
-  --yellow:#ffd60a;--yellow-dim:#ffd60a12;
-  --blue:#3a86ff;
-  --text:#f0f0f8;--text2:#9898b8;--text3:#5a5a7a;
-  --radius:12px;--radius-sm:8px;
+  --bg:#05050e;--s1:#0a0a18;--s2:#0f0f1e;--s3:#151528;
+  --border:#ffffff0a;--border2:#ffffff14;--border3:#ffffff22;
+  --accent:#7c3aed;--accent2:#a78bfa;--accent-dim:#7c3aed18;
+  --red:#ef4444;--green:#10b981;--yellow:#f59e0b;--cyan:#06b6d4;--orange:#f97316;
+  --text:#eeeef8;--text2:#8888aa;--text3:#44445a;
+  --radius:14px;--radius-sm:10px;--radius-xs:6px;
 }
-html,body{height:100%;overflow:hidden;background:#000;color:var(--text);font-family:'Syne',sans-serif;}
+html,body{height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;
+  display:flex;flex-direction:column;position:relative;user-select:none;}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 20% 10%,#7c3aed0c 0%,transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 90%,#06b6d40a 0%,transparent 60%);
+  pointer-events:none;z-index:0;}
 
-/* ── VIDEO FULL SCREEN ── */
-.video-wrap{position:fixed;inset:0;background:#000;}
-#localVideo{width:100%;height:100%;object-fit:cover;display:block;transition:filter .3s;}
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+  padding-top:max(12px, env(safe-area-inset-top));
+  background:rgba(5,5,14,.92);border-bottom:1px solid var(--border2);
+  backdrop-filter:blur(20px);position:relative;z-index:100;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:8px;font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;}
+.brand-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 10px var(--accent);}
+.brand-name{color:var(--text2)}.brand-tag{color:var(--accent2)}
+.cam-id-badge{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;
+  padding:4px 12px;border-radius:999px;border:1px solid var(--border2);background:var(--s2);color:var(--text2);}
+.conn-badge{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;
+  padding:3px 10px;border-radius:999px;border:1px solid transparent;letter-spacing:.05em;}
+.conn-idle{color:var(--text3);border-color:var(--border2)}
+.conn-wait{color:var(--yellow);border-color:#f59e0b30;background:#f59e0b0a;animation:pulse 1.5s infinite}
+.conn-live{color:var(--green);border-color:#10b98130;background:#10b9810a}
+.conn-err{color:var(--red);border-color:#ef444430;background:#ef44440a}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ── TOP BAR ── */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:50;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 18px;
-  background:linear-gradient(to bottom,rgba(0,0,0,.85) 0%,transparent 100%);
-  pointer-events:none;}
-.brand{display:flex;align-items:center;gap:8px;font-size:.75rem;font-weight:800;
-  letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6);}
-.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
-  box-shadow:0 0 10px var(--accent);flex-shrink:0;}
-.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:600;
-  padding:4px 10px;border-radius:999px;border:1px solid transparent;letter-spacing:.05em;
-  pointer-events:none;}
-.badge-idle{color:var(--text3);border-color:var(--border2)}
-.badge-wait{color:var(--yellow);border-color:#ffd60a30;background:var(--yellow-dim);animation:blink 2s infinite}
-.badge-live{color:var(--accent);border-color:#e6394630;background:var(--accent-dim);animation:blink 1.5s infinite}
-.badge-conn{color:var(--green);border-color:#2dc65330;background:var(--green-dim)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden;}
+.preview-wrap{flex:1;position:relative;background:#000;overflow:hidden;}
+#localVideo{width:100%;height:100%;object-fit:cover;display:block;}
+#localVideo.mirrored{transform:scaleX(-1);}
 
-/* ── LIVE BADGE ── */
-.vid-live-badge{position:fixed;top:60px;left:50%;transform:translateX(-50%);
-  background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;
-  font-size:.65rem;font-weight:700;padding:5px 14px;border-radius:4px;letter-spacing:.1em;
-  display:none;z-index:40;box-shadow:0 0 20px #e6394650;}
+/* HUD sobre preview */
+.hud-tl{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:6px;z-index:10;}
+.hud-tr{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:10;}
+.hud-bl{position:absolute;bottom:12px;left:12px;z-index:10;}
+.hud-br{position:absolute;bottom:12px;right:12px;z-index:10;}
+.hud-tag{font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:600;
+  padding:3px 8px;border-radius:4px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.1);letter-spacing:.06em;}
+.hud-tag.live{color:var(--red);animation:pulse .8s infinite}
+.hud-tag.green{color:var(--green)}.hud-tag.yellow{color:var(--yellow)}.hud-tag.cyan{color:var(--cyan)}
+.hud-tag.white{color:#fff}.hud-tag.orange{color:var(--orange)}
 
-/* ── VIEWERS indicator ── */
-.vid-viewers{position:fixed;top:60px;right:18px;
-  background:rgba(0,0,0,.7);border:1px solid var(--border2);
-  border-radius:999px;padding:4px 12px;
-  font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--green);
-  display:none;z-index:40;backdrop-filter:blur(6px);}
+/* Overlay estados */
+.cam-overlay{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;background:rgba(5,5,14,.9);z-index:5;}
+.cam-overlay.hidden{display:none}
+.spinner{width:40px;height:40px;border:2px solid var(--border2);border-top-color:var(--accent2);
+  border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay-txt{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text3);text-align:center;line-height:1.7;}
 
-/* ── REC indicator ── */
-.rec-indicator{position:fixed;bottom:100px;right:18px;
-  display:none;align-items:center;gap:6px;
-  background:rgba(230,57,70,.9);color:#fff;
-  font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;
-  padding:5px 12px;border-radius:999px;z-index:40;animation:blink 1s infinite;}
-.rec-dot{width:7px;height:7px;background:#fff;border-radius:50%}
+/* Recording flash overlay */
+.rec-flash{position:absolute;inset:0;border:3px solid var(--red);z-index:20;pointer-events:none;
+  opacity:0;transition:opacity .3s;border-radius:2px;}
+.rec-flash.active{opacity:1;animation:recpulse 1s infinite}
+@keyframes recpulse{0%,100%{opacity:.7}50%{opacity:.2}}
 
-/* ── BOTTOM CODE CARD ── */
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;
-  padding:16px 18px 28px;
-  background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 100%);}
-.code-row{display:flex;align-items:center;justify-content:center;gap:12px;}
-.code-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(255,255,255,.4);}
-.code-number{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:600;
-  letter-spacing:.3em;color:var(--blue);text-shadow:0 0 20px #3a86ff60;margin-left:.2em;
-  cursor:default;user-select:all;}
-.copy-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
-  color:rgba(255,255,255,.6);border-radius:8px;width:36px;height:36px;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  transition:all .15s;flex-shrink:0;}
-.copy-btn:hover{background:rgba(255,255,255,.2);color:#fff}
-.copy-btn svg{width:16px;height:16px}
+/* ── CONTROLS BAR ── */
+.controls-bar{background:rgba(5,5,14,.96);border-top:1px solid var(--border2);
+  padding:14px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));
+  flex-shrink:0;display:flex;flex-direction:column;gap:10px;}
 
-/* ── TORCH indicator ── */
-.torch-indicator{position:fixed;bottom:90px;left:18px;
-  background:rgba(255,214,10,.9);color:#000;
-  font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;
-  padding:4px 10px;border-radius:4px;letter-spacing:.08em;display:none;z-index:40;}
+.ctrl-row{display:flex;align-items:center;justify-content:center;gap:10px;}
+.ctrl-row.spread{justify-content:space-between;}
 
-/* ── NETWORK indicator ── */
-.net-indicator{position:fixed;top:110px;right:18px;
-  background:rgba(0,0,0,.7);border:1px solid var(--border2);
-  border-radius:999px;padding:4px 12px;
-  font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--text2);
-  display:none;z-index:40;backdrop-filter:blur(6px);}
+/* Botones principales */
+.big-btn{width:60px;height:60px;border-radius:50%;border:2px solid var(--border2);
+  background:var(--s2);color:var(--text2);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;cursor:pointer;transition:all .2s;flex-shrink:0;
+  font-family:'Syne',sans-serif;font-size:.52rem;font-weight:700;letter-spacing:.04em;}
+.big-btn svg{width:20px;height:20px;flex-shrink:0}
+.big-btn:active{transform:scale(.93)}
+.big-btn.on-green{border-color:var(--green);color:var(--green);background:#10b9810f;box-shadow:0 0 18px #10b98125}
+.big-btn.on-yellow{border-color:var(--yellow);color:var(--yellow);background:#f59e0b0f;box-shadow:0 0 18px #f59e0b25}
+.big-btn.on-red{border-color:var(--red);color:var(--red);background:#ef44440f;box-shadow:0 0 18px #ef444425;animation:pulse .8s infinite}
+.big-btn.on-cyan{border-color:var(--cyan);color:var(--cyan);background:#06b6d40f}
+.big-btn.accent{border-color:var(--accent);color:var(--accent2);background:var(--accent-dim)}
+.big-btn:disabled{opacity:.3;cursor:not-allowed}
 
-/* ── START OVERLAY ── */
-.start-overlay{position:fixed;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#080810 0%,#0d0d1a 100%);
-  z-index:100;gap:22px;padding:32px;text-align:center;}
-.start-icon{width:80px;height:80px;border-radius:50%;background:var(--accent-dim);
-  border:1px solid #e6394630;display:flex;align-items:center;justify-content:center;}
-.start-overlay h2{font-size:1.4rem;font-weight:800;letter-spacing:-.01em}
-.start-overlay p{font-size:.82rem;color:var(--text2);max-width:260px;line-height:1.7}
-.btn-start{background:var(--accent);color:#fff;border:none;border-radius:10px;
-  padding:16px 42px;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;
-  cursor:pointer;transition:all .2s;letter-spacing:.02em;
-  box-shadow:0 0 40px #e6394640;}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 0 56px #e6394660}
-.btn-start:active{transform:translateY(0)}
-.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none}
+/* Botón central grande */
+.center-btn{width:72px;height:72px;font-size:.58rem;}
 
-/* ── ERROR BAR ── */
-.error-bar{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
-  background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.25);
-  border-radius:8px;padding:8px 18px;font-size:.75rem;color:#ff8a8a;
-  text-align:center;font-family:'JetBrains Mono',monospace;z-index:60;
-  display:none;backdrop-filter:blur(8px);white-space:nowrap;max-width:90vw;
-  overflow:hidden;text-overflow:ellipsis;}
+/* Sliders */
+.slider-row{display:flex;align-items:center;gap:10px;}
+.slider-lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text3);width:32px;text-align:right;flex-shrink:0;}
+.slider-val{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--accent2);width:36px;flex-shrink:0;}
+input[type=range]{flex:1;height:3px;background:var(--s3);border-radius:999px;
+  outline:none;-webkit-appearance:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;
+  background:var(--accent2);border-radius:50%;cursor:pointer;border:2px solid var(--bg);}
 
-/* ── KEEPALIVE DOT ── */
-.keepalive-dot{position:fixed;bottom:26px;left:18px;
-  width:6px;height:6px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 6px var(--green);display:none;z-index:50;}
+/* Stats mini */
+.stats-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.stat-chip{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--text3);
+  background:var(--s2);border:1px solid var(--border);padding:3px 8px;border-radius:4px;}
+.stat-chip span{color:var(--text2);font-weight:600;}
 
-/* ── FLASH overlay ── */
-.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;
-  z-index:200;transition:opacity .25s;}
+/* Toast */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-10px);
+  z-index:999;background:var(--s2);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:10px 18px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text);
+  box-shadow:0 4px 24px rgba(0,0,0,.5);opacity:0;transition:all .25s;pointer-events:none;
+  white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-left:3px solid var(--green);color:var(--green)}
+.toast.error{border-left:3px solid var(--red);color:var(--red)}
+.toast.info{border-left:3px solid var(--accent2);color:var(--accent2)}
+.toast.warn{border-left:3px solid var(--yellow);color:var(--yellow)}
 
-/* ── TOAST ── */
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);
-  background:rgba(0,0,0,.85);border:1px solid var(--border2);
-  border-radius:10px;padding:12px 22px;font-family:'JetBrains Mono',monospace;
-  font-size:.78rem;color:#fff;z-index:300;pointer-events:none;
-  opacity:0;transition:all .2s;backdrop-filter:blur(10px);white-space:nowrap;}
-.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
-
-/* ── CONN PROGRESS ── */
-.conn-progress{position:fixed;top:0;left:0;height:2px;
-  background:var(--accent);width:0%;transition:width .4s ease;z-index:200;}
+/* Setup screen */
+.setup-screen{position:fixed;inset:0;background:var(--bg);z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:24px;padding:32px;}
+.setup-screen.hidden{display:none}
+.setup-logo{display:flex;align-items:center;gap:10px;font-size:.8rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;}
+.setup-logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent2);box-shadow:0 0 14px var(--accent)}
+.setup-title{font-size:1.5rem;font-weight:800;color:var(--text);text-align:center;line-height:1.3}
+.setup-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text3);text-align:center;line-height:1.8;max-width:300px;}
+.setup-code-display{font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:700;
+  color:var(--accent2);letter-spacing:.25em;background:var(--s2);
+  border:1px solid var(--border2);border-radius:var(--radius);padding:16px 28px;
+  box-shadow:0 0 40px #7c3aed15;text-align:center;}
+.setup-code-lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;text-align:center;}
+.setup-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--radius);
+  padding:14px 32px;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:all .2s;width:100%;max-width:280px;}
+.setup-btn:hover{background:var(--accent2);transform:translateY(-2px)}
+.setup-btn.secondary{background:var(--s2);color:var(--text2);border:1px solid var(--border2)}
+.perm-list{display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;}
+.perm-item{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);}
+.perm-icon{font-size:1rem;flex-shrink:0}
+.perm-status{margin-left:auto;font-size:.6rem;color:var(--text3);}
+.perm-status.ok{color:var(--green)}.perm-status.err{color:var(--red)}.perm-status.wait{color:var(--yellow)}
 </style>
 </head>
 <body>
 
-<div class="video-wrap">
-  <video id="localVideo" autoplay playsinline muted></video>
+<!-- SETUP SCREEN -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-logo">
+    <div class="setup-logo-dot"></div>
+    <span style="color:var(--text2)">Stream</span><span style="color:var(--accent2)">Link</span>
+    <span style="color:var(--text3);font-size:.6rem">CÁMARA</span>
+  </div>
+  <div>
+    <div class="setup-title">Tu código de cámara</div>
+    <div style="margin-top:6px" class="setup-code-lbl">Ingresá este código en el Admin</div>
+  </div>
+  <div class="setup-code-display" id="setupCodeDisplay">—————</div>
+  <div class="setup-code-lbl" id="setupCodeSub">Generando ID único…</div>
+
+  <div class="perm-list" id="permList">
+    <div class="perm-item"><span class="perm-icon">📷</span>Cámara y micrófono<span class="perm-status wait" id="p-cam">Pendiente</span></div>
+    <div class="perm-item"><span class="perm-icon">📍</span>Geolocalización<span class="perm-status wait" id="p-gps">Pendiente</span></div>
+    <div class="perm-item"><span class="perm-icon">🔋</span>Estado del hardware<span class="perm-status wait" id="p-hw">Pendiente</span></div>
+    <div class="perm-item"><span class="perm-icon">📡</span>Sensores de movimiento<span class="perm-status wait" id="p-mot">Pendiente</span></div>
+  </div>
+
+  <button class="setup-btn" id="setupStartBtn">Solicitar permisos e iniciar</button>
+  <button class="setup-btn secondary" id="setupSkipBtn">Iniciar sin todos los permisos</button>
 </div>
 
-<div class="conn-progress" id="connProgress"></div>
-
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="brand">
     <div class="brand-dot"></div>
-    StreamLink <span style="color:var(--accent);margin-left:3px">CAM</span>
+    <span class="brand-name">Stream</span><span class="brand-tag">CAM</span>
   </div>
-  <div id="statusBadge" class="badge badge-idle">OFFLINE</div>
+  <div class="cam-id-badge" id="camIdBadge">——</div>
+  <div class="conn-badge conn-idle" id="connBadge">OFFLINE</div>
 </div>
 
-<div class="vid-live-badge" id="liveBadge">● EN VIVO</div>
-<div class="vid-viewers" id="vidViewers"><span id="viewerCount">0</span> visor(es)</div>
-<div class="net-indicator" id="netIndicator">—</div>
-<div class="torch-indicator" id="torchIndicator">⚡ FLASH ON</div>
+<!-- MAIN PREVIEW -->
+<div class="main">
+  <div class="preview-wrap">
+    <video id="localVideo" autoplay playsinline muted></video>
 
-<div class="rec-indicator" id="recIndicator">
-  <div class="rec-dot"></div> REC
-</div>
+    <!-- Recording border -->
+    <div class="rec-flash" id="recFlash"></div>
 
-<div class="bottom-bar">
-  <div class="code-row">
-    <div class="code-label">CÓDIGO</div>
-    <div class="code-number" id="peerIdDisplay">·····</div>
-    <button class="copy-btn" id="copyBtn" title="Copiar código">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="9" y="9" width="13" height="13" rx="2"/>
-        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-      </svg>
-    </button>
+    <!-- HUD top-left -->
+    <div class="hud-tl">
+      <div class="hud-tag live" id="hudLive" style="display:none">● EN VIVO</div>
+      <div class="hud-tag on" id="hudAdmin" style="display:none;color:var(--accent2)">👁 ADMIN</div>
+      <div class="hud-tag yellow" id="hudRec" style="display:none">⏺ REC</div>
+    </div>
+
+    <!-- HUD top-right -->
+    <div class="hud-tr">
+      <div class="hud-tag green" id="hudGps" style="display:none">📍 GPS</div>
+      <div class="hud-tag yellow" id="hudTorch" style="display:none">⚡ FLASH</div>
+      <div class="hud-tag cyan" id="hudScreen" style="display:none">🖥 SCREEN</div>
+    </div>
+
+    <!-- HUD bottom-left: sensors -->
+    <div class="hud-bl">
+      <div id="sensorHud" style="display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+
+    <!-- HUD bottom-right: battery -->
+    <div class="hud-br">
+      <div class="hud-tag white" id="hudBattery" style="display:none"></div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="cam-overlay" id="camOverlay">
+      <div class="spinner"></div>
+      <div class="overlay-txt" id="overlayTxt">Iniciando…<br>Esperando conexión del Admin</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-bar">
+    <!-- Fila principal de botones -->
+    <div class="ctrl-row">
+
+      <!-- Voltear cámara -->
+      <button class="big-btn" id="btnFlip" title="Voltear cámara">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+        </svg>
+        Voltear
+      </button>
+
+      <!-- Flash / Linterna -->
+      <button class="big-btn" id="btnTorch" title="Flash">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        Flash
+      </button>
+
+      <!-- Grabación local -->
+      <button class="big-btn center-btn" id="btnRec" title="Grabar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/>
+        </svg>
+        Grabar
+      </button>
+
+      <!-- GPS -->
+      <button class="big-btn" id="btnGps" title="GPS">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        GPS
+      </button>
+
+      <!-- Screen share -->
+      <button class="big-btn" id="btnScreen" title="Compartir pantalla">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+        Pantalla
+      </button>
+
+    </div>
+
+    <!-- Zoom slider -->
+    <div class="slider-row">
+      <span class="slider-lbl">ZOOM</span>
+      <input type="range" id="zoomSlider" min="1" max="8" step="0.1" value="1">
+      <span class="slider-val" id="zoomVal">1×</span>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-chip">CAM <span id="sc-cam">—</span></div>
+      <div class="stat-chip">BAT <span id="sc-bat">—</span></div>
+      <div class="stat-chip">GPS <span id="sc-gps">—</span></div>
+      <div class="stat-chip">ROT <span id="sc-rot">—</span></div>
+    </div>
+
   </div>
 </div>
 
-<div class="keepalive-dot" id="keepaliveDot"></div>
-<div class="flash" id="flashEffect"></div>
 <div class="toast" id="toast"></div>
 
-<div class="start-overlay" id="startOverlay">
-  <div class="start-icon">
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8">
-      <path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
-    </svg>
-  </div>
-  <h2>StreamLink · Cámara</h2>
-  <p>Esta cámara transmitirá al admin en tiempo real procesada por Javascript. Compartí el código de 5 dígitos para conectarse.</p>
-  <button class="btn-start" id="startBtn">Encender Cámara</button>
-</div>
-
-<div class="error-bar" id="errorBar"></div>
-
 <script>
-// ── ELEMENTOS ──
-const localVideo     = document.getElementById('localVideo');
-const startBtn       = document.getElementById('startBtn');
-const startOverlay   = document.getElementById('startOverlay');
-const statusBadge    = document.getElementById('statusBadge');
-const peerIdDisplay  = document.getElementById('peerIdDisplay');
-const copyBtn        = document.getElementById('copyBtn');
-const liveBadge      = document.getElementById('liveBadge');
-const vidViewers     = document.getElementById('vidViewers');
-const viewerCount    = document.getElementById('viewerCount');
-const recIndicator   = document.getElementById('recIndicator');
-const errorBar       = document.getElementById('errorBar');
-const torchIndicator = document.getElementById('torchIndicator');
-const keepaliveDot   = document.getElementById('keepaliveDot');
-const flashEffect    = document.getElementById('flashEffect');
-const toastEl        = document.getElementById('toast');
-const connProgress   = document.getElementById('connProgress');
-const netIndicator   = document.getElementById('netIndicator');
+// ═══════════════════════════════════════════
+//  STREAMLINK CAMERA CLIENT  v2.0
+//  Todos los permisos + comandos remotos
+// ═══════════════════════════════════════════
 
 // ── ESTADO ──
-let peer              = null;
-let localStream       = null;
-let currentTrack      = null;
-let facingMode        = 'environment';
-let torchOn           = false;
-let torchCapable      = false;
-let wakeLock          = null;
-let keepAliveCtx      = null;
-let keepAliveInterval = null;
-let videoHealthInterval = null;
-let mediaRecorder     = null;
-let isRecording       = false;
-let recordedChunks    = [];
-let gpsWatchId        = null;
-let lastGpsData       = null;
-let peerReady         = false;
-let currentRoomId     = null;
+let myPeer       = null;
+let myId         = null;
+let localStream  = null;       // stream de cámara activo
+let screenStream = null;       // stream de pantalla si está activo
+let adminConn    = null;       // DataConnection con el admin
+let adminCall    = null;       // MediaConnection activa
+let currentFacing = 'environment';
+let torchTrack   = null;
+let torchOn      = false;
+let gpsWatchId   = null;
+let gpsActive    = false;
+let lastGps      = null;
+let mediaRecorder = null;
+let recChunks    = [];
+let isRecording  = false;
+let batteryObj   = null;
+let sensorActive = { accel: false, gyro: false, orient: false };
 
-// ── NUEVAS VARIABLES PARA INTERCEPTAR VIDEO CON CANVAS ──
-let processedStream = null;
-const hiddenCanvas = document.createElement('canvas');
-const ctx = hiddenCanvas.getContext('2d', { willReadFrequently: true });
-let animationId = null;
-
-// adminId → { dc: DataConnection, pc: RTCPeerConnection, call: MediaConnection, callActive: bool }
-const adminSessions = {};
+// Canvas + OffscreenContext para overlay de brillo
+let brightnessCanvas = null;
+let brightnessCtx    = null;
+let brightnessVal    = 1;
+let zoomVal_         = 1;
+let animFrameId      = null;
 
 // ── UTILS ──
-function setStatus(text, cls) {
-  statusBadge.textContent = text;
-  statusBadge.className   = 'badge ' + cls;
+function toast(msg, type = 'info', dur = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, dur);
+}
+function setConnBadge(txt, cls) {
+  const el = document.getElementById('connBadge');
+  el.textContent = txt;
+  el.className = 'conn-badge ' + cls;
+}
+function showHud(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = show ? '' : 'none';
 }
 
-function showError(msg, dur = 6000) {
-  errorBar.textContent    = '⚠ ' + msg;
-  errorBar.style.display  = 'block';
-  clearTimeout(errorBar._t);
-  errorBar._t = setTimeout(() => { errorBar.style.display = 'none'; }, dur);
+// ── SETUP: Generar ID ──
+function generateId() {
+  // ID de 5 dígitos único basado en timestamp + random
+  const base = (Date.now() % 100000).toString().padStart(5, '0');
+  // Mezcla los dígitos con random para unicidad
+  const rand = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const raw  = parseInt(base) ^ parseInt(rand);
+  return (raw % 100000).toString().padStart(5, '0');
 }
 
-function showToast(msg, dur = 1800) {
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  clearTimeout(toastEl._t);
-  toastEl._t = setTimeout(() => { toastEl.classList.remove('show'); }, dur);
-}
-
-function setProgress(pct) {
-  connProgress.style.width = pct + '%';
-  if (pct >= 100) setTimeout(() => { connProgress.style.width = '0%'; }, 500);
-}
-
-function liveAdminCount() {
-  return Object.values(adminSessions).filter(s => s.callActive).length;
-}
-
-function updateViewerUI() {
-  const n = liveAdminCount();
-  viewerCount.textContent  = n;
-  vidViewers.style.display = n > 0 ? 'block' : 'none';
-  liveBadge.style.display  = n > 0 ? 'block' : 'none';
-  if (n > 0) setStatus(`EN VIVO · ${n}`, 'badge-live');
-  else if (peerReady) setStatus('LISTA · ESPERANDO', 'badge-wait');
-}
-
-function getSession(adminId) {
-  if (!adminSessions[adminId]) {
-    adminSessions[adminId] = { dc: null, pc: null, call: null, callActive: false };
-  }
-  return adminSessions[adminId];
-}
-
-function sendAck(adminId, payload) {
-  const session = adminSessions[adminId];
-  if (!session || !session.dc) return false;
-  const dc = session.dc;
-  if (dc.open && dc.dataChannel && dc.dataChannel.readyState === 'open') {
-    try { dc.send(JSON.stringify(payload)); return true; } catch(e) {}
-  } else if (dc._open) {
-    try { dc.send(JSON.stringify(payload)); return true; } catch(e) {}
-  }
-  return false;
-}
-
-function broadcastToAll(obj) {
-  const msg = JSON.stringify(obj);
-  Object.values(adminSessions).forEach(s => {
-    if (!s.dc) return;
-    try { s.dc.send(msg); } catch(e) {}
-  });
-}
-
-// ── BUCLE DE PROCESAMIENTO DE VIDEO ──
-function processVideoFrames() {
-  if (localVideo.videoWidth === 0) {
-    animationId = requestAnimationFrame(processVideoFrames);
-    return;
-  }
-  
-  if (hiddenCanvas.width !== localVideo.videoWidth) {
-    hiddenCanvas.width = localVideo.videoWidth;
-    hiddenCanvas.height = localVideo.videoHeight;
-  }
-
-  // Se dibuja el frame actual de la cámara
-  ctx.drawImage(localVideo, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
-
-  // AQUÍ LOS DATOS YA PASAN POR JAVASCRIPT
-  // Si querés modificar píxeles, usá ctx.getImageData y ctx.putImageData aquí.
-
-  animationId = requestAnimationFrame(processVideoFrames);
-}
-
-// ── WAKE LOCK ──
-async function requestWakeLock() {
-  try {
-    if ('wakeLock' in navigator) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => { wakeLock = null; });
-    }
-  } catch(e) {}
-}
-
-// ── AUDIO KEEPALIVE ──
-function startAudioKeepalive() {
-  try {
-    keepAliveCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (keepAliveCtx.state === 'suspended') keepAliveCtx.resume();
-    const silentBuf = keepAliveCtx.createBuffer(1, 1, 22050);
-    keepAliveInterval = setInterval(() => {
-      if (!keepAliveCtx) return;
-      if (keepAliveCtx.state === 'suspended') keepAliveCtx.resume().catch(() => {});
-      const src = keepAliveCtx.createBufferSource();
-      src.buffer = silentBuf;
-      src.connect(keepAliveCtx.destination);
-      src.start(0);
-      keepaliveDot.style.display = keepaliveDot.style.display === 'block' ? 'none' : 'block';
-    }, 1000);
-  } catch(e) {}
-}
-
-document.addEventListener('visibilitychange', async () => {
-  if (document.visibilityState === 'visible') {
-    if (!wakeLock) await requestWakeLock();
-    if (keepAliveCtx?.state === 'suspended') keepAliveCtx.resume().catch(() => {});
-    if (localVideo.srcObject && localVideo.paused) localVideo.play().catch(() => {});
-  }
-});
-
-document.addEventListener('touchstart', () => {
-  if (keepAliveCtx?.state === 'suspended') keepAliveCtx.resume().catch(() => {});
-}, { passive: true });
-
-// ── RED ──
-function startNetworkMonitor() {
-  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  if (!conn) return;
-
-  function update() {
-    const type = conn.effectiveType || '—';
-    const dl   = conn.downlink ? conn.downlink + ' Mbps' : '—';
-    netIndicator.textContent = `${type.toUpperCase()} ${dl}`;
-    netIndicator.style.display = 'block';
-    netIndicator.style.color =
-      type.includes('4g') ? 'var(--green)' :
-      type.includes('3g') ? 'var(--yellow)' : 'var(--accent)';
-  }
-  conn.addEventListener('change', update);
-  update();
-}
-
-// ── VIDEO HEALTH MONITOR ──
-function startVideoHealthMonitor() {
-  clearInterval(videoHealthInterval);
-  videoHealthInterval = setInterval(async () => {
-    if (!localStream) return;
-    if (localVideo.paused || localVideo.readyState < 2) {
-      localVideo.play().catch(() => {});
-    }
-    const tracks = localStream.getVideoTracks();
-    if (tracks.length > 0 && tracks[0].readyState === 'ended') {
-      await restartVideoTrack();
-    }
-  }, 3000);
-}
-
-async function restartVideoTrack() {
-  try {
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
-      audio: false
-    });
-    const newTrack = newStream.getVideoTracks()[0];
-    localStream.getVideoTracks().forEach(t => { localStream.removeTrack(t); t.stop(); });
-    localStream.addTrack(newTrack);
-    localVideo.srcObject = localStream;
-    localVideo.play().catch(() => {});
-    currentTrack = newTrack;
-    torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
-    if (torchOn && torchCapable) newTrack.applyConstraints({ advanced: [{ torch: true }] }).catch(() => {});
-    // No hace falta reemplazar tracks en WebRTC porque el canvas ya gestiona el streaming
-  } catch(e) { showError('Error al recuperar la cámara.'); }
-}
-
-// ── DEVICE INFO ──
-function detectBrowser(ua) {
-  if (/EdgA?\//.test(ua))          return 'Edge';
-  if (/OPR\/|Opera/.test(ua))      return 'Opera';
-  if (/SamsungBrowser/.test(ua))   return 'Samsung';
-  if (/Chrome\//.test(ua))         return 'Chrome';
-  if (/Firefox\//.test(ua))        return 'Firefox';
-  if (/Safari\//.test(ua))         return 'Safari';
-  return 'Unknown';
-}
-function detectOS(ua) {
-  if (/iPhone|iPad/.test(ua))      return 'iOS';
-  if (/Android/.test(ua))          return 'Android';
-  if (/Windows NT/.test(ua))       return 'Windows';
-  if (/Mac OS X/.test(ua))         return 'macOS';
-  if (/Linux/.test(ua))            return 'Linux';
-  return 'Unknown';
-}
-function buildDeviceInfoPayload() {
-  const ua   = navigator.userAgent;
-  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  return {
-    type:     'deviceInfo',
-    platform: navigator.platform || '—',
-    browser:  detectBrowser(ua),
-    os:       detectOS(ua),
-    screen:   `${screen.width}×${screen.height}`,
-    memory:   navigator.deviceMemory || null,
-    cores:    navigator.hardwareConcurrency || null,
-    lang:     navigator.language || '—',
-    tz:       Intl.DateTimeFormat().resolvedOptions().timeZone,
-    online:   navigator.onLine,
-    touch:    navigator.maxTouchPoints || 0,
-    conn:     conn ? `${conn.effectiveType || '—'} / ${conn.downlink ? conn.downlink + 'Mbps' : '—'}` : null
-  };
-}
-
-// ── GPS ──
-function startGPS() {
-  if (!('geolocation' in navigator) || gpsWatchId !== null) return;
-  gpsWatchId = navigator.geolocation.watchPosition(pos => {
-    const c  = pos.coords;
-    lastGpsData = {
-      type: 'gps',
-      lat:  c.latitude,  lng:  c.longitude,
-      acc:  c.accuracy,  alt:  c.altitude,
-      spd:  c.speed,     head: c.heading,
-      ts:   pos.timestamp
-    };
-    broadcastToAll(lastGpsData);
-  }, err => {
-    broadcastToAll({ type: 'gps', active: false, error: err.message });
-  }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 });
-}
-
-function stopGPS() {
-  if (gpsWatchId !== null) {
-    navigator.geolocation.clearWatch(gpsWatchId);
-    gpsWatchId  = null;
-    lastGpsData = null;
-    broadcastToAll({ type: 'gps', active: false });
-  }
-}
-
-// ── MANEJAR COMANDOS DEL ADMIN ──────────────────────────────
-async function handleAdminCommand(adminId, msg) {
-  switch (msg.action) {
-    // ── VOLTEAR CÁMARA ──
-    case 'flip': {
-      facingMode = facingMode === 'environment' ? 'user' : 'environment';
-      try {
-        const oldTrack = localStream.getVideoTracks()[0];
-        oldTrack.stop();
-        const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
-          audio: false
-        });
-        const newTrack = newStream.getVideoTracks()[0];
-        localStream.removeTrack(oldTrack);
-        localStream.addTrack(newTrack);
-        localVideo.srcObject = localStream;
-        localVideo.play().catch(() => {});
-        currentTrack = newTrack;
-        torchOn      = false;
-        torchCapable = !!(newTrack.getCapabilities && newTrack.getCapabilities().torch);
-        torchIndicator.style.display = 'none';
-        // No reemplazamos en WebRTC, el canvas se actualiza solo
-        sendAck(adminId, { type: 'cmdAck', action: 'flip', facingMode });
-      } catch(e) {
-        facingMode = facingMode === 'environment' ? 'user' : 'environment';
-        sendAck(adminId, { type: 'cmdAck', action: 'flip', error: e.message });
-      }
-      break;
-    }
-
-    // ── FLASH / TORCH ──
-    case 'torch': {
-      const wantTorch = !!msg.value;
-      if (!currentTrack) {
-        sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Sin track de video' });
-        break;
-      }
-      const caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
-
-      if (caps.torch) {
-        try {
-          await currentTrack.applyConstraints({ advanced: [{ torch: wantTorch }] });
-          torchOn = wantTorch;
-          torchIndicator.style.display = torchOn ? 'block' : 'none';
-          sendAck(adminId, { type: 'cmdAck', action: 'torch', value: torchOn });
-        } catch(e) {
-          sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
-        }
-      } else if (wantTorch) {
-        try {
-          const newStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: facingMode }, advanced: [{ torch: true }] },
-            audio: false
-          });
-          const newTrack = newStream.getVideoTracks()[0];
-          const newCaps  = newTrack.getCapabilities ? newTrack.getCapabilities() : {};
-          if (!newCaps.torch) {
-            newTrack.stop();
-            sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible en este dispositivo' });
-            break;
-          }
-          const oldTrack = currentTrack;
-          localStream.removeTrack(oldTrack);
-          localStream.addTrack(newTrack);
-          localVideo.srcObject = localStream;
-          localVideo.play().catch(() => {});
-          currentTrack = newTrack;
-          torchCapable = true;
-          torchOn      = true;
-          oldTrack.stop();
-          torchIndicator.style.display = 'block';
-          sendAck(adminId, { type: 'cmdAck', action: 'torch', value: true });
-        } catch(e) {
-          sendAck(adminId, { type: 'cmdAck', action: 'torch', error: 'Flash no disponible' });
-        }
-      } else {
-        try {
-          const newStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
-            audio: false
-          });
-          const newTrack = newStream.getVideoTracks()[0];
-          const oldTrack = currentTrack;
-          localStream.removeTrack(oldTrack);
-          localStream.addTrack(newTrack);
-          localVideo.srcObject = localStream;
-          localVideo.play().catch(() => {});
-          currentTrack = newTrack;
-          torchOn      = false;
-          oldTrack.stop();
-          torchIndicator.style.display = 'none';
-          sendAck(adminId, { type: 'cmdAck', action: 'torch', value: false });
-        } catch(e) {
-          sendAck(adminId, { type: 'cmdAck', action: 'torch', error: e.message });
-        }
-      }
-      break;
-    }
-
-    // ── ZOOM ──
-    case 'zoom': {
-      const val = parseFloat(msg.value) || 1;
-      if (!currentTrack) break;
-      const caps = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
-      if (caps.zoom) {
-        const clamped = Math.min(Math.max(val, caps.zoom.min || 1), caps.zoom.max || 10);
-        try {
-          await currentTrack.applyConstraints({ advanced: [{ zoom: clamped }] });
-          break;
-        } catch(e) {}
-      }
-      localVideo.style.transform = `scale(${val})`;
-      break;
-    }
-
-    // ── BRILLO ──
-    case 'brightness': {
-      const val = parseFloat(msg.value) || 1;
-      localVideo.style.filter = `brightness(${val})`;
-      break;
-    }
-
-    // ── GPS START ──
-    case 'gps_start': {
-      startGPS();
-      if (lastGpsData) sendAck(adminId, lastGpsData);
-      sendAck(adminId, { type: 'cmdAck', action: 'gps_start', active: gpsWatchId !== null });
-      break;
-    }
-
-    // ── GPS STOP ──
-    case 'gps_stop': {
-      stopGPS();
-      sendAck(adminId, { type: 'cmdAck', action: 'gps_stop', active: false });
-      break;
-    }
-
-    // ── SNAPSHOT ──
-    case 'screenshot': {
-      // Tomamos la captura directamente del hiddenCanvas
-      const canvas  = document.createElement('canvas');
-      canvas.width  = hiddenCanvas.width  || 1280;
-      canvas.height = hiddenCanvas.height || 720;
-      canvas.getContext('2d').drawImage(hiddenCanvas, 0, 0);
-
-      flashEffect.style.opacity = '0.7';
-      setTimeout(() => { flashEffect.style.opacity = '0'; }, 250);
-
-      canvas.toBlob(blob => {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `streamlink-snap-${Date.now()}.png`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-      }, 'image/png');
-
-      try {
-        const thumb = document.createElement('canvas');
-        const scale = Math.min(1, 480 / canvas.width);
-        thumb.width  = Math.round(canvas.width  * scale);
-        thumb.height = Math.round(canvas.height * scale);
-        thumb.getContext('2d').drawImage(canvas, 0, 0, thumb.width, thumb.height);
-        const dataUrl = thumb.toDataURL('image/jpeg', 0.6);
-        sendAck(adminId, { type: 'screenshot', dataUrl, ts: Date.now() });
-      } catch(e) {}
-      break;
-    }
-
-    // ── GRABAR START ──
-    case 'record_start': {
-      if (!processedStream || isRecording) {
-        sendAck(adminId, { type: 'cmdAck', action: 'record_start', error: isRecording ? 'Ya grabando' : 'Sin stream' });
-        break;
-      }
-      recordedChunks = [];
-      const opts = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-        ? { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 4_000_000 }
-        : { mimeType: 'video/webm', videoBitsPerSecond: 4_000_000 };
-      try {
-        // Grabamos el stream procesado para incluir cualquier filtro del canvas
-        mediaRecorder = new MediaRecorder(processedStream, opts);
-      } catch {
-        mediaRecorder = new MediaRecorder(processedStream);
-      }
-      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
-      
-      const recordingAdminId = adminId;
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `streamlink-rec-${Date.now()}.webm`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-        recordedChunks = [];
-        isRecording    = false;
-        recIndicator.style.display = 'none';
-        sendAck(recordingAdminId, { type: 'cmdAck', action: 'record_stop' });
-        broadcastToAll({ type: 'cmdAck', action: 'record_stop' });
-      };
-      mediaRecorder.start(1000);
-      isRecording = true;
-      recIndicator.style.display = 'flex';
-      sendAck(adminId, { type: 'cmdAck', action: 'record_start' });
-      break;
-    }
-
-    // ── GRABAR STOP ──
-    case 'record_stop': {
-      if (!isRecording || !mediaRecorder) {
-        sendAck(adminId, { type: 'cmdAck', action: 'record_stop', error: 'No estaba grabando' });
-        break;
-      }
-      mediaRecorder.stop();
-      break;
-    }
-
-    // ── PING ──
-    case 'ping': {
-      sendAck(adminId, { type: 'pong', ts: Date.now() });
-      break;
-    }
-  }
-}
-
-// ── INICIAR CÁMARA ──
-async function startCamera() {
-  startBtn.disabled      = true;
-  startBtn.textContent   = 'Accediendo…';
-  setProgress(20);
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: facingMode },
-        width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 }
-      },
-      audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000 }
-    });
-    currentTrack = localStream.getVideoTracks()[0];
-    if (currentTrack?.getCapabilities) {
-      torchCapable = !!(currentTrack.getCapabilities().torch);
-    }
-    localVideo.srcObject = localStream;
-    localVideo.play().catch(() => {});
-
-    // ── INICIAR INTERCEPCIÓN DE DATOS POR CANVAS ──
-    if (!animationId) {
-      processVideoFrames(); 
-      processedStream = hiddenCanvas.captureStream(30); 
-      
-      // Agregamos la pista de audio original al stream procesado (para no perder el micrófono)
-      if (localStream.getAudioTracks().length > 0) {
-        processedStream.addTrack(localStream.getAudioTracks()[0]);
-      }
-    }
-
-    setProgress(60);
-    startOverlay.style.display = 'none';
-    setStatus('CONECTANDO…', 'badge-wait');
-
-    await requestWakeLock();
-    startAudioKeepalive();
-    startVideoHealthMonitor();
-    startNetworkMonitor();
-    setProgress(80);
-    initPeer();
-
-  } catch(err) {
-    setProgress(0);
-    startBtn.disabled    = false;
-    startBtn.textContent = 'Reintentar';
-    if (err.name === 'NotAllowedError')   showError('Permiso de cámara denegado.');
-    else if (err.name === 'NotFoundError') showError('No se encontró ninguna cámara.');
-    else showError('Error al acceder a la cámara: ' + err.message);
-  }
-}
-
-// ── PEERJS ─────────────────────────────────────────────────
-function initPeer() {
-  const roomId = Math.floor(10000 + Math.random() * 90000).toString();
-  currentRoomId = roomId;
-
-  if (peer && !peer.destroyed) {
-    try { peer.destroy(); } catch(e) {}
-  }
-
-  peer = new Peer(roomId, {
+// ── INIT PEER ──
+function initPeer(id) {
+  myPeer = new Peer(id, {
     config: {
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302'  },
+        { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'turn:openrelay.metered.ca:80',    username: 'openrelayproject', credential: 'openrelayproject' },
-        { urls: 'turn:openrelay.metered.ca:443',   username: 'openrelayproject', credential: 'openrelayproject' },
-        { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
       ]
     },
     debug: 0
   });
 
-  peer.on('open', id => {
-    peerIdDisplay.textContent = id;
-    peerReady = true;
-    setStatus('LISTA · ESPERANDO', 'badge-wait');
-    setProgress(100);
+  myPeer.on('open', peerId => {
+    myId = peerId;
+    document.getElementById('camIdBadge').textContent = peerId;
+    document.getElementById('setupCodeDisplay').textContent = peerId;
+    document.getElementById('setupCodeSub').textContent = 'Código listo — ingresalo en el Admin';
+    setConnBadge('ESPERANDO', 'conn-wait');
   });
 
-  peer.on('connection', dataConn => {
-    const adminId = dataConn.peer;
-    const session = getSession(adminId);
-
-    if (session.dc && session.dc !== dataConn) {
-      try { session.dc.close(); } catch(e) {}
-    }
-    session.dc = dataConn;
-
-    dataConn.on('open', () => {
-      try { dataConn.send(JSON.stringify(buildDeviceInfoPayload())); } catch(e) {}
-      if (lastGpsData) {
-        try { dataConn.send(JSON.stringify(lastGpsData)); } catch(e) {}
-      }
+  myPeer.on('connection', dc => {
+    adminConn = dc;
+    dc.on('open', () => {
+      setConnBadge('ADMIN OK', 'conn-live');
+      // Enviar info del dispositivo inmediatamente
+      sendDeviceInfo();
+      if (gpsActive && lastGps) sendGps(lastGps);
     });
-
-    dataConn.on('data', raw => {
+    dc.on('data', raw => {
       try {
         const msg = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (msg.type === 'cmd') handleAdminCommand(adminId, msg);
-      } catch(e) {}
+        handleCommand(msg);
+      } catch (e) {}
     });
-
-    dataConn.on('close', () => {
-      if (adminSessions[adminId]) adminSessions[adminId].dc = null;
+    dc.on('close', () => {
+      adminConn = null;
+      setConnBadge('ESPERANDO', 'conn-wait');
+      showHud('hudAdmin', false);
     });
-    dataConn.on('error', () => {
-      if (adminSessions[adminId]) adminSessions[adminId].dc = null;
-    });
+    dc.on('error', () => {});
   });
 
-  peer.on('call', call => {
-    const adminId = call.peer;
-    const session = getSession(adminId);
-
-    if (session.call) {
-      try { session.call.close(); } catch(e) {}
-    }
-    session.call = call;
-
-    // RESPONDEMOS CON EL STREAM PROCESADO (CANVAS) EN LUGAR DEL ORIGINAL
-    call.answer(processedStream);
-    
-    session.callActive = true;
-    updateViewerUI();
-
-    const checkPc = setInterval(() => {
-      if (call.peerConnection) {
-        session.pc = call.peerConnection;
-        clearInterval(checkPc);
-      }
-    }, 100);
-    setTimeout(() => clearInterval(checkPc), 10000);
-
+  myPeer.on('call', call => {
+    adminCall = call;
+    const streamToSend = screenStream || localStream;
+    call.answer(streamToSend || new MediaStream());
     call.on('stream', () => {
+      // Stream vacío del admin — no lo usamos
     });
-
     call.on('close', () => {
-      clearInterval(checkPc);
-      if (adminSessions[adminId]) {
-        adminSessions[adminId].callActive = false;
-        adminSessions[adminId].pc         = null;
-        adminSessions[adminId].call       = null;
-      }
-      updateViewerUI();
+      adminCall = null;
+      showHud('hudLive', false);
+      showHud('hudAdmin', false);
+      document.getElementById('camOverlay').classList.remove('hidden');
+      document.getElementById('overlayTxt').textContent = 'Admin desconectado\nEsperando reconexión…';
+      setConnBadge('ESPERANDO', 'conn-wait');
     });
-
-    call.on('error', err => {
-      clearInterval(checkPc);
-      if (adminSessions[adminId]) {
-        adminSessions[adminId].callActive = false;
-        adminSessions[adminId].pc         = null;
-        adminSessions[adminId].call       = null;
-      }
-      updateViewerUI();
-    });
+    showHud('hudLive', true);
+    showHud('hudAdmin', true);
+    document.getElementById('camOverlay').classList.add('hidden');
+    setConnBadge('EN VIVO', 'conn-live');
+    toast('Admin conectado — transmitiendo', 'success');
   });
 
-  peer.on('disconnected', () => {
-    peerReady = false;
-    if (!peer.destroyed) {
-      setStatus('RECONECTANDO…', 'badge-wait');
-      try { peer.reconnect(); } catch(e) {
-        setTimeout(initPeer, 3000);
-      }
-    }
-  });
-
-  peer.on('error', err => {
+  myPeer.on('error', err => {
     if (err.type === 'unavailable-id') {
-      setTimeout(initPeer, 500);
-    } else if (err.type === 'peer-unavailable') {
-    } else if (err.type === 'network' || err.type === 'server-error') {
-      setTimeout(() => {
-        if (!peer.destroyed) peer.reconnect();
-        else initPeer();
-      }, 3000);
-    } else {
-      showError('Error de red: ' + (err.message || err.type));
-      setStatus('ERROR', 'badge-idle');
+      // ID ocupado → generar otro
+      const newId = generateId();
+      setTimeout(() => initPeer(newId), 500);
     }
   });
 }
 
-// ── COPIAR CÓDIGO ──
-copyBtn.addEventListener('click', () => {
-  const code = peerIdDisplay.textContent;
-  if (code === '·····') return;
-  navigator.clipboard.writeText(code).then(() => {
-    copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-    showToast('✓ Código copiado');
-    setTimeout(() => {
-      copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
-    }, 1800);
-  }).catch(() => {
+// ── PERMISOS Y STREAMS ──
+async function requestCamera(facing) {
+  currentFacing = facing;
+  const constraints = {
+    video: {
+      facingMode: { ideal: facing },
+      width:  { ideal: 1920 },
+      height: { ideal: 1080 },
+      frameRate: { ideal: 30 }
+    },
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      sampleRate: 44100
+    }
+  };
+  try {
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    document.getElementById('localVideo').srcObject = localStream;
+    torchTrack = localStream.getVideoTracks()[0] || null;
+    document.getElementById('p-cam').textContent = '✓ OK';
+    document.getElementById('p-cam').className   = 'perm-status ok';
+    applyZoomToTrack(zoomVal_);
+    return true;
+  } catch (e) {
+    document.getElementById('p-cam').textContent = '✗ Denegado';
+    document.getElementById('p-cam').className   = 'perm-status err';
+    return false;
+  }
+}
+
+async function requestGps() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) {
+      document.getElementById('p-gps').textContent = '✗ N/A';
+      document.getElementById('p-gps').className = 'perm-status err';
+      resolve(false); return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        document.getElementById('p-gps').textContent = '✓ OK';
+        document.getElementById('p-gps').className = 'perm-status ok';
+        resolve(true);
+      },
+      err => {
+        document.getElementById('p-gps').textContent = err.code === 1 ? '✗ Denegado' : '✗ Error';
+        document.getElementById('p-gps').className = 'perm-status err';
+        resolve(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
+}
+
+async function requestHardware() {
+  let ok = false;
+  // Batería
+  if (navigator.getBattery) {
     try {
-      const el = document.createElement('textarea');
-      el.value = code;
-      el.style.position = 'fixed';
-      el.style.opacity  = '0';
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      showToast('✓ Código copiado');
-    } catch(e) {
-      showToast('Copiá: ' + code);
+      batteryObj = await navigator.getBattery();
+      batteryObj.addEventListener('levelchange',    updateBatteryHud);
+      batteryObj.addEventListener('chargingchange', updateBatteryHud);
+      updateBatteryHud();
+      ok = true;
+    } catch(e) {}
+  }
+  // Screen orientation
+  if (screen.orientation) ok = true;
+
+  document.getElementById('p-hw').textContent = ok ? '✓ OK' : '~ Parcial';
+  document.getElementById('p-hw').className   = 'perm-status ' + (ok ? 'ok' : 'wait');
+  return ok;
+}
+
+function requestSensors() {
+  let ok = false;
+  if (typeof DeviceMotionEvent !== 'undefined') {
+    // iOS 13+ requiere permiso explícito
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission().then(r => {
+        if (r === 'granted') { startMotionListeners(); ok = true; }
+      }).catch(() => {});
+    } else {
+      startMotionListeners(); ok = true;
+    }
+  }
+  document.getElementById('p-mot').textContent = ok ? '✓ OK' : '~ Limitado';
+  document.getElementById('p-mot').className   = 'perm-status ' + (ok ? 'ok' : 'wait');
+  return ok;
+}
+
+function startMotionListeners() {
+  sensorActive.accel = true;
+  window.addEventListener('devicemotion', e => {
+    const a = e.accelerationIncludingGravity;
+    if (!a) return;
+    const x = (a.x || 0).toFixed(1);
+    const y = (a.y || 0).toFixed(1);
+    const z = (a.z || 0).toFixed(1);
+    document.getElementById('sc-rot').textContent = `${x}/${y}/${z}`;
+    updateSensorHud(x, y, z);
+  });
+  window.addEventListener('deviceorientation', e => {
+    sensorActive.orient = true;
+    const alpha = e.alpha ? e.alpha.toFixed(0) : '—';
+    const beta  = e.beta  ? e.beta.toFixed(0)  : '—';
+    const gamma = e.gamma ? e.gamma.toFixed(0)  : '—';
+    // Enviar al admin si está conectado
+    if (adminConn && adminConn.open) {
+      try { adminConn.send(JSON.stringify({ type: 'sensor', alpha, beta, gamma })); } catch(e) {}
     }
   });
+}
+
+let sensorHudTimer = null;
+function updateSensorHud(x, y, z) {
+  const hud = document.getElementById('sensorHud');
+  hud.innerHTML = `
+    <div class="hud-tag cyan">X ${x}m/s²</div>
+    <div class="hud-tag cyan">Y ${y}m/s²</div>
+    <div class="hud-tag cyan">Z ${z}m/s²</div>`;
+  clearTimeout(sensorHudTimer);
+  sensorHudTimer = setTimeout(() => { hud.innerHTML = ''; }, 3000);
+}
+
+function updateBatteryHud() {
+  if (!batteryObj) return;
+  const pct  = Math.round(batteryObj.level * 100);
+  const chg  = batteryObj.charging ? '⚡' : '🔋';
+  const cls  = pct > 20 ? 'green' : 'orange';
+  const hudEl = document.getElementById('hudBattery');
+  hudEl.textContent = `${chg} ${pct}%`;
+  hudEl.style.display = '';
+  hudEl.className = `hud-tag ${cls}`;
+  document.getElementById('sc-bat').textContent = `${pct}%${batteryObj.charging ? '+' : ''}`;
+}
+
+// ── DEVICE INFO ──
+function gatherDeviceInfo() {
+  const ua = navigator.userAgent;
+  let browser = 'Desconocido';
+  if (/Chrome\//.test(ua) && !/Chromium|Edge/.test(ua)) browser = 'Chrome ' + (ua.match(/Chrome\/([\d.]+)/)?.[1] || '');
+  else if (/Firefox\//.test(ua)) browser = 'Firefox ' + (ua.match(/Firefox\/([\d.]+)/)?.[1] || '');
+  else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari ' + (ua.match(/Version\/([\d.]+)/)?.[1] || '');
+  else if (/Edg\//.test(ua)) browser = 'Edge ' + (ua.match(/Edg\/([\d.]+)/)?.[1] || '');
+
+  let os = 'Desconocido';
+  if (/iPhone|iPad|iPod/.test(ua))  os = 'iOS';
+  else if (/Android/.test(ua))      os = 'Android ' + (ua.match(/Android ([\d.]+)/)?.[1] || '');
+  else if (/Windows/.test(ua))      os = 'Windows';
+  else if (/Mac OS X/.test(ua))     os = 'macOS';
+  else if (/Linux/.test(ua))        os = 'Linux';
+
+  let conn = '—';
+  const nc = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (nc) conn = `${nc.effectiveType || nc.type || '?'} ${nc.downlink ? nc.downlink + 'Mbps' : ''}`.trim();
+
+  return {
+    platform: navigator.platform || '—',
+    browser,
+    os,
+    screen:   `${screen.width}×${screen.height} @${window.devicePixelRatio}x`,
+    memory:   navigator.deviceMemory   || null,
+    cores:    navigator.hardwareConcurrency || null,
+    conn,
+    lang:     navigator.language,
+    tz:       Intl.DateTimeFormat().resolvedOptions().timeZone,
+    touch:    navigator.maxTouchPoints,
+    online:   navigator.onLine,
+    battery:  batteryObj ? Math.round(batteryObj.level * 100) + '%' : null,
+    charging: batteryObj ? batteryObj.charging : null,
+  };
+}
+
+function sendDeviceInfo() {
+  if (!adminConn || !adminConn.open) return;
+  try {
+    adminConn.send(JSON.stringify({ type: 'deviceInfo', ...gatherDeviceInfo() }));
+  } catch(e) {}
+}
+
+// ── GPS ──
+function startGps() {
+  if (!navigator.geolocation) { toast('GPS no disponible', 'error'); return; }
+  gpsActive = true;
+  showHud('hudGps', true);
+  document.getElementById('btnGps').classList.add('on-green');
+  document.getElementById('sc-gps').textContent = 'ON';
+
+  gpsWatchId = navigator.geolocation.watchPosition(
+    pos => {
+      lastGps = {
+        lat:  pos.coords.latitude,
+        lng:  pos.coords.longitude,
+        acc:  pos.coords.accuracy,
+        alt:  pos.coords.altitude,
+        spd:  pos.coords.speed,
+        head: pos.coords.heading,
+        ts:   pos.timestamp,
+      };
+      sendGps(lastGps);
+      document.getElementById('sc-gps').textContent =
+        `${(+lastGps.lat).toFixed(4)}, ${(+lastGps.lng).toFixed(4)}`;
+    },
+    err => { toast('GPS: ' + err.message, 'warn'); },
+    { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
+  );
+}
+
+function stopGps() {
+  if (gpsWatchId !== null) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null; }
+  gpsActive = false;
+  lastGps   = null;
+  showHud('hudGps', false);
+  document.getElementById('btnGps').classList.remove('on-green');
+  document.getElementById('sc-gps').textContent = '—';
+  sendGpsStop();
+}
+
+function sendGps(data) {
+  if (!adminConn || !adminConn.open) return;
+  try { adminConn.send(JSON.stringify({ type: 'gps', active: true, ...data })); } catch(e) {}
+}
+function sendGpsStop() {
+  if (!adminConn || !adminConn.open) return;
+  try { adminConn.send(JSON.stringify({ type: 'gps', active: false })); } catch(e) {}
+}
+
+// ── TORCH ──
+async function toggleTorch(on) {
+  if (!torchTrack) { sendCmdAck('torch', null, 'Sin acceso a la cámara'); return; }
+  const caps = torchTrack.getCapabilities?.() || {};
+  if (!caps.torch) { sendCmdAck('torch', null, 'Flash no disponible en este dispositivo'); return; }
+  try {
+    await torchTrack.applyConstraints({ advanced: [{ torch: on }] });
+    torchOn = on;
+    showHud('hudTorch', on);
+    document.getElementById('btnTorch').className = 'big-btn' + (on ? ' on-yellow' : '');
+    document.getElementById('btnTorch').children[1].textContent = on ? 'ON' : 'Flash';
+    sendCmdAck('torch', on);
+  } catch(e) {
+    sendCmdAck('torch', null, 'Error al controlar flash');
+  }
+}
+
+// ── VOLTEAR CÁMARA ──
+async function flipCamera() {
+  currentFacing = currentFacing === 'environment' ? 'user' : 'environment';
+  const vid = document.getElementById('localVideo');
+  vid.className = currentFacing === 'user' ? 'mirrored' : '';
+  const ok = await requestCamera(currentFacing);
+  if (ok) {
+    // Reemplazar track en la llamada activa
+    if (adminCall && adminCall.peerConnection) {
+      const newTrack = localStream.getVideoTracks()[0];
+      const senders  = adminCall.peerConnection.getSenders();
+      const vSender  = senders.find(s => s.track && s.track.kind === 'video');
+      if (vSender && newTrack) vSender.replaceTrack(newTrack).catch(() => {});
+    }
+    document.getElementById('sc-cam').textContent = currentFacing === 'user' ? 'Front' : 'Back';
+    sendCmdAck('flip');
+    toast(`Cámara: ${currentFacing === 'user' ? 'Frontal' : 'Trasera'}`, 'info');
+  } else {
+    sendCmdAck('flip', null, 'Error al voltear');
+  }
+}
+
+// ── ZOOM ──
+async function applyZoomToTrack(zv) {
+  zoomVal_ = zv;
+  document.getElementById('zoomSlider').value = zv;
+  document.getElementById('zoomVal').textContent = zv.toFixed(1) + '×';
+  if (!torchTrack) return;
+  const caps = torchTrack.getCapabilities?.() || {};
+  if (caps.zoom) {
+    try {
+      const clamped = Math.min(Math.max(zv, caps.zoom.min || 1), caps.zoom.max || 8);
+      await torchTrack.applyConstraints({ advanced: [{ zoom: clamped }] });
+    } catch(e) {
+      // Si falla en hardware, usamos CSS transform
+      document.getElementById('localVideo').style.transform = `scale(${zv})`;
+    }
+  } else {
+    document.getElementById('localVideo').style.transform = `scale(${zv})`;
+  }
+}
+
+// ── GRABACIÓN LOCAL ──
+function startRecording() {
+  if (!localStream) { sendCmdAck('record_start', null, 'Sin stream activo'); return; }
+  recChunks = [];
+  try {
+    mediaRecorder = new MediaRecorder(localStream, { mimeType: 'video/webm;codecs=vp9,opus' });
+  } catch(e) {
+    try { mediaRecorder = new MediaRecorder(localStream); } catch(e2) {
+      sendCmdAck('record_start', null, 'MediaRecorder no disponible'); return;
+    }
+  }
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+  mediaRecorder.onstop = saveRecording;
+  mediaRecorder.start(1000);
+  isRecording = true;
+  document.getElementById('recFlash').classList.add('active');
+  showHud('hudRec', true);
+  document.getElementById('btnRec').classList.add('on-red');
+  sendCmdAck('record_start');
+  toast('Grabación iniciada', 'success');
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+  }
+  isRecording = false;
+  document.getElementById('recFlash').classList.remove('active');
+  showHud('hudRec', false);
+  document.getElementById('btnRec').classList.remove('on-red');
+  sendCmdAck('record_stop');
+}
+
+function saveRecording() {
+  const blob = new Blob(recChunks, { type: 'video/webm' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `streamlink-rec-${myId}-${Date.now()}.webm`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Grabación guardada', 'success');
+}
+
+// ── SCREEN SHARE ──
+async function toggleScreenShare() {
+  if (screenStream) {
+    // Desactivar
+    screenStream.getTracks().forEach(t => t.stop());
+    screenStream = null;
+    showHud('hudScreen', false);
+    document.getElementById('btnScreen').classList.remove('on-cyan');
+    // Volver a cámara
+    if (adminCall && adminCall.peerConnection) {
+      const vTrack  = localStream?.getVideoTracks()[0];
+      const senders = adminCall.peerConnection.getSenders();
+      const vSender = senders.find(s => s.track?.kind === 'video');
+      if (vSender && vTrack) vSender.replaceTrack(vTrack).catch(() => {});
+    }
+    toast('Screen share detenido', 'info');
+    return;
+  }
+  if (!navigator.mediaDevices.getDisplayMedia) {
+    toast('Screen share no disponible', 'error'); return;
+  }
+  try {
+    screenStream = await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: 30 }, audio: true
+    });
+    screenStream.getVideoTracks()[0].onended = () => {
+      screenStream = null;
+      showHud('hudScreen', false);
+      document.getElementById('btnScreen').classList.remove('on-cyan');
+    };
+    // Reemplazar track en llamada
+    if (adminCall && adminCall.peerConnection) {
+      const scTrack = screenStream.getVideoTracks()[0];
+      const senders = adminCall.peerConnection.getSenders();
+      const vSender = senders.find(s => s.track?.kind === 'video');
+      if (vSender && scTrack) vSender.replaceTrack(scTrack).catch(() => {});
+    }
+    showHud('hudScreen', true);
+    document.getElementById('btnScreen').classList.add('on-cyan');
+    toast('Compartiendo pantalla', 'success');
+  } catch(e) {
+    toast('Screen share cancelado', 'warn');
+  }
+}
+
+// ── MANEJAR COMANDOS REMOTOS ──
+function handleCommand(msg) {
+  if (msg.type !== 'cmd') return;
+  switch (msg.action) {
+    case 'flip':
+      flipCamera();
+      break;
+    case 'torch':
+      toggleTorch(!!msg.value);
+      break;
+    case 'gps_start':
+      if (!gpsActive) startGps();
+      sendCmdAck('gps_start', true, null, { active: true });
+      break;
+    case 'gps_stop':
+      if (gpsActive) stopGps();
+      sendCmdAck('gps_stop', false, null, { active: false });
+      break;
+    case 'zoom':
+      applyZoomToTrack(parseFloat(msg.value) || 1);
+      sendCmdAck('zoom', msg.value);
+      break;
+    case 'brightness':
+      brightnessVal = parseFloat(msg.value) || 1;
+      document.getElementById('localVideo').style.filter = `brightness(${brightnessVal})`;
+      sendCmdAck('brightness', msg.value);
+      break;
+    case 'record_start':
+      if (!isRecording) startRecording();
+      break;
+    case 'record_stop':
+      if (isRecording) stopRecording();
+      break;
+    case 'snapshot':
+      // Admin pide snapshot — respondemos con un frame como base64
+      captureAndSendSnapshot();
+      break;
+  }
+}
+
+function sendCmdAck(action, value, error, extra) {
+  if (!adminConn || !adminConn.open) return;
+  const msg = { type: 'cmdAck', action };
+  if (value     !== undefined) msg.value  = value;
+  if (error     !== undefined) msg.error  = error;
+  if (extra)     Object.assign(msg, extra);
+  try { adminConn.send(JSON.stringify(msg)); } catch(e) {}
+}
+
+function captureAndSendSnapshot() {
+  const vid = document.getElementById('localVideo');
+  if (!vid || !vid.videoWidth) return;
+  const canvas = document.createElement('canvas');
+  canvas.width  = Math.min(vid.videoWidth, 1280);
+  canvas.height = Math.min(vid.videoHeight, 720);
+  canvas.getContext('2d').drawImage(vid, 0, 0, canvas.width, canvas.height);
+  const data = canvas.toDataURL('image/jpeg', 0.85);
+  if (adminConn && adminConn.open) {
+    try { adminConn.send(JSON.stringify({ type: 'snapshot', data })); } catch(e) {}
+  }
+}
+
+// ── SETUP FLOW ──
+async function doSetup() {
+  document.getElementById('setupStartBtn').disabled = true;
+  document.getElementById('setupStartBtn').textContent = 'Solicitando permisos…';
+
+  await requestCamera('environment');
+  await requestGps();
+  await requestHardware();
+  requestSensors();
+
+  document.getElementById('sc-cam').textContent = 'Back';
+  document.getElementById('setupStartBtn').textContent = '✓ Listo — Iniciando';
+
+  setTimeout(() => {
+    document.getElementById('setupScreen').classList.add('hidden');
+    // Actualizar overlay
+    document.getElementById('overlayTxt').textContent = 'Cámara lista\nEsperando conexión del Admin';
+    document.getElementById('camOverlay').classList.remove('hidden');
+  }, 800);
+}
+
+document.getElementById('setupStartBtn').addEventListener('click', doSetup);
+document.getElementById('setupSkipBtn').addEventListener('click', async () => {
+  await requestCamera('environment');
+  document.getElementById('setupScreen').classList.add('hidden');
 });
 
-startBtn.addEventListener('click', startCamera);
+// ── BOTONES UI ──
+document.getElementById('btnFlip').addEventListener('click', flipCamera);
+document.getElementById('btnTorch').addEventListener('click', () => toggleTorch(!torchOn));
+document.getElementById('btnGps').addEventListener('click', () => {
+  if (gpsActive) stopGps(); else startGps();
+});
+document.getElementById('btnScreen').addEventListener('click', toggleScreenShare);
+document.getElementById('btnRec').addEventListener('click', () => {
+  if (isRecording) stopRecording(); else startRecording();
+});
+
+document.getElementById('zoomSlider').addEventListener('input', e => {
+  applyZoomToTrack(parseFloat(e.target.value));
+});
+
+// ── INIT ──
+const myId_ = generateId();
+document.getElementById('setupCodeDisplay').textContent = myId_;
+document.getElementById('setupCodeSub').textContent = 'Generando peer…';
+initPeer(myId_);
+
+// Online/offline
+window.addEventListener('online',  () => { if (adminConn) sendDeviceInfo(); });
+window.addEventListener('offline', () => { toast('Conexión perdida', 'warn'); });
+
+// Wake lock para mantener pantalla activa
+(async () => {
+  if ('wakeLock' in navigator) {
+    try {
+      await navigator.wakeLock.request('screen');
+    } catch(e) {}
+  }
+})();
 </script>
 </body>
 </html>
