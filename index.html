@@ -598,7 +598,7 @@ img{display:block;max-width:100%}
   flex-wrap:wrap;
   justify-content:center;
   gap:0;
-  padding:48px 40px;
+  padding:32px 40px; /* Acá reducimos el padding vertical */
   max-width:1200px;
   margin:0 auto;
   overflow:hidden;
@@ -745,6 +745,7 @@ footer{
 .text-muted{color:var(--text-muted)}
 .row{display:flex;align-items:center;flex-wrap:wrap;gap:16px}
 </style>
+  
 </head>
 <body>
 
@@ -1307,5 +1308,61 @@ footer{
   });
 })();
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const statNumbers = document.querySelectorAll('.stat-num');
+    const animationDuration = 2000; // Duración en milisegundos (2 segundos)
 
+    const animateValue = (obj, start, end, duration) => {
+        let startTimestamp = null;
+        
+        // Guarda el sufijo (como + o %) si existe
+        const originalText = obj.innerHTML;
+        const suffixMatch = originalText.match(/[^0-9]+$/);
+        const suffix = suffixMatch ? suffixMatch[0] : '';
+
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            
+            // Calculamos el valor actual y le añadimos el sufijo
+            const currentValue = Math.floor(progress * (end - start) + start);
+            obj.innerHTML = currentValue + suffix;
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                // Asegura el valor final exacto al terminar
+                obj.innerHTML = end + suffix; 
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                
+                // Extrae solo los números del texto original (ignora + o %)
+                const text = target.innerText;
+                const endValue = parseInt(text.replace(/[^0-9]/g, ''), 10);
+                
+                if (!isNaN(endValue)) {
+                    animateValue(target, 0, endValue, animationDuration);
+                }
+                
+                // Deja de observar este elemento para que solo se anime una vez
+                observer.unobserve(target);
+            }
+        });
+    }, {
+        threshold: 0.5 // Se activa cuando al menos el 50% de la estadística es visible
+    });
+
+    statNumbers.forEach(stat => {
+        observer.observe(stat);
+    });
+});
+</script>
 </body></html>
