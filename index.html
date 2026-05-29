@@ -5,6 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -62,6 +63,7 @@ img{display:block;max-width:100%}
   display:flex;
   align-items:center;
   gap:8px;
+  margin-left:auto;
 }
 .nav-link{
   padding:6px 12px;
@@ -334,52 +336,85 @@ img{display:block;max-width:100%}
   to{transform:translateX(-50%)}
 }
 
-/* ─── PROJECTS GRID ─── */
+/* ─── PROJECTS GRID (Masonry + Glassmorphism) ─── */
 #projects-section{
   padding:80px clamp(18px,5vw,40px);
 }
 .projects-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:12px;
+  column-count: 3;
+  column-gap: 16px;
+  width: 100%;
   max-width:1600px;
   margin:0 auto;
+  display: block;
+}
+@media (max-width: 992px) {
+  .projects-grid {
+    column-count: 2;
+  }
+}
+@media (max-width: 576px) {
+  .projects-grid {
+    column-count: 1;
+  }
 }
 .project-card{
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 16px;
   position:relative;
-  border-radius:4px;
+  border-radius:8px;
   overflow:hidden;
-  aspect-ratio:3/4;
   cursor:pointer;
-  filter:grayscale(1);
+  filter:grayscale(100%);
   transition:filter .4s ease,transform .4s ease;
+  break-inside: avoid;
+  text-decoration: none;
 }
-.project-card:hover{filter:grayscale(0);transform:scale(1.01)}
+.project-card:hover{
+  filter:grayscale(0);
+  transform:scale(1.03);
+}
 .project-card img{
-  width:100%;height:100%;
-  object-fit:cover;
+  width:100%;
+  height:auto;
   display:block;
+  object-fit:cover;
 }
 .project-card__overlay{
   position:absolute;
-  bottom:10px;left:8px;right:8px;
-  display:flex;align-items:center;
-  justify-content:space-between;
-  gap:4px;
-  padding:12px 20px;
-  background:rgba(99,99,99,.3);
-  backdrop-filter:blur(6px);
-  border:1px solid rgb(214,214,214);
-  border-radius:40px;
-  box-shadow:0 0 20px 4px rgba(92,92,92,.3);
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  width: calc(100% - 32px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius:30px;
   opacity:0;
-  transition:opacity .3s ease;
+  transition:opacity .3s ease, background .3s ease;
+  z-index: 2;
 }
-.project-card:hover .project-card__overlay{opacity:1}
+.project-card:hover .project-card__overlay{
+  opacity:1;
+  background: rgba(255, 255, 255, 0.25);
+}
 .project-card__overlay span{
   font-size:14px;
+  font-weight: 500;
   color:#fff;
   white-space:nowrap;
+}
+.project-card__overlay svg {
+  width: 16px;
+  height: 16px;
+  fill: #ffffff;
 }
 
 /* ─── ABOUT SECTION ─── */
@@ -470,7 +505,7 @@ img{display:block;max-width:100%}
 }
 .service-photo img{width:100%;height:100%;object-fit:cover}
 
-/* ─── TESTIMONIALS ─── */
+/* ─── TESTIMONIALS (Grid Estático Actualizado) ─── */
 #testimonials{
   padding:var(--gap-section-lg) clamp(18px,6vw,80px);
 }
@@ -496,32 +531,60 @@ img{display:block;max-width:100%}
 }
 .testi-photo img{width:100%;height:100%;object-fit:cover}
 .testi-info{display:flex;flex-direction:column;gap:24px}
-.testi-cards-wrap{
-  overflow:hidden;
-  mask-image:linear-gradient(to right,transparent 0%,#000 12.5%,#000 87.5%,transparent 100%);
-  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 12.5%,#000 87.5%,transparent 100%);
+
+.testi-cards-wrap {
+  width: 100%;
 }
-.testi-cards-inner{
-  display:flex;
-  gap:24px;
-  width:max-content;
-  animation:ticker 30s linear infinite;
+.testi-cards-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
 }
-.testi-card{
-  width:500px;
-  flex-shrink:0;
-  padding:40px 40px 80px;
-  background:linear-gradient(180deg,var(--card-bg) 25%,rgba(0,0,0,0) 100%);
-  backdrop-filter:blur(50px);
-  border-radius:10px;
-  display:flex;flex-direction:column;gap:30px;
+@media(max-width:1024px){
+  .testi-cards-inner {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
-.testi-card-header{display:flex;flex-direction:column;gap:16px}
+@media(max-width:768px){
+  .testi-cards-inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+.testi-card {
+  padding: 32px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.testi-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
 .testi-avatar{width:84px;height:84px;border-radius:42px;object-fit:cover}
-.testi-name{font-family:'Satoshi',sans-serif;font-size:clamp(22px,3vw,36px);font-weight:500;color:#fff}
-.testi-role{font-size:14px;color:rgba(255,255,255,.6)}
+
+.testi-name {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.testi-role {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
 .testi-divider{width:100%;height:1px;background:rgba(255,255,255,.1)}
-.testi-quote{font-size:clamp(14px,1.4vw,18px);color:rgba(255,255,255,.7);line-height:1.6}
+.testi-quote {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.6;
+}
 .testi-stars{display:flex;align-items:center;gap:8px;margin-top:auto}
 .testi-rating{font-size:22px;font-weight:500;color:rgba(255,255,255,.6)}
 .stars{display:flex;gap:4px}
@@ -666,7 +729,9 @@ footer{
   margin-top:16px;
 }
 .scroll-line{flex:1;max-width:80px;height:1px;background:rgba(255,255,255,.2)}
-@media(max-width:640px){.scroll-indicator{display:none}}
+@media(max-width:768px){ /* Ajustado para ocultarse en móviles y tablets */
+  .scroll-indicator{display:none}
+}
 
 /* ─── SECTION TRANSITIONS (simple fade-up on scroll) ─── */
 .reveal{
@@ -925,11 +990,7 @@ footer{
         <div class="divider"></div>
         <p>Designing robust, secure, and highly scalable server-side systems capable of handling high traffic and complex business logic.</p>
       </div>
-      <div class="service-card">
-        <h4>Database Design &amp; Tuning</h4>
-        <div class="divider"></div>
-        <p>Architecting efficient SQL and NoSQL database schemas, optimizing queries to ensure data integrity and lightning-fast response times.</p>
-      </div>
+      
     </div>
   </div>
 
@@ -1032,28 +1093,8 @@ footer{
           </div>
         </article>
 
-        <!-- Card 4 (Sofia) -->
-        <article class="testi-card">
-          <div class="testi-card-header">
-            <img src="https://framerusercontent.com/images/VG4Ga2U7ZktrC75M3Vg8eUynj4M.png" alt="Sofia Toms" class="testi-avatar" loading="lazy">
-            <div>
-              <p class="testi-name">Sofia Toms</p>
-              <p class="testi-role">Founder at GreenK Studios</p>
-            </div>
-          </div>
-          <div class="testi-divider"></div>
-          <p class="testi-quote">Matias's designs speak for themselves — bold, strategic, and impactful. He took the time to understand our brand, delivering packaging concepts that resonated with our target audience.</p>
-          <div class="testi-stars">
-            <span class="testi-rating">5.0</span>
-            <div class="stars">
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-            </div>
-          </div>
-        </article>
+        
+        
       </div>
     </div>
 
@@ -1192,9 +1233,9 @@ footer{
   </div>
 
   <div class="footer-bottom">
-    <p>hello@framebase.design</p>
-    <p>Design In <a href="https://framer.com" target="_blank" rel="noopener">Framer</a></p>
-    <p>All rights reserved, ©2025</p>
+    <p>matiasleonelibarra37@gmail.com</p>
+    
+    <p>All rights reserved, ©2023</p>
   </div>
 </footer>
 
