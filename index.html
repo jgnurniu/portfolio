@@ -1,7 +1,7 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolite – Portfolio</title>
+<title>Matías Ibarra | Software Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
@@ -81,7 +81,6 @@ img{display:block;max-width:100%}
   align-items:center;
   gap:8px;
 }
-/* hamburger – hidden on desktop */
 .hamburger{
   display:none;
   flex-direction:column;
@@ -104,7 +103,7 @@ img{display:block;max-width:100%}
 .hamburger.is-open span:nth-child(2){opacity:0;transform:scaleX(0)}
 .hamburger.is-open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
-/* ─── MOBILE MENU OVERLAY ─── */
+/* ─── MOBILE MENU ─── */
 .mobile-menu{
   position:fixed;
   inset:0;
@@ -223,7 +222,6 @@ img{display:block;max-width:100%}
   gap:16px;
   width:100%;
 }
-/* ─── GLASS BUTTON ─── */
 .btn-glass{
   display:inline-flex;
   align-items:center;
@@ -259,15 +257,9 @@ img{display:block;max-width:100%}
   .hero-ctas{flex-direction:column;align-items:stretch}
   .btn-glass{width:100%;justify-content:center}
 }
-
-/* ─── SECTION BASE ─── */
 .section{
   width:100%;
   padding:var(--gap-section-lg) clamp(18px,6vw,80px);
-}
-.section--narrow{
-  max-width:1200px;
-  margin:0 auto;
 }
 .section-tag{
   display:inline-flex;
@@ -310,8 +302,6 @@ img{display:block;max-width:100%}
   color:var(--text-muted);
   max-width:640px;
 }
-
-/* ─── LOGO TICKER ─── */
 .ticker-wrap{
   width:100%;
   overflow:hidden;
@@ -336,7 +326,7 @@ img{display:block;max-width:100%}
   to{transform:translateX(-50%)}
 }
 
-/* ─── PROJECTS GRID (Masonry + Glassmorphism) ─── */
+/* ─── PROJECTS GRID ─── */
 #projects-section{
   padding:80px clamp(18px,5vw,40px);
 }
@@ -349,14 +339,10 @@ img{display:block;max-width:100%}
   display: block;
 }
 @media (max-width: 992px) {
-  .projects-grid {
-    column-count: 2;
-  }
+  .projects-grid { column-count: 2; }
 }
 @media (max-width: 576px) {
-  .projects-grid {
-    column-count: 1;
-  }
+  .projects-grid { column-count: 1; }
 }
 .project-card{
   display: inline-block;
@@ -505,91 +491,6 @@ img{display:block;max-width:100%}
 }
 .service-photo img{width:100%;height:100%;object-fit:cover}
 
-/* ─── TESTIMONIALS (Grid Estático Actualizado) ─── */
-#testimonials{
-  padding:var(--gap-section-lg) clamp(18px,6vw,80px);
-}
-.testimonials-inner{
-  max-width:1600px;
-  margin:0 auto;
-  display:flex;
-  flex-direction:column;
-  gap:44px;
-}
-.testimonials-top{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:44px;
-  align-items:start;
-}
-@media(max-width:900px){.testimonials-top{grid-template-columns:1fr}}
-.testi-photo{
-  border-radius:8px;
-  overflow:hidden;
-  filter:grayscale(1);
-  min-height:300px;
-}
-.testi-photo img{width:100%;height:100%;object-fit:cover}
-.testi-info{display:flex;flex-direction:column;gap:24px}
-
-.testi-cards-wrap {
-  width: 100%;
-}
-.testi-cards-inner {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  width: 100%;
-}
-@media(max-width:1024px){
-  .testi-cards-inner {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media(max-width:768px){
-  .testi-cards-inner {
-    grid-template-columns: 1fr;
-  }
-}
-
-.testi-card {
-  padding: 32px;
-  background: var(--card-bg);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.testi-card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: flex-start;
-}
-.testi-avatar{width:84px;height:84px;border-radius:42px;object-fit:cover}
-
-.testi-name {
-  font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 4px;
-}
-.testi-role {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-}
-.testi-divider{width:100%;height:1px;background:rgba(255,255,255,.1)}
-.testi-quote {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.6;
-}
-.testi-stars{display:flex;align-items:center;gap:8px;margin-top:auto}
-.testi-rating{font-size:22px;font-weight:500;color:rgba(255,255,255,.6)}
-.stars{display:flex;gap:4px}
-.stars svg{width:22px;height:22px;fill:gold}
-
 /* ─── STATS ─── */
 .stats-box{
   background:var(--card-bg);
@@ -598,9 +499,9 @@ img{display:block;max-width:100%}
   flex-wrap:wrap;
   justify-content:center;
   gap:0;
-  padding:32px 40px; /* Acá reducimos el padding vertical */
+  padding:32px 40px;
   max-width:1200px;
-  margin:0 auto;
+  margin: 60px auto 0;
   overflow:hidden;
 }
 .stat-item{
@@ -729,11 +630,11 @@ footer{
   margin-top:16px;
 }
 .scroll-line{flex:1;max-width:80px;height:1px;background:rgba(255,255,255,.2)}
-@media(max-width:768px){ /* Ajustado para ocultarse en móviles y tablets */
+@media(max-width:768px){
   .scroll-indicator{display:none}
 }
 
-/* ─── SECTION TRANSITIONS (simple fade-up on scroll) ─── */
+/* ─── SECTION TRANSITIONS ─── */
 .reveal{
   opacity:0;
   transform:translateY(32px);
@@ -749,7 +650,6 @@ footer{
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════ NAVBAR ═══════════════════════════════════════ -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar__inner">
     <a href="#hero" class="navbar__logo-link" aria-label="Home">
@@ -758,9 +658,8 @@ footer{
 
     <div class="navbar__links" id="desktopLinks">
       <a href="#services" class="nav-link">Services</a>
-      <a href="#projects-section" class="nav-link">Projects</a>
-      <a href="#testimonials" class="nav-link">Testimonials</a>
-      <a href="#faq" class="nav-link">Contact</a>
+      <a href="#projects-section" class="nav-link">Cases</a>
+      <a href="#faq" class="nav-link">FAQ & Contact</a>
     </div>
 
     <div class="navbar__cta">
@@ -773,16 +672,13 @@ footer{
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════════ MOBILE MENU ═══════════════════════════════════════ -->
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true" role="dialog" aria-label="Mobile navigation">
   <a href="#services" class="nav-link" data-mobile-link="">Services</a>
-  <a href="#projects-section" class="nav-link" data-mobile-link="">Projects</a>
-  <a href="#testimonials" class="nav-link" data-mobile-link="">Testimonials</a>
+  <a href="#projects-section" class="nav-link" data-mobile-link="">Cases</a>
   <div class="mobile-menu-divider"></div>
-  <a href="#faq" class="nav-link" data-mobile-link="">Contact</a>
+  <a href="#faq" class="nav-link" data-mobile-link="">FAQ & Contact</a>
 </div>
 
-<!-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════ -->
 <section id="hero">
   <div class="hero-video-bg">
     <video autoplay="" muted="" loop="" playsinline="" aria-hidden="true">
@@ -790,10 +686,10 @@ footer{
     </video>
   </div>
 
-  <div class="hero-content reveal visible">
+   <div class="hero-content reveal visible">
     <div class="badge">
       <span class="badge-dot"></span>
-      Crafting Unique Brand Identities
+      Optimized for Performance & Scalability
     </div>
 
     <h1 class="hero-title">
@@ -801,12 +697,12 @@ footer{
     </h1>
 
     <p class="hero-subtitle">
-      Specialized in developing high-end web solutions with pixel-perfect design. Let's transform your complex ideas into high-performance digital products.
+      Specialized in architecting high-end engineering solutions with clean code. Let's transform your complex systems into robust, fast, and scalable digital products.
     </p>
 
     <div class="hero-ctas">
       <a href="#faq" class="btn-glass">Get in Touch</a>
-      <a href="#projects-section" class="btn-glass">Explore Projects</a>
+      <a href="#projects-section" class="btn-glass">View Case Studies</a>
     </div>
 
     <div class="scroll-indicator">
@@ -817,11 +713,10 @@ footer{
         <rect x="9.5" y="7" width="3" height="8" rx="1.5" fill="white" fill-opacity=".6"></rect>
       </svg>
       <div class="scroll-line"></div>
-      <span>to see projects</span>
+      <span>to see cases</span>
     </div>
   </div>
 
-  <!-- Logo ticker -->
   <div class="ticker-wrap" style="position:absolute;bottom:32px;left:0;right:0;z-index:1">
     <div class="ticker-inner" style="animation-play-state: running;">
       <img src="https://framerusercontent.com/images/otv1rEDn2X7h8TFtKPCksQmAEKQ.svg" alt="Logo 1" height="27">
@@ -829,7 +724,6 @@ footer{
       <img src="https://framerusercontent.com/images/hhTRf8RciR9bakkAgIckAkEiQM.svg" alt="Logo 3" height="27">
       <img src="https://framerusercontent.com/images/1ph1389RD4RtUDEfqVhWbujyF7s.svg" alt="Logo 4" height="27">
       <img src="https://framerusercontent.com/images/Yn3MOOL9rTXhK9U8MLvSnEoNP8.svg" alt="Logo 5" height="27">
-      <!-- duplicated for seamless loop -->
       <img src="https://framerusercontent.com/images/otv1rEDn2X7h8TFtKPCksQmAEKQ.svg" alt="" height="27" aria-hidden="true">
       <img src="https://framerusercontent.com/images/rrRoFs4icQtustYbIGm5r5DXREI.svg" alt="" height="27" aria-hidden="true">
       <img src="https://framerusercontent.com/images/hhTRf8RciR9bakkAgIckAkEiQM.svg" alt="" height="27" aria-hidden="true">
@@ -839,63 +733,43 @@ footer{
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════ PROJECTS ═══════════════════════════════════════ -->
 <section id="projects-section">
   <div style="max-width:1600px;margin:0 auto;padding:0 clamp(0px,1vw,0px)">
     <div class="row reveal visible" style="margin-bottom:32px;padding:0 clamp(18px,5vw,40px)">
-      <p class="section-body" style="font-size:clamp(18px,2vw,24px);max-width:none">Recent Works</p>
+      <p class="section-body" style="font-size:clamp(18px,2vw,24px);max-width:none">Engineering Case Studies</p>
     </div>
     <div class="divider" style="margin:0 clamp(18px,5vw,40px) 32px"></div>
   </div>
 
   <div class="projects-grid" style="padding:0 clamp(18px,5vw,40px)">
-    <a href="https://www.behance.net/" target="_blank" rel="noopener" class="project-card reveal visible">
-      <img src="https://framerusercontent.com/images/GkhJfmw17Q5eehve51WR25Ijjnk.png" alt="Project 1" loading="lazy">
+    <a href="#case1" class="project-card reveal visible">
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" alt="SaaS Dashboard" loading="lazy">
       <div class="project-card__overlay">
-        <span>View Casestudy</span>
+        <span>Case Study: SaaS Analytics Dashboard</span>
         <svg width="18" height="18" viewBox="0 0 256 256" fill="white" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
       </div>
     </a>
-    <a href="https://www.behance.net/" target="_blank" rel="noopener" class="project-card reveal visible" style="transition-delay:.1s">
-      <img src="https://framerusercontent.com/images/En1SV0rP485Zf5WOrpnHl3Nz658.png" alt="Project 2" loading="lazy">
+    <a href="#case2" class="project-card reveal visible" style="transition-delay:.1s">
+      <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" alt="Corporate Platform" loading="lazy">
       <div class="project-card__overlay">
-        <span>View Casestudy</span>
+        <span>Case Study: Corporate Platform Refactor</span>
         <svg width="18" height="18" viewBox="0 0 256 256" fill="white" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
       </div>
     </a>
-    <a href="https://www.behance.net/" target="_blank" rel="noopener" class="project-card reveal visible" style="transition-delay:.2s">
-      <img src="https://framerusercontent.com/images/bed888CTflXNK3KFX1R7VhRMtE.png" alt="Project 3" loading="lazy">
+    <a href="#case3" class="project-card reveal visible" style="transition-delay:.2s">
+      <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80" alt="High-Converting Landing" loading="lazy">
       <div class="project-card__overlay">
-        <span>View Casestudy</span>
-        <svg width="18" height="18" viewBox="0 0 256 256" fill="white" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
-      </div>
-    </a>
-    <a href="#about-me" class="project-card reveal visible" style="transition-delay:.05s">
-      <img src="https://i.blogs.es/c66e83/python3/1366_2000.jpeg" alt="Profile" loading="lazy">
-    </a>
-    <a href="https://www.behance.net/" target="_blank" rel="noopener" class="project-card reveal visible" style="transition-delay:.15s">
-      <img src="https://framerusercontent.com/images/QqqmFNIdzb0HbOiMSHvqZXkwT7w.png" alt="Project 5" loading="lazy">
-      <div class="project-card__overlay">
-        <span>View Casestudy</span>
-        <svg width="18" height="18" viewBox="0 0 256 256" fill="white" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
-      </div>
-    </a>
-    <a href="https://www.behance.net/" target="_blank" rel="noopener" class="project-card reveal visible" style="transition-delay:.25s">
-      <img src="https://framerusercontent.com/images/RYRvZnstUexQMOl8zRyrvDfDT0.png" alt="Project 6" loading="lazy">
-      <div class="project-card__overlay">
-        <span>View Casestudy</span>
+        <span>Case Study: High-Converting Tech Landing</span>
         <svg width="18" height="18" viewBox="0 0 256 256" fill="white" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
       </div>
     </a>
   </div>
 
   <div style="display:flex;justify-content:center;align-items:center;gap:24px;margin-top:40px;flex-wrap:wrap;padding:0 clamp(18px,5vw,40px)">
-    <p class="text-muted" style="font-size:clamp(15px,1.6vw,18px)"><a href="#projects-section" style="text-decoration:underline;color:inherit">All Projects</a></p>
-    <a href="https://cal.com/rick/get-rick-rolled" target="_blank" rel="noopener" class="btn-glass">Book a Free Call</a>
+    <a href="https://cal.com/rick/get-rick-rolled" target="_blank" rel="noopener" class="btn-glass">Book a Technical Call</a>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════ ABOUT ═══════════════════════════════════════ -->
 <section id="about-me">
   <div class="about-grid">
     <div class="about-info reveal visible">
@@ -906,15 +780,14 @@ footer{
       <div class="divider"></div>
 
       <div>
-        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em">Skills</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em">Technical Stack</p>
         <div class="skills-wrap">
-          <span class="skill-chip">React</span>
+          <span class="skill-chip">React / Next.js</span>
           <span class="skill-chip">Node.js</span>
-          <span class="skill-chip">JavaScript (ES6+)</span>
-          <span class="skill-chip">API Integration</span>
-          <span class="skill-chip">Database Design (SQL/NoSQL)</span>
-          <span class="skill-chip">PHP</span>
-          <span class="skill-chip">Figma (UI/UX)</span>
+          <span class="skill-chip">Tailwind CSS</span>
+          <span class="skill-chip">RESTful APIs</span>
+          <span class="skill-chip">SQL / NoSQL Architecture</span>
+          <span class="skill-chip">Git / CI/CD Pipelines</span>
         </div>
       </div>
 
@@ -948,30 +821,27 @@ footer{
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════ SERVICES ═══════════════════════════════════════ -->
 <section id="services">
   <div class="services-inner">
     <div class="services-left reveal visible">
       <div class="section-tag">
         <span class="section-tag__dot"></span>
-        Design services
+        Technical Expertise
       </div>
       <h2 class="section-heading">Services</h2>
-      <p class="section-body">Helping businesses scale with robust web applications that are secure, fast, and built to perform.</p>
+      <p class="section-body">Helping businesses scale with robust web applications that are secure, fast, and built to perform at an enterprise level.</p>
 
       <div class="skills-wrap" style="margin-top:8px">
-        <span class="skill-chip">Product Design</span>
-        <span class="skill-chip">Brand Identity Design</span>
-        <span class="skill-chip">Branding</span>
-        <span class="skill-chip">Packaging Design</span>
-        <span class="skill-chip">Mockup Design</span>
+        <span class="skill-chip">Frontend Excellence</span>
+        <span class="skill-chip">Backend Architecture</span>
+        <span class="skill-chip">Database Scalability</span>
+        <span class="skill-chip">System Optimization</span>
       </div>
 
       <div class="divider"></div>
 
       <div style="display:flex;flex-wrap:wrap;gap:12px">
         <a href="https://cal.com/rick/get-rick-rolled" target="_blank" rel="noopener" class="btn-glass">Book a Free Call</a>
-        <a href="#projects-section" class="btn-glass">See Projects</a>
       </div>
     </div>
 
@@ -991,133 +861,30 @@ footer{
         <div class="divider"></div>
         <p>Designing robust, secure, and highly scalable server-side systems capable of handling high traffic and complex business logic.</p>
       </div>
-      
     </div>
   </div>
 
-  <!-- service photo on its own row on mobile -->
   <div class="service-photo reveal visible" style="margin-top:44px;max-width:1600px;margin-left:auto;margin-right:auto;transition-delay:.2s">
-    <img src="https://framerusercontent.com/images/p6Im6dfknHAI0ig4NqDcO4WNpc.jpg" alt="Design work" loading="lazy" style="width:100%;height:503px;object-fit:cover">
+    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=80" alt="Server Infrastructure" loading="lazy" style="width:100%;height:503px;object-fit:cover">
   </div>
-</section>
-
-<!-- ═══════════════════════════════════════ TESTIMONIALS ═══════════════════════════════════════ -->
-<section id="testimonials">
-  <div class="testimonials-inner">
-    <div class="testimonials-top">
-      <div class="testi-photo reveal visible">
-        <img src="https://framerusercontent.com/images/PjaPY2S6qP6ii6fCxTJHhHU66SM.png" alt="Client" loading="lazy" style="width:100%;min-height:300px;object-fit:cover">
-      </div>
-      <div class="testi-info reveal visible" style="transition-delay:.1s">
-        <div class="section-tag">
-          <span class="section-tag__dot"></span>
-          Reviews
-        </div>
-        <h2 class="section-heading">Client Reviews</h2>
-        <p class="section-body">Real feedback from clients and teams who trusted my technical expertise to build and scale their platforms.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px">
-          <a href="https://cal.com/rick/get-rick-rolled" target="_blank" rel="noopener" class="btn-glass">Book a Free Call</a>
-          <a href="#services" class="btn-glass">See Services</a>
-        </div>
-      </div>
+  
+  <div class="stats-box reveal visible">
+    <div class="stat-item">
+      <span class="stat-num">+40%</span>
+      <span class="stat-label">Average Performance Boost</span>
     </div>
-
-    <!-- Testimonial Grid estático -->
-    <div class="testi-cards-wrap reveal visible">
-      <div class="testi-cards-inner">
-        <!-- Card 1 -->
-        <article class="testi-card">
-          <div class="testi-card-header">
-            <img src="https://framerusercontent.com/images/GTWhJyJde9nAeuMXqgYJh6jQhrU.jpg" alt="Richards Johnson" class="testi-avatar" loading="lazy">
-            <div>
-              <p class="testi-name">Richards Johnson</p>
-              <p class="testi-role">Creative Director &amp; Lead Designer</p>
-            </div>
-          </div>
-          <div class="testi-divider"></div>
-          <p class="testi-quote">Working with Matias was a seamless experience. His ability to bridge the gap between complex UI designs and robust full-stack architecture resulted in a high-performance product that drove meaningful user engagement. Highly recommended!</p>
-          <div class="testi-stars">
-            <span class="testi-rating">5.0</span>
-            <div class="stars">
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-            </div>
-          </div>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="testi-card">
-          <div class="testi-card-header">
-            <img src="https://framerusercontent.com/images/c5E9pkEhKO6BmnqFuXLWa9Xqw34.png" alt="June Lee" class="testi-avatar" loading="lazy">
-            <div>
-              <p class="testi-name">June Lee</p>
-              <p class="testi-role">CEO of GreenRoots</p>
-            </div>
-          </div>
-          <div class="testi-divider"></div>
-          <p class="testi-quote">Matias's strategic approach to backend engineering brought our platform vision to life. The application he developed is fast, secure, and aligns perfectly with our need for an efficient database structure.</p>
-          <div class="testi-stars">
-            <span class="testi-rating">5.0</span>
-            <div class="stars">
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-            </div>
-          </div>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="testi-card">
-          <div class="testi-card-header">
-            <img src="https://framerusercontent.com/images/hSbSnYWGLq3elsCJfJAmFGgQZOc.png" alt="Jona Carter" class="testi-avatar" loading="lazy">
-            <div>
-              <p class="testi-name">Jona Carter</p>
-              <p class="testi-role">Founder of EcoLux</p>
-            </div>
-          </div>
-          <div class="testi-divider"></div>
-          <p class="testi-quote">Every system Matias touches turns into a perfect blend of performance and clean code. He refactored our legacy code into a modern architecture, significantly boosting our application's loading speed.</p>
-          <div class="testi-stars">
-            <span class="testi-rating">5.0</span>
-            <div class="stars">
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-            </div>
-          </div>
-        </article>
-
-        
-        
-      </div>
+    <div class="stat-item">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Client Satisfaction</span>
     </div>
-
-    <!-- Stats -->
-    <div class="stats-box reveal visible">
-      <div class="stat-item">
-        <span class="stat-num">180+</span>
-        <span class="stat-label">Design projects completed</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">96%</span>
-        <span class="stat-label">Client satisfaction rate</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">5+</span>
-        <span class="stat-label">Years of experience</span>
-      </div>
+    <div class="stat-item">
+      <span class="stat-num">30+</span>
+      <span class="stat-label">Scalable Systems Built</span>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════ FAQ ═══════════════════════════════════════ -->
+
 <section id="faq">
   <div class="faq-inner">
     <div class="faq-left reveal visible">
@@ -1129,7 +896,7 @@ footer{
       <p class="section-body">Find answers to common questions about my development process, tech stack, and workflow.</p>
 
       <div class="faq-photo">
-        <img src="https://framerusercontent.com/images/QqqmFNIdzb0HbOiMSHvqZXkwT7w.png" alt="Design preview" loading="lazy" style="width:100%;height:503px;object-fit:cover">
+        <img src="https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&fit=crop&w=800&q=80" alt="Code Preview" loading="lazy" style="width:100%;height:503px;object-fit:cover">
       </div>
 
       <div class="skills-wrap">
@@ -1148,99 +915,82 @@ footer{
           <span>What services do you provide?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">I specialize in brand identity and package design, with experience in web design, UI/UX, and creating full brand experiences from concept to production.</div>
+        <div class="faq-answer">I specialize in full-stack web development, backend architecture, and performance optimization for modern digital platforms.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
           <span>How do I start working with you?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">Simply book a free discovery call through the link on this page. We'll discuss your project goals, timeline, and budget to see if we're a great fit.</div>
+        <div class="faq-answer">Simply book a free discovery call through the link on this page. We'll discuss your technical requirements, timeline, and architecture goals.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          <span>What design tools do you use?</span>
+          <span>What is your tech stack?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">I use Figma for UI/UX design, VS Code for development, and tools like Postman, TablePlus, and GitHub for a clean, efficient workflow.</div>
+        <div class="faq-answer">I build primarily with React/Next.js for the frontend, and Node.js with robust SQL/NoSQL databases for the backend, deployed on scalable infrastructure.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
           <span>How long does a project take?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">Timelines vary by scope. A typical landing page takes 1–2 weeks; a full web application can range from 4–12 weeks depending on complexity.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>Do you provide revisions?</span>
-          <span class="faq-icon" aria-hidden="true"></span>
-        </div>
-        <div class="faq-answer">Yes — all projects include structured revision rounds. The number of rounds is defined at the start of each engagement to keep things clear.</div>
+        <div class="faq-answer">Timelines vary by scope. A modern SaaS dashboard can take 3-6 weeks, while a full enterprise refactor depends entirely on system complexity.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
           <span>What industries do you work with?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">I've worked across SaaS, e-commerce, sustainability, fitness, and creative agencies. I adapt quickly to new verticals and love learning new domains.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>Do you offer development services?</span>
-          <span class="faq-icon" aria-hidden="true"></span>
-        </div>
-        <div class="faq-answer">Absolutely. I deliver full-stack solutions — from backend APIs and databases to pixel-perfect frontends — ready for production deployment.</div>
+        <div class="faq-answer">I work with tech startups, SaaS companies, and established businesses looking to modernize their web presence or internal tools.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
           <span>What is your pricing structure?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">I offer project-based and retainer pricing. Exact rates depend on scope and complexity. Let's chat to get you an accurate quote.</div>
+        <div class="faq-answer">I offer project-based pricing for clear deliverables and retainer pricing for ongoing system maintenance and scalability improvements.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          <span>Can you redesign my existing website?</span>
+          <span>Can you refactor my existing application?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">Yes. I can audit your current site, identify UX and performance issues, and rebuild it into a modern, scalable product — preserving your brand identity.</div>
+        <div class="faq-answer">Yes. I can audit your current codebase, identify performance bottlenecks, and refactor it into a modern, scalable product.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════ FOOTER ═══════════════════════════════════════ -->
 <footer>
   <div class="footer-cta reveal visible">
     <div class="badge" style="background:rgba(10,10,10,.6)">
       <span style="width:7px;height:7px;border-radius:50%;background:#fff;display:inline-block;flex-shrink:0"></span>
       Available For Work
     </div>
-    <h3>Curious about what we can create together? Let's bring something extraordinary to life!</h3>
-    <a href="https://cal.com/rick/get-rick-rolled" target="_blank" rel="noopener" class="btn-glass" style="font-size:16px;padding:14px 28px">Book a Free Call</a>
+    <h3>Ready to build a robust and scalable platform? Let's talk engineering.</h3>
+    <a href="https://cal.com/rick/get-rick-rolled" target="_blank" rel="noopener" class="btn-glass" style="font-size:16px;padding:14px 28px">Book a Technical Call</a>
 
     <div class="footer-socials">
-      <a href="https://www.behance.net/" target="_blank" rel="noopener" aria-label="Behance">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 1.2.515 1.87 1.404 1.87.351 0 .663-.09.889-.254.226-.165.391-.405.455-.767h2.97l.038.18zM15.998 13h3.062c-.056-1.147-.8-1.87-1.486-1.87-.749 0-1.473.73-1.576 1.87zM9 16c0 1.013-.996 1-1.5 1H5v-2h2.5C8.004 15 9 15.012 9 16zm-.498-3.5c0 .995-.747 1-1.252 1H5v-2h2.25c.497 0 1.252.005 1.252 1zM11.77 7.07C10.866 6.5 9.25 6.5 8 6.5H3v11h5.196c1.254 0 2.554-.171 3.35-1.047.575-.622.826-1.41.826-2.41 0-.978-.3-1.82-.9-2.38.6-.5.88-1.16.88-1.9 0-.98-.394-1.813-1.582-2.694z"></path></svg>
+      <a href="https://github.com/jgnurniu/" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.627-5.373-12-12-12z"/></svg>
       </a>
-      <a href="https://x.com/" target="_blank" rel="noopener" aria-label="X (Twitter)">
+      <a href="#" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="#" target="_blank" rel="noopener" aria-label="X (Twitter)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.766l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-      </a>
-      <a href="https://dribbble.com/" target="_blank" rel="noopener" aria-label="Dribbble">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.605 4.61a8.502 8.502 0 0 1 1.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.416 25.416 0 0 0-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0 1 12 3.475zm-3.633.803a53.896 53.896 0 0 1 3.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 0 1 4.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 0 1-2.19-5.705zM12 20.547a8.482 8.482 0 0 1-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.318 35.318 0 0 1 1.823 6.475 8.4 8.4 0 0 1-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 0 1-3.655 5.715z"></path></svg>
       </a>
     </div>
   </div>
 
   <div class="footer-bottom">
-    <p>matiasleonelibarra37@gmail.com</p>
-    
-    <p>All rights reserved, ©2023</p>
+    <p>contact@matiasibarra.dev</p>
+    <p>All rights reserved, ©2026</p>
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════ JAVASCRIPT ═══════════════════════════════════════ -->
 <script>
 (function(){
   'use strict';
@@ -1302,7 +1052,7 @@ footer{
   });
 
   /* ── Ticker pause on hover (accessibility) ── */
-  document.querySelectorAll('.ticker-inner,.testi-cards-inner').forEach(function(el){
+  document.querySelectorAll('.ticker-inner').forEach(function(el){
     el.addEventListener('mouseenter',function(){ el.style.animationPlayState='paused'; });
     el.addEventListener('mouseleave',function(){ el.style.animationPlayState='running'; });
   });
@@ -1311,29 +1061,28 @@ footer{
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const statNumbers = document.querySelectorAll('.stat-num');
-    const animationDuration = 2000; // Duración en milisegundos (2 segundos)
+    const animationDuration = 2000; 
 
     const animateValue = (obj, start, end, duration) => {
         let startTimestamp = null;
         
-        // Guarda el sufijo (como + o %) si existe
         const originalText = obj.innerHTML;
+        const prefixMatch = originalText.match(/^[^0-9]+/);
         const suffixMatch = originalText.match(/[^0-9]+$/);
+        const prefix = prefixMatch ? prefixMatch[0] : '';
         const suffix = suffixMatch ? suffixMatch[0] : '';
 
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
             
-            // Calculamos el valor actual y le añadimos el sufijo
             const currentValue = Math.floor(progress * (end - start) + start);
-            obj.innerHTML = currentValue + suffix;
+            obj.innerHTML = prefix + currentValue + suffix;
             
             if (progress < 1) {
                 window.requestAnimationFrame(step);
             } else {
-                // Asegura el valor final exacto al terminar
-                obj.innerHTML = end + suffix; 
+                obj.innerHTML = prefix + end + suffix; 
             }
         };
         window.requestAnimationFrame(step);
@@ -1344,7 +1093,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (entry.isIntersecting) {
                 const target = entry.target;
                 
-                // Extrae solo los números del texto original (ignora + o %)
                 const text = target.innerText;
                 const endValue = parseInt(text.replace(/[^0-9]/g, ''), 10);
                 
@@ -1352,12 +1100,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     animateValue(target, 0, endValue, animationDuration);
                 }
                 
-                // Deja de observar este elemento para que solo se anime una vez
                 observer.unobserve(target);
             }
         });
     }, {
-        threshold: 0.5 // Se activa cuando al menos el 50% de la estadística es visible
+        threshold: 0.5 
     });
 
     statNumbers.forEach(stat => {
