@@ -6,6 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
 
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -326,7 +327,7 @@ img{display:block;max-width:100%}
   to{transform:translateX(-50%)}
 }
 
-/* ─── PROJECTS GRID (CORREGIDO A GRID Y ASPECT RATIO) ─── */
+/* ─── PROJECTS GRID ─── */
 #projects-section{
   padding:80px clamp(18px,5vw,40px);
 }
@@ -352,12 +353,16 @@ img{display:block;max-width:100%}
   overflow:hidden;
   cursor:pointer;
   filter:grayscale(100%);
-  transition:filter .4s ease,transform .4s ease;
+  transition: filter 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
 }
 .project-card:hover{
   filter:grayscale(0);
-  transform:scale(1.03);
+  transform: scale(1.03) translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  z-index: 10;
 }
 .project-card img{
   width:100%;
@@ -633,13 +638,33 @@ footer{
   .scroll-indicator{display:none}
 }
 
-/* ─── SECTION TRANSITIONS ─── */
-.reveal{
-  opacity:0;
-  transform:translateY(32px);
-  transition:opacity .7s ease,transform .7s ease;
+/* ─── ANIMACIONES PREMIUM (ESTILO LINEAR/VERCEL) ─── */
+@keyframes heroFadeUp {
+  0% { opacity: 0; transform: translateY(30px); filter: blur(5px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
-.reveal.visible{opacity:1;transform:translateY(0)}
+
+.hero-content .badge { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; opacity: 0; }
+.hero-content .hero-title { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; }
+.hero-content .hero-subtitle { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; opacity: 0; }
+.hero-content .hero-ctas { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0; }
+.hero-content .scroll-indicator { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0; }
+
+/* ─── SECTION TRANSITIONS (Mejoradas) ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98); 
+  filter: blur(4px); 
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
 
 /* ─── MISC UTILS ─── */
 .text-muted{color:var(--text-muted)}
