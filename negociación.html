@@ -6,10 +6,10 @@
 <title>Start a Project | Matías Ibarra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
 
 <style>
-/* ─── VARIABLES GLOBALES (Las mismas de tu index) ─── */
+/* ─── VARIABLES GLOBALES ─── */
 :root {
   --white: #fff;
   --black: #000;
@@ -218,18 +218,18 @@ select option { background: var(--card-bg); color: #fff; }
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <p><strong>Proposal & Kickoff:</strong> You will receive a detailed proposal via email, including architecture layout, timelines, and pricing.</p>
+          <p><strong>Proposal &amp; Kickoff:</strong> You will receive a detailed proposal via email, including architecture layout, timelines, and pricing.</p>
         </div>
       </div>
     </div>
 
     <div class="form-panel">
-      <form action="#" method="POST">
+      <form id="projectForm">
         
         <div class="form-row">
           <div class="form-group">
             <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" placeholder="John Doe" required>
+            <input type="text" id="name" name="name" placeholder="John Doe" required="">
           </div>
           <div class="form-group">
             <label for="company">Company (Optional)</label>
@@ -239,13 +239,13 @@ select option { background: var(--card-bg); color: #fff; }
 
         <div class="form-group">
           <label for="email">Work Email</label>
-          <input type="email" id="email" name="email" placeholder="john@company.com" required>
+          <input type="email" id="email" name="email" placeholder="john@company.com" required="">
         </div>
 
         <div class="form-group">
           <label for="budget">Estimated Budget</label>
-          <select id="budget" name="budget" required>
-            <option value="" disabled selected>Select a range</option>
+          <select id="budget" name="budget" required="">
+            <option value="" disabled="" selected="">Select a range</option>
             <option value="under_2k">Less than $2,000</option>
             <option value="2k_5k">$2,000 - $5,000</option>
             <option value="5k_10k">$5,000 - $10,000</option>
@@ -255,7 +255,7 @@ select option { background: var(--card-bg); color: #fff; }
 
         <div class="form-group">
           <label for="details">Project Details</label>
-          <textarea id="details" name="details" placeholder="Tell me about the problem you are trying to solve, your current tech stack, and your goals..." required></textarea>
+          <textarea id="details" name="details" placeholder="Tell me about the problem you are trying to solve, your current tech stack, and your goals..." required=""></textarea>
         </div>
 
         <button type="submit" class="btn-submit">Request Technical Proposal</button>
@@ -264,5 +264,43 @@ select option { background: var(--card-bg); color: #fff; }
 
   </main>
 
+  <script>
+    document.getElementById('projectForm').addEventListener('submit', function(event) {
+      // Evita que la página se recargue al enviar el formulario
+      event.preventDefault();
+
+      // Recolectar datos del formulario
+      const name = document.getElementById('name').value;
+      const company = document.getElementById('company').value || "No especificada";
+      const email = document.getElementById('email').value;
+      
+      // Obtener el texto visible del selector de presupuesto, no el value interno
+      const budgetSelect = document.getElementById('budget');
+      const budget = budgetSelect.options[budgetSelect.selectedIndex].text;
+      
+      const details = document.getElementById('details').value;
+
+      // === IMPORTANTE: COLOCA TU NÚMERO AQUÍ ===
+      // Debe incluir código de país (ej. 54 para Argentina) seguido del número completo, sin el signo +
+      const telefono = "549XXXXXXXXXX"; 
+
+      // Armar el mensaje con formato para WhatsApp (los asteriscos hacen el texto negrita)
+      const mensaje = `*Nuevo Request de Proyecto!* 🚀\n\n` +
+                      `*Nombre:* ${name}\n` +
+                      `*Compañía:* ${company}\n` +
+                      `*Email:* ${email}\n` +
+                      `*Presupuesto:* ${budget}\n\n` +
+                      `*Detalles del Proyecto:*\n${details}`;
+
+      // Codificar el texto para que sea seguro en una URL (reemplaza espacios por %20, etc.)
+      const textoCodificado = encodeURIComponent(mensaje);
+
+      // Crear el link de WhatsApp
+      const urlWhatsApp = `https://wa.me/${telefono}?text=${textoCodificado}`;
+
+      // Abrir WhatsApp en una pestaña nueva
+      window.open(urlWhatsApp, '_blank');
+    });
+  </script>
 </body>
 </html>
