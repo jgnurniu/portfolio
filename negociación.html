@@ -196,7 +196,7 @@ select option { background: var(--card-bg); color: #fff; }
   </nav>
 
   <main class="contact-container">
-    
+
     <div class="info-panel">
       <div class="badge">
         <span class="badge-dot"></span>
@@ -206,7 +206,7 @@ select option { background: var(--card-bg); color: #fff; }
       <p class="info-desc">
         To ensure maximum efficiency and focus on delivering high-quality code, I operate on an <strong>async-first</strong> communication model. This allows me to dedicate uninterrupted time to architectural planning and development.
       </p>
-      
+
       <div class="process-steps">
         <div class="step">
           <div class="step-num">1</div>
@@ -224,7 +224,13 @@ select option { background: var(--card-bg); color: #fff; }
     </div>
 
     <div class="form-panel">
-      <form id="projectForm">
+      <form id="projectForm" action="https://formsubmit.co/matiasibarra.dev@gmail.com" method="POST">
+        
+        <input type="hidden" name="_subject" value="Nuevo Request de Proyecto! 🚀">
+        <input type="hidden" name="_template" value="box">
+        <input type="hidden" name="_captcha" value="false">
+        
+        <input type="hidden" name="_next" value="https://tu-dominio.com/index.html"> 
         
         <div class="form-row">
           <div class="form-group">
@@ -264,43 +270,5 @@ select option { background: var(--card-bg); color: #fff; }
 
   </main>
 
-  <script>
-    document.getElementById('projectForm').addEventListener('submit', function(event) {
-      // Evita que la página se recargue al enviar el formulario
-      event.preventDefault();
-
-      // Recolectar datos del formulario
-      const name = document.getElementById('name').value;
-      const company = document.getElementById('company').value || "No especificada";
-      const email = document.getElementById('email').value;
-      
-      // Obtener el texto visible del selector de presupuesto, no el value interno
-      const budgetSelect = document.getElementById('budget');
-      const budget = budgetSelect.options[budgetSelect.selectedIndex].text;
-      
-      const details = document.getElementById('details').value;
-
-      // === IMPORTANTE: COLOCA TU NÚMERO AQUÍ ===
-      // Debe incluir código de país (ej. 54 para Argentina) seguido del número completo, sin el signo +
-      const telefono = "5493812096455"; 
-
-      // Armar el mensaje con formato para WhatsApp (los asteriscos hacen el texto negrita)
-      const mensaje = `*Nuevo Request de Proyecto!* 🚀\n\n` +
-                      `*Nombre:* ${name}\n` +
-                      `*Compañía:* ${company}\n` +
-                      `*Email:* ${email}\n` +
-                      `*Presupuesto:* ${budget}\n\n` +
-                      `*Detalles del Proyecto:*\n${details}`;
-
-      // Codificar el texto para que sea seguro en una URL (reemplaza espacios por %20, etc.)
-      const textoCodificado = encodeURIComponent(mensaje);
-
-      // Crear el link de WhatsApp
-      const urlWhatsApp = `https://wa.me/${telefono}?text=${textoCodificado}`;
-
-      // Abrir WhatsApp en una pestaña nueva
-      window.open(urlWhatsApp, '_blank');
-    });
-  </script>
 </body>
 </html>
