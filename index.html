@@ -1,11 +1,11 @@
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matías Ibarra | Software Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
-
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -211,10 +211,10 @@ img{display:block;max-width:100%}
   font-family:'Inter',sans-serif;
   font-size:clamp(15px,2.5vw,18px);
   font-weight:400;
-  color:rgba(255,255,255,.75);
-  max-width:560px;
-  line-height:1.6;
-  letter-spacing:-.02em;
+  color:rgba(255,255,255,.85);
+  max-width:650px;
+  line-height:1.7;
+  letter-spacing:-.01em;
 }
 .hero-ctas{
   display:flex;
@@ -431,9 +431,11 @@ img{display:block;max-width:100%}
   padding:8px 14px;
   background:var(--card-bg);
   border-radius:8px;
-  font-size:13px;
-  color:rgba(255,255,255,.75);
+  font-size:14px;
+  font-weight:500;
+  color:#fff;
   letter-spacing:-.02em;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 .experience-list{display:flex;flex-direction:column;gap:16px}
 .exp-row{
@@ -721,7 +723,7 @@ footer{
     </a>
 
     <div class="navbar__links" id="desktopLinks">
-      <a href="#services" class="nav-link">Services</a>
+      <a href="#services" class="nav-link">Expertise</a>
       <a href="#projects-section" class="nav-link">Cases</a>
       <a href="#faq" class="nav-link">FAQ &amp; Contact</a>
     </div>
@@ -737,7 +739,7 @@ footer{
 </nav>
 
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true" role="dialog" aria-label="Mobile navigation">
-  <a href="#services" class="nav-link" data-mobile-link="">Services</a>
+  <a href="#services" class="nav-link" data-mobile-link="">Expertise</a>
   <a href="#projects-section" class="nav-link" data-mobile-link="">Cases</a>
   <div class="mobile-menu-divider"></div>
   <a href="#faq" class="nav-link" data-mobile-link="">FAQ &amp; Contact</a>
@@ -750,22 +752,24 @@ footer{
     </video>
   </div>
 
-   <div class="hero-content reveal visible">
+     <div class="hero-content reveal visible">
     <div class="badge">
       <span class="badge-dot"></span>
-      Optimized for Performance &amp; Scalability
+      Business-Driven Engineering
     </div>
 
     <h1 class="hero-title">
-      Crafting High<br>Performance Digital<br>Experiences
+      I Build &amp; Refactor<br>Digital Products<br>That Drive Results
     </h1>
 
     <p class="hero-subtitle">
-      Specialized in architecting high-end engineering solutions with clean code. Let's transform your complex systems into robust, fast, and scalable digital products.
+      <strong>What I do:</strong> I transform standard web applications into high-end digital experiences.<br>
+      <strong>For whom:</strong> Businesses and founders who demand reliability, precision, and a premium UI.<br>
+      <strong>The result:</strong> Scalable, fast, and secure platforms that build user trust and increase conversions.
     </p>
 
     <div class="hero-ctas">
-      <a href="#faq" class="btn-glass">Get in Touch</a>
+      <a href="#faq" class="btn-glass">Discuss Your Project</a>
       <a href="#projects-section" class="btn-glass">View Case Studies</a>
     </div>
 
@@ -813,7 +817,8 @@ footer{
         <svg width="18" height="18" viewBox="0 0 256 256" fill="white" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
       </div>
     </a>
-    <a href="hambur.html" class="project-card reveal visible" style="transition-delay:.1s">
+
+  <a href="hambur.html" class="project-card reveal visible" style="transition-delay:.1s">
       <img src="hambur.png" alt="Corporate Platform" loading="lazy">
       <div class="project-card__overlay">
         <span>Case Study: Corporate Platform Refactor</span>
@@ -838,48 +843,46 @@ footer{
   <div class="about-grid">
     <div class="about-info reveal visible">
       <div>
-        <h2>Software Engineer</h2>
+        <h2>A Reliable Partner</h2>
       </div>
-      <p>I'm Matias Ibarra, a result-oriented Software Engineer specialized in architecting and delivering high-performance, robust, and scalable full-stack web applications. I combine technical precision with a clean architecture to create seamless digital products ready for production.</p>
+      <p>I understand that a successful project requires more than just code—it demands clear communication, absolute reliability, and a focus on business objectives. I'm Matías Ibarra, and I specialize in taking ownership of digital products, refactoring complex logic into intuitive, premium interfaces. When you hand me a project, you can trust that it will be delivered with precision, on time, and built to drive your business forward.</p>
       <div class="divider"></div>
 
       <div>
-        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em">Technical Stack</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em">Core Technology Stack</p>
         <div class="skills-wrap">
-          <span class="skill-chip">React / Next.js</span>
+          <span class="skill-chip">React</span>
+          <span class="skill-chip">TypeScript</span>
           <span class="skill-chip">Node.js</span>
-          <span class="skill-chip">Tailwind CSS</span>
-          <span class="skill-chip">RESTful APIs</span>
-          <span class="skill-chip">SQL / NoSQL Architecture</span>
-          <span class="skill-chip">Git / CI/CD Pipelines</span>
+          <span class="skill-chip">PostgreSQL</span>
         </div>
       </div>
 
       <div class="divider"></div>
 
       <div>
-        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">Experience</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">Experience &amp; Trust</p>
         <div class="experience-list">
           <div class="exp-row">
-            <span>Full-Stack Developer</span>
-            <span>GreenLeaf Co</span>
+            <span>Full-Stack Software Engineer</span>
+            <span>Upwork / International Clients</span>
             <span>Currently</span>
           </div>
           <div class="exp-row">
-            <span>Backend Engineer</span>
-            <span>UrbanFit Studio</span>
-            <span>2023–24</span>
+            <span>Frontend &amp; UI Refactoring</span>
+            <span>Bellason App (Collab)</span>
+            <span>2025–26</span>
           </div>
           <div class="exp-row">
-            <span>Web Developer Freelance</span>
-            <span>GreenK Studio</span>
-            <span>2020–22</span>
+            <span>Web Developer</span>
+            <span>Independent Projects</span>
+            <span>2021–25</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="about-photo reveal visible" style="transition-delay:.15s">
+      <div class="about-photo reveal visible" style="transition-delay:.15s">
       <img src="https://images.stockcake.com/public/5/a/a/5aa42d34-dfde-4ee9-95b1-aba33ccfa802_large/coding-in-shadows-stockcake.jpg" alt="Matias Ibarra – Software Engineer" loading="lazy">
     </div>
   </div>
@@ -890,40 +893,39 @@ footer{
     <div class="services-left reveal visible">
       <div class="section-tag">
         <span class="section-tag__dot"></span>
-        Technical Expertise
+        Solving Business Problems
       </div>
-      <h2 class="section-heading">Services</h2>
-      <p class="section-body">Helping businesses scale with robust web applications that are secure, fast, and built to perform at an enterprise level.</p>
+      <h2 class="section-heading">Expertise</h2>
+      <p class="section-body">I don't just write scripts; I engineer solutions that align with your business goals, ensuring your product is a reliable asset, not a technical liability.</p>
 
       <div class="skills-wrap" style="margin-top:8px">
-        <span class="skill-chip">Frontend Excellence</span>
-        <span class="skill-chip">Backend Architecture</span>
-        <span class="skill-chip">Database Scalability</span>
-        <span class="skill-chip">System Optimization</span>
+        <span class="skill-chip" style="border:none">Clear Communication</span>
+        <span class="skill-chip" style="border:none">Transparent Timelines</span>
+        <span class="skill-chip" style="border:none">Clean Architecture</span>
       </div>
 
       <div class="divider"></div>
 
       <div style="display:flex;flex-wrap:wrap;gap:12px">
-        <a href="#" target="_blank" rel="noopener" class="btn-glass">Book a Free Call</a>
+        <a href="negociación.html" target="_blank" rel="noopener" class="btn-glass">Book a Free Call</a>
       </div>
     </div>
 
     <div class="services-cards reveal visible" style="transition-delay:.1s">
       <div class="service-card">
-        <h4>Full-Stack Development</h4>
+        <h4>UI/UX Refactoring &amp; Optimization</h4>
         <div class="divider"></div>
-        <p>Building seamless end-to-end web applications using modern frameworks like React and Node.js, ensuring exceptional user experience and performance.</p>
+        <p>Transforming clunky or outdated interfaces into intuitive, premium experiences that build immediate user trust and increase conversion rates.</p>
       </div>
       <div class="service-card">
-        <h4>API Development &amp; Integration</h4>
+        <h4>Scalable End-to-End Engineering</h4>
         <div class="divider"></div>
-        <p>Crafting clean, secure, and well-documented RESTful APIs, as well as seamlessly integrating third-party services into your existing platform.</p>
+        <p>Building highly reliable web applications from the ground up, ensuring your platform is secure, fast, and architected to handle business growth.</p>
       </div>
       <div class="service-card">
-        <h4>Backend Architecture</h4>
+        <h4>Business-Driven Development</h4>
         <div class="divider"></div>
-        <p>Designing robust, secure, and highly scalable server-side systems capable of handling high traffic and complex business logic.</p>
+        <p>Aligning technology with your business objectives. I prioritize clear updates, flawless logic, and delivering a tangible return on investment through clean code.</p>
       </div>
     </div>
   </div>
@@ -938,16 +940,15 @@ footer{
       <span class="stat-label">Average Performance Boost</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num">98%</span>
-      <span class="stat-label">Client Satisfaction</span>
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Transparent Communication</span>
     </div>
     <div class="stat-item">
       <span class="stat-num">5+</span>
-      <span class="stat-label">Scalable Systems Built</span>
+      <span class="stat-label">High-End Systems Delivered</span>
     </div>
   </div>
 </section>
-
 
 <section id="faq">
   <div class="faq-inner">
@@ -957,15 +958,10 @@ footer{
         FAQ's
       </div>
       <h2 class="section-heading">Answers</h2>
-      <p class="section-body">Find answers to common questions about my development process, tech stack, and workflow.</p>
+      <p class="section-body">Transparency is key to a great partnership. Here are the answers to how I work and what you can expect.</p>
 
       <div class="faq-photo">
         <img src="https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&amp;fit=crop&amp;w=800&amp;q=80" alt="Code Preview" loading="lazy" style="width:100%;height:503px;object-fit:cover">
-      </div>
-
-      <div class="skills-wrap">
-        <span class="skill-chip">Full-Stack Development &amp; Frameworks</span>
-        <span class="skill-chip">System Architecture &amp; Database Scalability</span>
       </div>
 
       <div class="divider"></div>
@@ -976,62 +972,48 @@ footer{
     <div class="faq-list reveal visible" style="transition-delay:.1s">
       <div class="faq-item">
         <div class="faq-question">
-          <span>What services do you provide?</span>
+          <span>Can I trust you with my project?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">I specialize in full-stack web development, backend architecture, and performance optimization for modern digital platforms.</div>
+        <div class="faq-answer">Absolutely. Reliability is my core value. I provide transparent timelines, regular progress updates, and I deliver clean, maintainable code that you truly own.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          <span>How do I start working with you?</span>
+          <span>Do you understand the business side?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">Simply book a free discovery call through the link on this page. We'll discuss your technical requirements, timeline, and architecture goals.</div>
+        <div class="faq-answer">Yes. I don't just look at tickets; I look at your goals. Whether it's increasing conversions through better UI or ensuring the backend logic supports your sales model, business success drives the engineering.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          <span>What is your tech stack?</span>
+          <span>What is your exact tech stack?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">I build primarily with React/Next.js for the frontend, and Node.js with robust SQL/NoSQL databases for the backend, deployed on scalable infrastructure.</div>
+        <div class="faq-answer">I specialize deeply in React, TypeScript, Node.js, and PostgreSQL. By focusing on these core technologies, I ensure enterprise-grade stability and performance.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          <span>How long does a project take?</span>
+          <span>How do you handle communication?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">Timelines vary by scope. A modern SaaS dashboard can take 3-6 weeks, while a full enterprise refactor depends entirely on system complexity.</div>
+        <div class="faq-answer">Clear, concise, and proactive. You will never have to guess the status of your project. I ensure we are always aligned on deliverables and expectations.</div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          <span>What industries do you work with?</span>
+          <span>Can you fix an underperforming application?</span>
           <span class="faq-icon" aria-hidden="true"></span>
         </div>
-        <div class="faq-answer">I work with tech startups, SaaS companies, and established businesses looking to modernize their web presence or internal tools.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>What is your pricing structure?</span>
-          <span class="faq-icon" aria-hidden="true"></span>
-        </div>
-        <div class="faq-answer">I offer project-based pricing for clear deliverables and retainer pricing for ongoing system maintenance and scalability improvements.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-question">
-          <span>Can you refactor my existing application?</span>
-          <span class="faq-icon" aria-hidden="true"></span>
-        </div>
-        <div class="faq-answer">Yes. I can audit your current codebase, identify performance bottlenecks, and refactor it into a modern, scalable product.</div>
+        <div class="faq-answer">Yes, this is my specialty. I audit the existing codebase, identify performance bottlenecks or UI friction points, and refactor the product to feel premium and function flawlessly.</div>
       </div>
     </div>
   </div>
-</section><a href="https://wa.me/5493812096455?text=Hola%20Matías,%20vengo%20de%20tu%20portfolio%20y%20me%20gustaría%20hacerte%20una%20consulta." class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+</section>
+
+<a href="https://wa.me/5493812096455?text=Hola%20Matías,%20vengo%20de%20tu%20portfolio%20y%20me%20gustaría%20hacerte%20una%20consulta." class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path>
   </svg>
 </a>
-
-
 
 <footer>
   <div class="footer-cta reveal visible">
@@ -1039,8 +1021,8 @@ footer{
       <span style="width:7px;height:7px;border-radius:50%;background:#fff;display:inline-block;flex-shrink:0"></span>
       Available For Work
     </div>
-    <h3>Ready to build a robust and scalable platform? Let's talk engineering.</h3>
-    <a href="https://jgnurniu.github.io/portfolio/negociaci%C3%B3n.html" target="_blank" rel="noopener" class="btn-glass" style="font-size:16px;padding:14px 28px">Book a Technical Call</a>
+    <h3>Ready to build a reliable digital product that drives results? Let's talk business.</h3>
+    <a href="https://jgnurniu.github.io/portfolio/negociaci%C3%B3n.html" target="_blank" rel="noopener" class="btn-glass" style="font-size:16px;padding:14px 28px">Discuss Your Project</a>
 
     <div class="footer-socials">
       <a href="https://github.com/jgnurniu/" target="_blank" rel="noopener" aria-label="GitHub">
@@ -1183,7 +1165,5 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-
-
-
-</body></html>
+</body>
+</html>
