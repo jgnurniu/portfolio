@@ -224,13 +224,18 @@ select option { background: var(--card-bg); color: #fff; }
     </div>
 
     <div class="form-panel">
-      <form id="projectForm" action="https://formsubmit.co/matiasibarra.dev@gmail.com" method="POST">
+      <!-- Formulario configurado con Web3Forms -->
+      <form id="projectForm" action="https://api.web3forms.com/submit" method="POST">
         
-        <input type="hidden" name="_subject" value="Nuevo Request de Proyecto! 🚀">
-        <input type="hidden" name="_template" value="box">
-        <input type="hidden" name="_captcha" value="false">
+        <!-- Tu clave de acceso de Web3Forms -->
+        <input type="hidden" name="access_key" value="90e1896c-755e-489a-a8f5-19d59b53c9f5">
         
-        <input type="hidden" name="_next" value="https://tu-dominio.com/index.html"> 
+        <!-- Configuraciones adicionales -->
+        <input type="hidden" name="subject" value="Nuevo Request de Proyecto! 🚀">
+        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+        
+        <!-- Opcional: Redirige de vuelta a tu web (descomenta y pon tu URL si lo deseas) -->
+        <!-- <input type="hidden" name="redirect" value="https://tu-dominio.com/gracias.html"> -->
         
         <div class="form-row">
           <div class="form-group">
@@ -252,10 +257,10 @@ select option { background: var(--card-bg); color: #fff; }
           <label for="budget">Estimated Budget</label>
           <select id="budget" name="budget" required="">
             <option value="" disabled="" selected="">Select a range</option>
-            <option value="under_2k">Less than $2,000</option>
-            <option value="2k_5k">$2,000 - $5,000</option>
-            <option value="5k_10k">$5,000 - $10,000</option>
-            <option value="10k_plus">$10,000+</option>
+            <option value="under_5">Less than $500</option>
+            <option value="1k_2k">$1,000 - $2,500</option>
+            <option value="3k_5k">$3,000 - $5,000</option>
+            <option value="5k_plus">$5,000+</option>
           </select>
         </div>
 
