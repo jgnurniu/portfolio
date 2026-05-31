@@ -652,28 +652,31 @@ footer{
 .hero-content .hero-ctas { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0; }
 .hero-content .scroll-indicator { animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0; }
 
-/* ─── SECTION TRANSITIONS (Nivel Premium) ─── */
+/* ─── SECTION TRANSITIONS (Nivel Premium - Corregido) ─── */
 .reveal {
   opacity: 0;
-  transform: translateY(40px) scale(0.98); 
   filter: blur(5px); 
+  transform: translateY(40px) scale(0.98);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
               transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
               filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform, filter;
 }
 
-.reveal.fade-left { transform: translateX(-60px); }
-.reveal.fade-right { transform: translateX(60px); }
-.reveal.zoom-in { transform: scale(0.85) translateY(20px); }
-.reveal.fade-up { transform: translateY(60px); }
+/* Estados iniciales específicos según dirección */
+.reveal.fade-up { transform: translateY(50px) scale(1); }
+.reveal.fade-left { transform: translateX(-50px) translateY(0) scale(1); }
+.reveal.fade-right { transform: translateX(50px) translateY(0) scale(1); }
+.reveal.zoom-in { transform: scale(0.9) translateY(10px); }
 
+/* Estado final cuando se activa con JS (Ubicado abajo para ganar por cascada limpia) */
 .reveal.visible {
   opacity: 1;
-  transform: translate(0) scale(1) !important;
   filter: blur(0);
+  transform: translate(0, 0) scale(1);
 }
 
+/* Tiempos de retraso para efecto cascada (Stagger) */
 .delay-1 { transition-delay: 0.15s; }
 .delay-2 { transition-delay: 0.3s; }
 .delay-3 { transition-delay: 0.45s; }
@@ -1096,7 +1099,7 @@ footer{
         revealObserver.unobserve(entry.target);
       }
     });
-  },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+  },{threshold:0.05,rootMargin:'0px 0px -20px 0px'});
 
   document.querySelectorAll('.reveal').forEach(function(el){
     revealObserver.observe(el);
