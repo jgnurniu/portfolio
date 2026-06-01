@@ -1,11 +1,13 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Booxia</title>
 <meta name="description" content="Booxia – Next-generation portable Bluetooth headphone delivering deep bass.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fragment+Mono&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Fragment+Mono&display=swap" rel="stylesheet">
 
 <style>
 /* =============================================
@@ -26,6 +28,7 @@
   --radius-md: 10px;
   --radius-pill: 40px;
   --transition: 0.28s cubic-bezier(0.4,0,0.2,1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); 
 }
 
 html { scroll-behavior: smooth; }
@@ -37,12 +40,13 @@ body {
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
 h1,h2,h3,h4,h5,h6 { line-height: 1.1; letter-spacing: -0.03em; }
 a { text-decoration: none; color: inherit; }
-img, video { display: block; max-width: 100%; }
+img, video { display: block; max-width: 100%; height: auto; }
 ul, ol { list-style: none; }
 
 /* =============================================
@@ -70,6 +74,12 @@ ul, ol { list-style: none; }
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   background: rgba(20,20,21,0.4);
+  transition: background 0.4s ease, padding 0.4s ease;
+}
+
+.nav.scrolled {
+  background: rgba(20,20,21,0.85);
+  padding-block: -5px;
 }
 
 .nav__inner {
@@ -80,12 +90,12 @@ ul, ol { list-style: none; }
   padding: 22px 30px;
   max-width: 1360px;
   margin-inline: auto;
+  transition: padding 0.4s ease;
 }
 
-.nav__logo img {
-  height: 16px;
-  width: auto;
-}
+.nav.scrolled .nav__inner { padding: 15px 30px; }
+
+.nav__logo img { height: 16px; width: auto; }
 
 .nav__links {
   display: flex;
@@ -96,7 +106,6 @@ ul, ol { list-style: none; }
 }
 
 .nav__link {
-  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 400;
   text-transform: uppercase;
@@ -109,11 +118,7 @@ ul, ol { list-style: none; }
   align-items: center;
 }
 
-.nav__link span {
-  display: block;
-  transition: transform var(--transition);
-}
-
+.nav__link span { display: block; transition: transform var(--transition); }
 .nav__link::after {
   content: attr(data-text);
   position: absolute;
@@ -123,7 +128,6 @@ ul, ol { list-style: none; }
   white-space: nowrap;
   transition: bottom var(--transition);
 }
-
 .nav__link:hover span { transform: translateY(-100%); }
 .nav__link:hover::after { bottom: 0; }
 
@@ -139,11 +143,7 @@ ul, ol { list-style: none; }
   color: var(--color-white);
 }
 
-.nav__dropdown svg {
-  width: 12px; height: 12px;
-  transition: transform var(--transition);
-}
-
+.nav__dropdown svg { width: 12px; height: 12px; transition: transform var(--transition); }
 .nav__actions { display: flex; align-items: center; gap: 20px; }
 
 .btn {
@@ -153,20 +153,19 @@ ul, ol { list-style: none; }
   gap: 8px;
   padding: 14px 28px;
   border-radius: var(--radius-pill);
-  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+  transition: all var(--transition);
   border: none;
   outline: none;
   position: relative;
   overflow: hidden;
 }
 
-.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
 .btn:active { transform: translateY(0); }
 
 .btn--dark {
@@ -180,6 +179,7 @@ ul, ol { list-style: none; }
   color: var(--color-white);
   border: 1px solid rgba(255,255,255,0.25);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 }
 
@@ -199,7 +199,6 @@ ul, ol { list-style: none; }
   background: none;
   border: none;
 }
-
 .nav__hamburger span {
   display: block;
   width: 22px;
@@ -213,11 +212,11 @@ ul, ol { list-style: none; }
 .nav__mobile {
   display: none;
   flex-direction: column;
-  gap: 0;
   border-top: 1px solid var(--color-white-20);
   padding: 20px 30px 24px;
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
 }
-
 .nav__mobile a {
   font-size: 14px;
   text-transform: uppercase;
@@ -225,8 +224,9 @@ ul, ol { list-style: none; }
   padding: 12px 0;
   border-bottom: 1px solid var(--color-white-10);
   color: var(--color-white);
+  transition: color var(--transition);
 }
-
+.nav__mobile a:hover { color: var(--color-white-60); padding-left: 5px; }
 .nav__mobile.open { display: flex; }
 
 /* =============================================
@@ -244,12 +244,19 @@ ul, ol { list-style: none; }
   position: absolute;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
 }
 
 .hero__bg img {
   width: 100%; height: 100%;
   object-fit: cover;
   object-position: center;
+  animation: slowZoom 25s ease-in-out infinite alternate;
+}
+
+@keyframes slowZoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
 }
 
 .hero__overlay {
@@ -266,7 +273,7 @@ ul, ol { list-style: none; }
   width: 100%;
   max-width: 1300px;
   margin-inline: auto;
-  padding: 220px 30px 260px;
+  padding: 220px 30px 100px;
 }
 
 .hero__text { max-width: 530px; }
@@ -308,13 +315,35 @@ ul, ol { list-style: none; }
 }
 
 .about__inner {
-  max-width: 1100px;
+  max-width: 1200px;
   margin-inline: auto;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
 }
 
-.about__content { max-width: 610px; width: 100%; }
+.about__image {
+  flex: 1;
+  width: 100%;
+  max-width: 500px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.about__image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.about__content { 
+  flex: 1;
+  max-width: 610px; 
+  width: 100%; 
+}
 
 .section-tag {
   font-size: 13px;
@@ -334,15 +363,9 @@ ul, ol { list-style: none; }
   margin-bottom: 30px;
 }
 
-.section-title--white { color: var(--color-white); }
-
 .about__tabs { display: flex; flex-direction: column; gap: 0; }
 
-.tab-item {
-  border-top: 1px solid var(--color-border);
-  overflow: hidden;
-}
-
+.tab-item { border-top: 1px solid var(--color-border); overflow: hidden; }
 .tab-item:last-child { border-bottom: 1px solid var(--color-border); }
 
 .tab-header {
@@ -354,27 +377,20 @@ ul, ol { list-style: none; }
   user-select: none;
 }
 
-.tab-title {
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--color-dark);
-}
+.tab-title { font-size: 20px; font-weight: 400; color: var(--color-dark); }
 
 .tab-icon {
   width: 18px; height: 18px;
   position: relative;
   flex-shrink: 0;
 }
-
-.tab-icon::before,
-.tab-icon::after {
+.tab-icon::before, .tab-icon::after {
   content: '';
   position: absolute;
   background: var(--color-dark);
   border-radius: 2px;
   transition: transform var(--transition), opacity var(--transition);
 }
-
 .tab-icon::before { width: 18px; height: 1.5px; top: 50%; left: 0; transform: translateY(-50%); }
 .tab-icon::after  { width: 1.5px; height: 18px; left: 50%; top: 0; transform: translateX(-50%); }
 
@@ -387,7 +403,6 @@ ul, ol { list-style: none; }
 }
 
 .tab-item.open .tab-body { grid-template-rows: 1fr; }
-
 .tab-body__inner { overflow: hidden; }
 
 .tab-grid {
@@ -397,15 +412,8 @@ ul, ol { list-style: none; }
   padding-bottom: 28px;
 }
 
-.tab-cell__label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-dark);
-  margin-bottom: 10px;
-}
-
+.tab-cell__label { font-size: 14px; font-weight: 500; color: var(--color-dark); margin-bottom: 10px; }
 .dot-list { display: flex; flex-direction: column; gap: 8px; }
-
 .dot-list li {
   display: flex;
   align-items: flex-start;
@@ -414,7 +422,6 @@ ul, ol { list-style: none; }
   color: var(--color-muted);
   line-height: 1.55;
 }
-
 .dot-list li::before {
   content: '';
   width: 4px; height: 4px;
@@ -438,21 +445,19 @@ ul, ol { list-style: none; }
   width: 100%;
   border-radius: var(--radius-md);
   overflow: hidden;
-  margin-bottom: 0;
-  position: sticky;
-  top: 20px;
+  margin-bottom: 40px;
 }
 
 .features__image img { width: 100%; object-fit: cover; }
 
 .experience-title {
-  font-size: clamp(52px, 8vw, 150px);
+  font-size: clamp(40px, 8vw, 150px);
   font-weight: 400;
   line-height: 0.93;
   letter-spacing: -0.04em;
   color: var(--color-dark);
   text-align: center;
-  margin: 40px 0 60px;
+  margin: 0 0 60px;
 }
 
 .feature-cards {
@@ -460,57 +465,39 @@ ul, ol { list-style: none; }
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  position: relative;
-  min-height: 700px;
+  width: 100%;
 }
 
 .feature-card {
   background: var(--color-white);
   border-radius: var(--radius-md);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.18);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
   padding: 28px 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  width: 140px;
+  width: calc(33.333% - 20px);
+  min-width: 140px;
+  max-width: 180px;
   text-align: center;
-  transition: transform var(--transition);
+  transition: transform var(--transition), box-shadow var(--transition);
 }
 
-.feature-card:hover { transform: translateY(-4px); }
+.feature-card:hover { 
+  transform: translateY(-8px) scale(1.02); 
+  box-shadow: 0 25px 50px rgba(0,0,0,0.12);
+}
 
 .feature-card img { width: 50px; height: 50px; object-fit: contain; }
-
-.feature-card__label {
-  font-size: 14px;
-  color: var(--color-muted);
-  line-height: 1.4;
-}
-
-/* Absolute positions for large screens – simplified to flex wrapping */
+.feature-card__label { font-size: 14px; color: var(--color-muted); line-height: 1.4; }
 
 /* =============================================
    VIDEO SECTION
 ============================================= */
-.video-section {
-  background: var(--color-dark);
-  position: relative;
-}
-
-.video-section video {
-  width: 100%;
-  height: 600px;
-  object-fit: cover;
-  display: block;
-}
-
-.video-section__overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(20,20,21,0.18);
-  pointer-events: none;
-}
+.video-section { background: var(--color-dark); position: relative; }
+.video-section video { width: 100%; height: 600px; object-fit: cover; display: block; }
+.video-section__overlay { position: absolute; inset: 0; background: rgba(20,20,21,0.18); pointer-events: none; }
 
 /* =============================================
    PRODUCT SECTION
@@ -532,7 +519,6 @@ ul, ol { list-style: none; }
   margin-bottom: 60px;
 }
 
-/* Small product cards row */
 .product-cards-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -549,17 +535,15 @@ ul, ol { list-style: none; }
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  transition: box-shadow var(--transition);
+  transition: box-shadow var(--transition), transform var(--transition);
 }
 
-.product-card-sm:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
-
-.product-card-sm h5 {
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--color-dark);
-  text-align: center;
+.product-card-sm:hover { 
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+  transform: translateY(-4px);
 }
+
+.product-card-sm h5 { font-size: 22px; font-weight: 400; color: var(--color-dark); text-align: center; }
 
 .product-card-sm__image {
   width: 100%; max-width: 340px;
@@ -567,17 +551,15 @@ ul, ol { list-style: none; }
   overflow: hidden;
   aspect-ratio: 1;
 }
-
-.product-card-sm__image img { width: 100%; height: 100%; object-fit: cover; }
-
-.product-card-sm__price {
-  font-size: 15px;
-  color: var(--color-muted);
+.product-card-sm__image img { 
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s var(--ease-out-expo);
 }
+.product-card-sm:hover .product-card-sm__image img { transform: scale(1.05); }
 
+.product-card-sm__price { font-size: 15px; color: var(--color-muted); }
 .product-card-sm__price strong { color: var(--color-dark); margin-left: 4px; }
 
-/* Featured product card */
 .product-featured {
   background: #fafafa;
   border: 1px solid var(--color-border);
@@ -587,28 +569,16 @@ ul, ol { list-style: none; }
   align-items: center;
   overflow: hidden;
   position: relative;
+  transition: box-shadow var(--transition);
 }
 
-.product-featured__image {
-  aspect-ratio: 1;
-  overflow: hidden;
-}
+.product-featured:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.06); }
 
+.product-featured__image { aspect-ratio: 1; overflow: hidden; }
 .product-featured__image img { width: 100%; height: 100%; object-fit: cover; }
 
-.product-featured__info {
-  padding: 40px 40px 40px 48px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* Color options */
-.color-options {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
+.product-featured__info { padding: 40px 40px 40px 48px; display: flex; flex-direction: column; gap: 24px; }
+.color-options { display: flex; gap: 10px; align-items: center; }
 
 .color-dot {
   width: 44px; height: 44px;
@@ -616,51 +586,25 @@ ul, ol { list-style: none; }
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: border-color var(--transition);
+  transition: border-color var(--transition), transform var(--transition);
 }
-
+.color-dot:hover { transform: scale(1.1); }
 .color-dot.active { border-color: var(--color-dark); }
 .color-dot img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Stars */
 .stars { display: flex; gap: 3px; }
 .stars svg { width: 18px; height: 18px; fill: var(--color-dark); }
 
-.product-name {
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 400;
-  color: var(--color-dark);
-  line-height: 1.1;
-}
+.product-name { font-size: clamp(24px, 3vw, 32px); font-weight: 400; color: var(--color-dark); line-height: 1.1; }
+.product-desc { font-size: 16px; color: var(--color-muted); line-height: 1.65; }
 
-.product-desc {
-  font-size: 16px;
-  color: var(--color-muted);
-  line-height: 1.65;
-}
-
-.product-pricing {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+.product-pricing { display: flex; align-items: center; gap: 12px; }
 .price-label { font-size: 22px; font-weight: 400; color: var(--color-muted); }
 .price-current { font-size: 22px; font-weight: 400; color: var(--color-dark); }
-.price-old {
-  font-size: 16px;
-  color: var(--color-dark);
-  opacity: 0.6;
-  text-decoration: line-through;
-}
+.price-old { font-size: 16px; color: var(--color-dark); opacity: 0.6; text-decoration: line-through; }
 
-.product-btns {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
+.product-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
-/* Discount badge */
 .discount-badge {
   position: absolute;
   top: 28px; right: 28px;
@@ -677,7 +621,6 @@ ul, ol { list-style: none; }
   color: var(--color-dark);
 }
 
-/* Product features row */
 .product-features-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -688,20 +631,9 @@ ul, ol { list-style: none; }
   overflow: hidden;
 }
 
-.pf-item {
-  padding: 24px 28px;
-  border-right: 1px solid var(--color-border);
-}
-
+.pf-item { padding: 24px 28px; border-right: 1px solid var(--color-border); }
 .pf-item:last-child { border-right: none; }
-
-.pf-item__value {
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--color-dark);
-  margin-bottom: 4px;
-}
-
+.pf-item__value { font-size: 18px; font-weight: 400; color: var(--color-dark); margin-bottom: 4px; }
 .pf-item__label { font-size: 14px; color: var(--color-muted); }
 
 /* =============================================
@@ -720,6 +652,7 @@ ul, ol { list-style: none; }
   gap: 60px;
   animation: marquee 18s linear infinite;
   width: max-content;
+  will-change: transform; 
 }
 
 .marquee-item {
@@ -730,7 +663,6 @@ ul, ol { list-style: none; }
   white-space: nowrap;
   flex-shrink: 0;
 }
-
 .marquee-item:nth-child(even) { opacity: 0.2; }
 
 @keyframes marquee {
@@ -741,11 +673,7 @@ ul, ol { list-style: none; }
 /* =============================================
    TESTIMONIAL SECTION
 ============================================= */
-.testimonials {
-  background: var(--color-white);
-  padding: 65px 30px 130px;
-}
-
+.testimonials { background: var(--color-white); padding: 65px 30px 130px; }
 .testimonials__inner { max-width: 860px; margin-inline: auto; text-align: center; }
 
 .testimonials__header {
@@ -767,55 +695,18 @@ ul, ol { list-style: none; }
 }
 
 .testimonial-card__stars { margin-bottom: 20px; }
-
-.testimonial-card__quote {
-  font-size: 18px;
-  line-height: 1.65;
-  letter-spacing: -0.02em;
-  color: var(--color-dark);
-  margin-bottom: 32px;
-}
-
-.testimonial-card__author {
-  display: flex;
-  align-items: flex-end;
-  gap: 20px;
-}
-
+.testimonial-card__quote { font-size: 18px; line-height: 1.65; letter-spacing: -0.02em; color: var(--color-dark); margin-bottom: 32px; }
+.testimonial-card__author { display: flex; align-items: flex-end; gap: 20px; }
 .testimonial-card__meta { flex: 1; }
-
-.testimonial-card__name {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--color-dark);
-  margin-bottom: 4px;
-}
-
-.testimonial-card__role {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-muted);
-}
-
-.testimonial-card__photo {
-  width: 90px;
-  height: 120px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
+.testimonial-card__name { font-size: 15px; font-weight: 500; color: var(--color-dark); margin-bottom: 4px; }
+.testimonial-card__role { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-muted); }
+.testimonial-card__photo { width: 90px; height: 120px; border-radius: var(--radius-md); overflow: hidden; flex-shrink: 0; }
 .testimonial-card__photo img { width: 100%; height: 100%; object-fit: cover; }
 
 /* =============================================
    CTA SECTION
 ============================================= */
-.cta {
-  background: var(--color-white);
-  padding: 10px 30px 130px;
-}
-
+.cta { background: var(--color-white); padding: 10px 30px 130px; }
 .cta__inner { max-width: 1100px; margin-inline: auto; }
 
 .cta__title {
@@ -832,26 +723,24 @@ ul, ol { list-style: none; }
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
+  height: 400px;
 }
-
-.cta__image-wrap img { width: 100%; object-fit: cover; }
+.cta__image-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
 .cta__phone {
   position: absolute;
   bottom: -30px;
   right: -10px;
   width: 300px;
+  height: auto !important;
   pointer-events: none;
+  object-fit: contain !important;
 }
 
 /* =============================================
    FOOTER
 ============================================= */
-.footer {
-  background: var(--color-dark);
-  padding: 130px 30px 30px;
-}
-
+.footer { background: var(--color-dark); padding: 130px 30px 30px; }
 .footer__inner { max-width: 1300px; margin-inline: auto; }
 
 .footer__box {
@@ -871,36 +760,20 @@ ul, ol { list-style: none; }
   position: relative;
 }
 
-.footer__columns::before,
-.footer__columns::after {
+.footer__columns::before, .footer__columns::after {
   content: '';
   position: absolute;
   top: 0; bottom: 0;
   width: 1px;
   background: var(--color-white-20);
 }
-
 .footer__columns::before { left: calc(33.33% - 0.5px); }
 .footer__columns::after  { left: calc(66.66% - 0.5px); }
 
-.footer__col-title {
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--color-white);
-  margin-bottom: 16px;
-}
-
-.footer__col a {
-  display: block;
-  font-size: 15px;
-  color: var(--color-white-60);
-  line-height: 2;
-  transition: color var(--transition);
-}
-
+.footer__col-title { font-size: 18px; font-weight: 400; color: var(--color-white); margin-bottom: 16px; }
+.footer__col a { display: block; font-size: 15px; color: var(--color-white-60); line-height: 2; transition: color var(--transition); }
 .footer__col a:hover { color: var(--color-white); text-decoration: underline; }
 
-/* Newsletter form */
 .footer__form {
   display: flex;
   align-items: center;
@@ -908,159 +781,120 @@ ul, ol { list-style: none; }
   border-bottom: 1px solid var(--color-white-20);
   padding-bottom: 12px;
 }
-
-.footer__input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  font-family: 'Poppins', sans-serif;
-  font-size: 15px;
-  color: var(--color-white);
-  padding: 4px 0;
-}
-
+.footer__input { flex: 1; background: none; border: none; outline: none; font-family: 'Poppins', sans-serif; font-size: 15px; color: var(--color-white); padding: 4px 0; }
 .footer__input::placeholder { color: var(--color-white-60); }
-
-.footer__submit {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 6px;
-  transition: transform var(--transition);
-}
-
+.footer__submit { background: none; border: none; cursor: pointer; color: var(--color-white); display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 6px; transition: transform var(--transition); }
 .footer__submit:hover { transform: translateX(3px); }
 .footer__submit svg { width: 18px; height: 18px; fill: currentColor; }
 
-/* Footer wordmark */
 .footer__wordmark {
-  width: 100%;
-  margin: 40px 0 20px;
-  border-top: 1px solid var(--color-white-20);
-  padding-top: 30px;
-  text-align: center;
-  font-size: clamp(40px, 8vw, 100px);
-  font-weight: 400;
-  letter-spacing: -0.04em;
-  color: var(--color-white-20);
-  font-family: 'Poppins', sans-serif;
-  user-select: none;
+  width: 100%; margin: 40px 0 20px; border-top: 1px solid var(--color-white-20); padding-top: 30px;
+  text-align: center; font-size: clamp(40px, 8vw, 100px); font-weight: 400; letter-spacing: -0.04em;
+  color: var(--color-white-20); font-family: 'Poppins', sans-serif; user-select: none;
 }
 
-.footer__bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 14px;
-  color: var(--color-white-60);
-}
-
-.footer__bottom-links {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.footer__bottom-links a {
-  color: var(--color-white-60);
-  transition: color var(--transition);
-}
-
+.footer__bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 14px; color: var(--color-white-60); }
+.footer__bottom-links { display: flex; align-items: center; gap: 16px; }
+.footer__bottom-links a { color: var(--color-white-60); transition: color var(--transition); }
 .footer__bottom-links a:hover { color: var(--color-white); }
-
-.footer__dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--color-white);
-  opacity: 0.2;
-}
+.footer__dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-white); opacity: 0.2; }
 
 /* =============================================
    DECORATIVE SIDE SHAPES
 ============================================= */
-.side-shape {
-  position: fixed;
-  top: 0;
-  width: 180px;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.55;
-}
-
+.side-shape { position: fixed; top: 0; width: 180px; height: 100vh; pointer-events: none; z-index: 0; opacity: 0.55; }
 .side-shape--left  { left: 0; }
 .side-shape--right { right: 0; }
-
 .side-shape img { width: 100%; height: 100%; object-fit: cover; }
 
 /* =============================================
-   SCROLL ANIMATIONS
+   SCROLL ANIMATIONS (PROFESSIONAL MULTI-DIRECTION)
 ============================================= */
 .reveal {
   opacity: 0;
-  transform: translateY(60px);
-  transition: opacity 0.75s ease, transform 0.75s ease;
+  transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+  will-change: opacity, transform;
 }
+
+.reveal--up { transform: translateY(60px); }
+.reveal--down { transform: translateY(-60px); }
+.reveal--left { transform: translateX(-60px); }
+.reveal--right { transform: translateX(60px); }
+.reveal--scale { transform: scale(0.92); }
 
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(0) scale(1);
 }
+
+.delay-100 { transition-delay: 0.1s; }
+.delay-200 { transition-delay: 0.2s; }
+.delay-300 { transition-delay: 0.3s; }
+.delay-400 { transition-delay: 0.4s; }
+.delay-500 { transition-delay: 0.5s; }
+.delay-600 { transition-delay: 0.6s; }
 
 /* =============================================
    RESPONSIVE
 ============================================= */
 @media (max-width: 1024px) {
-  .product-featured {
-    grid-template-columns: 1fr;
-  }
+  .product-featured { grid-template-columns: 1fr; }
   .product-featured__image { aspect-ratio: 16/9; }
-  .feature-card { width: 120px; }
   .footer__columns { grid-template-columns: 1fr 1fr; }
   .footer__columns::before { display: none; }
   .footer__columns::after { left: 50%; }
 }
 
+@media (max-width: 992px) {
+  .about__inner { flex-direction: column; justify-content: center; }
+  .about__image { max-width: 100%; margin-bottom: 20px; }
+}
+
 @media (max-width: 768px) {
   .nav__links, .nav__actions { display: none; }
   .nav__hamburger { display: flex; }
+  
   .about, .features, .products, .testimonials, .cta { padding-inline: 20px; }
   .about { padding-top: 80px; padding-bottom: 80px; }
   .products { padding-top: 80px; }
   .cta { padding-bottom: 80px; }
+  
+  .tab-grid { grid-template-columns: 1fr; } 
+  
   .product-cards-row { grid-template-columns: 1fr; }
   .product-features-bar { grid-template-columns: 1fr 1fr; }
   .pf-item:nth-child(2) { border-right: none; }
   .pf-item:nth-child(3) { border-right: 1px solid var(--color-border); }
+  
+  .feature-card { width: 45%; max-width: none; }
+  
   .footer__box { padding: 30px 20px; }
   .footer__columns { grid-template-columns: 1fr; }
   .footer__columns::before, .footer__columns::after { display: none; }
+  
   .testimonial-card { padding: 32px 24px; }
   .testimonial-card__author { flex-direction: column; align-items: flex-start; }
+  
   .side-shape { display: none; }
   .product-btns { flex-direction: column; }
   .product-btns .btn { width: 100%; }
-  .experience-title { font-size: clamp(40px, 10vw, 80px); }
+  
+  .reveal--left, .reveal--right { transform: translateY(40px); }
 }
 
 @media (max-width: 480px) {
   .hero__title { font-size: 38px; }
   .section-title { font-size: 30px; }
+  .feature-card { width: 100%; }
   .footer__bottom { flex-direction: column; align-items: flex-start; }
+  .product-features-bar { grid-template-columns: 1fr; }
+  .pf-item { border-right: none; border-bottom: 1px solid var(--color-border); }
+  .pf-item:last-child { border-bottom: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- SIDE SHAPES (decorative, hidden on mobile) -->
 <div class="side-shape side-shape--left" aria-hidden="true">
   <img src="https://framerusercontent.com/images/NdLkS8vtcmffOJXFVqqEDt4vKUE.svg" alt="">
 </div>
@@ -1068,8 +902,7 @@ ul, ol { list-style: none; }
   <img src="https://framerusercontent.com/images/2yzY1v4sr5ElVVFouKDhqNsY.svg" alt="">
 </div>
 
-<!-- ===================== NAVIGATION ===================== -->
-<nav class="nav" style="background: rgba(20, 20, 21, 0.4);">
+<nav class="nav" id="mainNav">
   <div class="nav__inner">
     <a class="nav__logo" href="#" aria-label="Booxia Home">
       <img src="https://framerusercontent.com/images/A6PqJxTff0Dj7pOAcAtv2xr759Y.svg" alt="Booxia">
@@ -1096,7 +929,6 @@ ul, ol { list-style: none; }
     </button>
   </div>
 
-  <!-- Mobile menu -->
   <div class="nav__mobile" id="mobileMenu">
     <a href="#">Home</a>
     <a href="#features">Features</a>
@@ -1107,7 +939,6 @@ ul, ol { list-style: none; }
   </div>
 </nav>
 
-<!-- ===================== HERO ===================== -->
 <section class="hero" id="home">
   <div class="hero__bg">
     <img src="https://framerusercontent.com/images/1L17lpjTKgKLlocor1Dg9cD5Iw.png" alt="Booxia headphones lifestyle" fetchpriority="high">
@@ -1115,25 +946,27 @@ ul, ol { list-style: none; }
   <div class="hero__overlay"></div>
 
   <div class="hero__content">
-    <div class="hero__text reveal visible">
+    <div class="hero__text reveal reveal--up">
       <h1 class="hero__title">Unleash powerful sound. Anywhere you go...</h1>
-      <p class="hero__subtitle">Meet the next-generation portable Bluetooth headphone delivering deep bass.</p>
-      <a class="btn btn--glass" href="#products">Our Products</a>
+      <p class="hero__subtitle delay-100">Meet the next-generation portable Bluetooth headphone delivering deep bass.</p>
+      <a class="btn btn--glass delay-200" href="#products">Our Products</a>
     </div>
   </div>
 </section>
 
-<!-- ===================== ABOUT ===================== -->
 <section class="about" id="about">
   <div class="about__glow" aria-hidden="true"></div>
   <div class="about__inner">
-    <div class="about__content reveal visible">
-      <p class="section-tag" style="color:var(--color-muted)">Tech spaces</p>
-      <h2 class="section-title">Dive into a world of pristine audio clarity where every beat resonates perfectly</h2>
+    
+    <div class="about__image reveal reveal--left">
+      <img src="https://framerusercontent.com/images/2BQZJVg5g3YBhNeNzcdRc0Tc.png?width=960&height=960" alt="Booxia headphones detail" loading="lazy" decoding="auto">
+    </div>
 
-      <div class="about__tabs">
+    <div class="about__content">
+      <p class="section-tag reveal reveal--up">Tech spaces</p>
+      <h2 class="section-title reveal reveal--up delay-100">Dive into a world of pristine audio clarity where every beat resonates perfectly</h2>
 
-        <!-- TAB 1: Sound -->
+      <div class="about__tabs reveal reveal--up delay-200">
         <div class="tab-item">
           <div class="tab-header" role="button" tabindex="0" aria-expanded="false">
             <span class="tab-title">Sound</span>
@@ -1175,7 +1008,6 @@ ul, ol { list-style: none; }
           </div>
         </div>
 
-        <!-- TAB 2: Design -->
         <div class="tab-item">
           <div class="tab-header" role="button" tabindex="0" aria-expanded="false">
             <span class="tab-title">Design</span>
@@ -1217,7 +1049,6 @@ ul, ol { list-style: none; }
           </div>
         </div>
 
-        <!-- TAB 3: Battery -->
         <div class="tab-item">
           <div class="tab-header" role="button" tabindex="0" aria-expanded="false">
             <span class="tab-title">Battery</span>
@@ -1259,42 +1090,41 @@ ul, ol { list-style: none; }
           </div>
         </div>
 
-      </div><!-- /tabs -->
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ===================== FEATURES ===================== -->
 <section class="features" id="features">
   <div class="features__inner">
-    <div class="features__image reveal visible">
+    <div class="features__image reveal reveal--scale">
       <img src="https://framerusercontent.com/images/6iSfmDw4nQgNMB867ynRbwSfdWU.png" alt="Booxia headphone close-up" loading="lazy">
     </div>
 
-    <h2 class="experience-title reveal visible">Experience next-gen</h2>
+    <h2 class="experience-title reveal reveal--up">Experience next-gen</h2>
 
-    <div class="feature-cards reveal visible">
-      <div class="feature-card">
+    <div class="feature-cards">
+      <div class="feature-card reveal reveal--up delay-100">
         <img src="https://framerusercontent.com/images/JvYqiK0ppkjh82udX16kQTULyc8.svg" alt="Driver size icon">
         <p class="feature-card__label">40mm Driver size</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal reveal--up delay-200">
         <img src="https://framerusercontent.com/images/95f6SWSUWMrsu6iVrJsvO8Wjcc.svg" alt="Weight icon">
         <p class="feature-card__label">285 g Product w.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal reveal--up delay-300">
         <img src="https://framerusercontent.com/images/lUqGyE0v9t2yzJGTGok2DJpNk.svg" alt="Battery icon">
         <p class="feature-card__label">35h Battery life</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal reveal--up delay-400">
         <img src="https://framerusercontent.com/images/BXGkVeSGqh6JZLRXa1LqYsk9kuo.svg" alt="Bluetooth icon">
         <p class="feature-card__label">v5.1 Bluetooth</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal reveal--up delay-500">
         <img src="https://framerusercontent.com/images/pQIIdZb9KxU6dljYNOSjglLqj0.svg" alt="Noise cancellation icon">
         <p class="feature-card__label">Noise cancellation</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal reveal--up delay-600">
         <img src="https://framerusercontent.com/images/KXS5JWP7jrsSllcc96lLTGau1M.svg" alt="USB-C icon">
         <p class="feature-card__label">USB-C Connector</p>
       </div>
@@ -1302,20 +1132,17 @@ ul, ol { list-style: none; }
   </div>
 </section>
 
-<!-- ===================== VIDEO ===================== -->
 <section class="video-section">
   <video src="https://framerusercontent.com/assets/n0eWQN8QTbxmLS0KNXyRwJInZZA.mp4" autoplay="" muted="" loop="" playsinline="" preload="metadata" aria-label="Booxia headphone promotional video"></video>
   <div class="video-section__overlay"></div>
 </section>
 
-<!-- ===================== PRODUCTS ===================== -->
 <section class="products" id="products">
   <div class="products__inner">
-    <h2 class="products__header reveal visible">Giving you an unprecedented musical journey</h2>
+    <h2 class="products__header reveal reveal--left">Giving you an unprecedented musical journey</h2>
 
-    <!-- Two small cards -->
-    <div class="product-cards-row reveal visible">
-      <div class="product-card-sm">
+    <div class="product-cards-row">
+      <div class="product-card-sm reveal reveal--up delay-100">
         <h5>Booxia Jordan Edition</h5>
         <div class="product-card-sm__image">
           <img src="https://framerusercontent.com/images/STj7DKvhFKEuKEqekLKeNz2Ks.png" alt="Booxia Jordan Edition" loading="lazy">
@@ -1323,7 +1150,7 @@ ul, ol { list-style: none; }
         <p class="product-card-sm__price">Start from: <strong>$49 – $399</strong></p>
         <a class="btn btn--dark" href="#">pre-order today</a>
       </div>
-      <div class="product-card-sm">
+      <div class="product-card-sm reveal reveal--up delay-200">
         <h5>Booxia Jordan Edition</h5>
         <div class="product-card-sm__image">
           <img src="https://framerusercontent.com/images/ZIDn7l90MuwqhUYUEMPLySlgRA.png" alt="Booxia Jordan Edition" loading="lazy">
@@ -1333,31 +1160,16 @@ ul, ol { list-style: none; }
       </div>
     </div>
 
-    <!-- Featured product card -->
-    <div class="product-featured reveal visible">
+    <div class="product-featured reveal reveal--scale delay-100">
       <div class="product-featured__image">
         <img src="https://framerusercontent.com/images/Vk5SYFAiAJM1HNL1PoPymzhWjpQ.png" alt="Booxia Jordan Edition featured" loading="lazy">
       </div>
 
       <div class="product-featured__info">
         <div class="color-options" aria-label="Color options">
-          <div class="color-dot active">
-            <img src="https://framerusercontent.com/images/HXPiAwmLlYR3B4WOglDFOE77vk.png" alt="Color option 1">
-          </div>
-          <div class="color-dot">
-            <img src="https://framerusercontent.com/images/A0NJGDG5aMPnecaSBiAT1lHRNc.png" alt="Color option 2">
-          </div>
-          <div class="color-dot">
-            <img src="https://framerusercontent.com/images/5sQTf4ifJigOefRMwaoxNASfIa4.png" alt="Color option 3">
-          </div>
-        </div>
-
-        <div class="stars" aria-label="5 stars">
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
+          <div class="color-dot active"><img src="https://framerusercontent.com/images/HXPiAwmLlYR3B4WOglDFOE77vk.png" alt="Color 1"></div>
+          <div class="color-dot"><img src="https://framerusercontent.com/images/A0NJGDG5aMPnecaSBiAT1lHRNc.png" alt="Color 2"></div>
+          <div class="color-dot"><img src="https://framerusercontent.com/images/5sQTf4ifJigOefRMwaoxNASfIa4.png" alt="Color 3"></div>
         </div>
 
         <h4 class="product-name">Booxia Jordan Edition</h4>
@@ -1371,45 +1183,22 @@ ul, ol { list-style: none; }
 
         <div class="product-btns">
           <a class="btn btn--dark" href="#">pre-order today</a>
-          <a class="btn btn--outline" href="https://affiliate-program.amazon.com/" target="_blank" rel="noopener">Buy On Affiliate</a>
         </div>
       </div>
-
       <div class="discount-badge" aria-label="10% discount">-10%</div>
     </div>
 
-    <!-- Feature bar -->
-    <div class="product-features-bar reveal visible">
-      <div class="pf-item">
-        <p class="pf-item__value">In stock!</p>
-        <p class="pf-item__label">Ships within 1–2 business days.</p>
-      </div>
-      <div class="pf-item">
-        <p class="pf-item__value">2 days</p>
-        <p class="pf-item__label">risk-free trial</p>
-      </div>
-      <div class="pf-item">
-        <p class="pf-item__value">1 year+</p>
-        <p class="pf-item__label">year warranty</p>
-      </div>
-      <div class="pf-item">
-        <p class="pf-item__value">Complimentary</p>
-        <p class="pf-item__label">shipping &amp; returns</p>
-      </div>
+    <div class="product-features-bar reveal reveal--up delay-200">
+      <div class="pf-item"><p class="pf-item__value">In stock!</p></div>
+      <div class="pf-item"><p class="pf-item__value">2 days trial</p></div>
+      <div class="pf-item"><p class="pf-item__value">1 year+ warranty</p></div>
+      <div class="pf-item"><p class="pf-item__value">Complimentary</p></div>
     </div>
   </div>
 </section>
 
-<!-- ===================== MARQUEE ===================== -->
 <div class="marquee-section" aria-hidden="true">
   <div class="marquee-track">
-    <span class="marquee-item">Beats</span>
-    <span class="marquee-item">Polymer</span>
-    <span class="marquee-item">Bang</span>
-    <span class="marquee-item">Beats</span>
-    <span class="marquee-item">Polymer</span>
-    <span class="marquee-item">Bang</span>
-    <!-- Duplicate for seamless loop -->
     <span class="marquee-item">Beats</span>
     <span class="marquee-item">Polymer</span>
     <span class="marquee-item">Bang</span>
@@ -1419,21 +1208,11 @@ ul, ol { list-style: none; }
   </div>
 </div>
 
-<!-- ===================== TESTIMONIALS ===================== -->
 <section class="testimonials" id="testimonial">
-  <div class="testimonials__inner reveal visible">
+  <div class="testimonials__inner reveal reveal--up">
     <h2 class="testimonials__header">Happy users saying about it</h2>
 
     <div class="testimonial-card">
-      <div class="testimonial-card__stars">
-        <div class="stars" aria-label="5 stars">
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-          <svg viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path></svg>
-        </div>
-      </div>
       <p class="testimonial-card__quote">" I've been using the Booxia bluetooth headphones for a few weeks, and I'm genuinely impressed. The audio is crisp and powerful — the bass hits deep without overpowering, mids &amp; highs stay clear and well-defined. "</p>
       <div class="testimonial-card__author">
         <div class="testimonial-card__meta">
@@ -1448,35 +1227,30 @@ ul, ol { list-style: none; }
   </div>
 </section>
 
-<!-- ===================== CTA ===================== -->
 <section class="cta">
   <div class="cta__inner">
-    <h2 class="cta__title reveal visible">Control with your device</h2>
-    <div class="cta__image-wrap reveal visible" style="position:relative; overflow:hidden; border-radius:10px; height:400px;">
-      <img src="https://framerusercontent.com/images/sL9Gs6yEBSa8JZ8Q3OHlqd9w.png" alt="Booxia app on device" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
-      <img class="cta__phone" src="https://framerusercontent.com/images/4rvuDIwJF8OwZeTjbOW9IkI.png" alt="Booxia app phone mockup" loading="lazy" style="position:absolute;bottom:-20px;right:0;width:260px;object-fit:contain;">
+    <h2 class="cta__title reveal reveal--up">Control with your device</h2>
+    <div class="cta__image-wrap reveal reveal--scale delay-100">
+      <img src="https://framerusercontent.com/images/sL9Gs6yEBSa8JZ8Q3OHlqd9w.png" alt="Booxia app on device" loading="lazy">
+      <img class="cta__phone reveal reveal--up delay-400" src="https://framerusercontent.com/images/4rvuDIwJF8OwZeTjbOW9IkI.png" alt="Booxia app phone mockup" loading="lazy">
     </div>
   </div>
 </section>
 
-<!-- ===================== FOOTER ===================== -->
-<footer class="footer">
+<footer class="footer reveal reveal--up">
   <div class="footer__inner">
     <div class="footer__box">
       <div class="footer__columns">
-        <!-- Contact -->
         <div class="footer__col">
           <h6 class="footer__col-title">Contact us</h6>
           <a href="tel:+1234567890123">+123 456 7890 123</a>
           <a href="mailto:info@booxia.com">info@booxia.com</a>
         </div>
-        <!-- Social -->
         <div class="footer__col">
           <h6 class="footer__col-title">Social info</h6>
           <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
           <a href="https://facebook.com" target="_blank" rel="noopener">Facebook</a>
         </div>
-        <!-- Newsletter -->
         <div class="footer__col">
           <h6 class="footer__col-title">Get updates</h6>
           <form class="footer__form" onsubmit="handleNewsletterSubmit(event)">
@@ -1489,11 +1263,7 @@ ul, ol { list-style: none; }
           </form>
         </div>
       </div>
-
-      <!-- Wordmark -->
       <div class="footer__wordmark" aria-hidden="true">Booxia</div>
-
-      <!-- Bottom bar -->
       <div class="footer__bottom">
         <span>Copyright &amp; design by @TemplateMunk – 2026</span>
         <div class="footer__bottom-links">
@@ -1506,7 +1276,6 @@ ul, ol { list-style: none; }
   </div>
 </footer>
 
-<!-- ===================== JAVASCRIPT ===================== -->
 <script>
 /* ---- Hamburger menu ---- */
 const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -1523,36 +1292,32 @@ document.querySelectorAll('.tab-header').forEach(header => {
     const item = header.closest('.tab-item');
     const isOpen = item.classList.contains('open');
 
-    // Close all
     document.querySelectorAll('.tab-item').forEach(t => {
       t.classList.remove('open');
       t.querySelector('.tab-header').setAttribute('aria-expanded', 'false');
     });
 
-    // Open clicked if it was closed
     if (!isOpen) {
       item.classList.add('open');
       header.setAttribute('aria-expanded', 'true');
     }
   });
-
-  header.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      header.click();
-    }
-  });
 });
 
-/* ---- Scroll reveal ---- */
-const revealObserver = new IntersectionObserver((entries) => {
+/* ---- Professional Scroll Reveal with Intersection Observer ---- */
+const revealOptions = {
+  threshold: 0.15, 
+  rootMargin: '0px 0px -50px 0px' 
+};
+
+const revealObserver = new IntersectionObserver((entries, observer) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
-      revealObserver.unobserve(entry.target);
+      observer.unobserve(entry.target); 
     }
   });
-}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+}, revealOptions);
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
@@ -1561,22 +1326,23 @@ document.querySelectorAll('.color-dot').forEach(dot => {
   dot.addEventListener('click', () => {
     dot.closest('.color-options').querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
     dot.classList.add('active');
-    // Update featured image to match selected color
     const newSrc = dot.querySelector('img').src;
     const featuredImg = document.querySelector('.product-featured__image img');
     if (featuredImg) featuredImg.src = newSrc;
   });
 });
 
-/* ---- Navbar background on scroll ---- */
-const nav = document.querySelector('.nav');
+/* ---- Navbar background logic on scroll ---- */
+const nav = document.getElementById('mainNav');
 window.addEventListener('scroll', () => {
-  nav.style.background = window.scrollY > 60
-    ? 'rgba(20,20,21,0.85)'
-    : 'rgba(20,20,21,0.4)';
+  if (window.scrollY > 60) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
 }, { passive: true });
 
-/* ---- Newsletter form ---- */
+/* ---- Newsletter logic ---- */
 function handleNewsletterSubmit(e) {
   e.preventDefault();
   const input = e.target.querySelector('input[type="email"]');
@@ -1592,7 +1358,5 @@ function handleNewsletterSubmit(e) {
   }, 800);
 }
 </script>
-
-
-
-</body></html>
+</body>
+</html>
