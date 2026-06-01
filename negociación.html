@@ -1,93 +1,285 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Start a Project | Matías Ibarra</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Inter:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start a Project | Matías Ibarra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-<style>
-:root {
-  --white: #fff;
-  --black: #000;
-  --card-bg: rgba(0, 0, 0, 0.4); /* Fondo más transparente para integrar con el video */
-  --text-muted: rgba(255, 255, 255, 0.65);
-  --nav-h: 72px;
-}
+  <style>
+    /* ─── VARIABLES GLOBALES ─── */
+    :root {
+      --white: #fff;
+      --black: #000;
+      --card-bg: rgba(13, 13, 13, 0.4); /* Transparencia para efecto Glassmorphism */
+      --text-muted: rgba(255, 255, 255, 0.65);
+      --nav-h: 72px;
+    }
 
-/* ─── VIDEO DE FONDO ─── */
-.video-bg {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: -1;
-  object-fit: cover;
-  pointer-events: none;
-}
-.video-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6); /* Oscurece el video para legibilidad */
-  z-index: -1;
-}
+    *, *::before, *::after { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
 
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: #000;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-a { text-decoration: none; color: inherit; }
+    /* ─── ESTRUCTURA BASE ─── */
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden; /* Evita scroll horizontal indeseado */
+      display: flex;
+      flex-direction: column;
+    }
 
-/* ─── NAVBAR MEJORADA ─── */
-.navbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--nav-h);
-  display: flex;
-  align-items: center;
-  padding: 0 clamp(18px, 4vw, 40px);
-  background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(10px);
-  z-index: 100;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
+    a { text-decoration: none; color: inherit; }
 
-/* ─── LAYOUT Y FORMULARIO (Actualizados para transparencia) ─── */
-.contact-container {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  max-width: 1200px;
-  margin: calc(var(--nav-h) + 60px) auto 60px;
-  padding: 0 clamp(18px, 5vw, 40px);
-  gap: 80px;
-}
-.form-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  padding: 40px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
+    /* ─── VIDEO DE FONDO Y CAPAS (Z-INDEX MANAGEMENT) ─── */
+    .video-bg {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100vw; 
+      height: 100vh;
+      object-fit: cover; /* Mantiene proporción sin deformar en cualquier pantalla */
+      z-index: -2; /* Al fondo absoluto */
+      pointer-events: none; /* Permite hacer clic a través del video */
+    }
 
-/* ... (Mantén aquí el resto de tus estilos de botones, inputs y steps originales) ... */
+    .video-overlay {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100vw; 
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.65); /* Oscurece el video para que el texto sea legible */
+      z-index: -1; /* Justo sobre el video, debajo del contenido */
+      pointer-events: none;
+    }
 
-/* ─── ANIMACIONES MEJORADAS ─── */
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-</style>
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      padding: 0 clamp(18px, 4vw, 40px);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100; /* Siempre al frente */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar__inner {
+      width: 100%; max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: #fff; }
+
+    /* ─── MAIN LAYOUT ─── */
+    .contact-container {
+      position: relative;
+      z-index: 10; /* Se asegura de estar sobre el video y el overlay */
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      max-width: 1200px;
+      margin: calc(var(--nav-h) + 60px) auto 60px;
+      padding: 0 clamp(18px, 5vw, 40px);
+      gap: 80px;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .contact-container {
+        grid-template-columns: 1fr;
+        gap: 50px;
+        margin-top: calc(var(--nav-h) + 40px);
+      }
+    }
+
+    /* ─── INFO PANEL (Lado Izquierdo) ─── */
+    .info-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      background: rgba(10, 10, 10, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 26px;
+      font-size: 13px; color: rgba(255, 255, 255, 0.85);
+      width: fit-content;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #25D366;
+      box-shadow: 0 0 8px rgba(37, 211, 102, 0.4);
+    }
+
+    .info-title {
+      font-family: 'Satoshi', sans-serif;
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 500; line-height: 1.1;
+    }
+
+    .info-desc {
+      font-size: 16px; color: var(--text-muted); line-height: 1.6;
+    }
+
+    .process-steps {
+      margin-top: 16px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+
+    .step {
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+
+    .step-num {
+      width: 28px; height: 28px;
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--white); flex-shrink: 0;
+    }
+
+    .step p { font-size: 14px; color: rgba(255, 255, 255, 0.8); line-height: 1.5; }
+
+    /* ─── FORMULARIO GLASSMORPHISM (Lado Derecho) ─── */
+    .form-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px); /* Efecto vidrio */
+      -webkit-backdrop-filter: blur(16px);
+      padding: 40px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 600px) {
+      .form-panel { padding: 24px; }
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    .form-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    label {
+      font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.8);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5); /* Semi-transparente para ver el video levemente */
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      background: rgba(0, 0, 0, 0.8);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+
+    textarea { resize: vertical; min-height: 120px; }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+      cursor: pointer;
+    }
+
+    select option { background: #0d0d0d; color: #fff; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background: #e6e6e6;
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* ─── ANIMACIONES OPTIMIZADAS (GPU) ─── */
+    .reveal {
+      opacity: 0;
+      /* Usar solo transform previene reflows y mejora el rendimiento en móviles */
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform; /* Alerta al navegador para optimizar memoria */
+    }
+
+    /* Direcciones */
+    .reveal.fade-up { transform: translateY(40px); }
+    .reveal.fade-left { transform: translateX(-40px); }
+    .reveal.fade-right { transform: translateX(40px); }
+
+    /* Estado visible */
+    .reveal.visible {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    /* Cascada (Delays) */
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+  </style>
 </head>
 <body>
 
@@ -98,22 +290,108 @@ a { text-decoration: none; color: inherit; }
 
   <nav class="navbar">
     <div class="navbar__inner">
-      <a href="index.html" class="back-link">← Back to Portfolio</a>
+      <a href="index.html" class="back-link reveal fade-left">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Portfolio
+      </a>
     </div>
   </nav>
 
   <main class="contact-container">
-    </main>
+
+    <div class="info-panel">
+      <div class="badge reveal fade-left delay-1">
+        <span class="badge-dot"></span>
+        Currently accepting new projects
+      </div>
+      
+      <h1 class="info-title reveal fade-left delay-2">Let's build something exceptional.</h1>
+      
+      <p class="info-desc reveal fade-left delay-3">
+        To ensure maximum efficiency and focus on delivering high-quality code, I operate on an <strong>async-first</strong> communication model. This allows me to dedicate uninterrupted time to architectural planning and development.
+      </p>
+
+      <div class="process-steps">
+        <div class="step reveal fade-up delay-2">
+          <div class="step-num">1</div>
+          <p><strong>Submit your brief:</strong> Fill out the form with your project details and technical requirements.</p>
+        </div>
+        <div class="step reveal fade-up delay-3">
+          <div class="step-num">2</div>
+          <p><strong>Technical Review:</strong> I will analyze the scope and feasibility of your request within 24-48 hours.</p>
+        </div>
+        <div class="step reveal fade-up delay-4">
+          <div class="step-num">3</div>
+          <p><strong>Proposal &amp; Kickoff:</strong> You will receive a detailed proposal via email, including architecture layout, timelines, and pricing.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-panel reveal fade-right delay-2">
+      <form id="projectForm" action="https://api.web3forms.com/submit" method="POST">
+
+        <input type="hidden" name="access_key" value="90e1896c-755e-489a-a8f5-19d59b53c9f5">
+        <input type="hidden" name="subject" value="Nuevo Request de Proyecto! 🚀">
+        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required="">
+          </div>
+          <div class="form-group">
+            <label for="company">Company (Optional)</label>
+            <input type="text" id="company" name="company" placeholder="Acme Corp">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Work Email</label>
+          <input type="email" id="email" name="email" placeholder="john@company.com" required="">
+        </div>
+
+        <div class="form-group">
+          <label for="budget">Estimated Budget</label>
+          <select id="budget" name="budget" required="">
+            <option value="" disabled="" selected="">Select a range</option>
+            <option value="under_5">Less than $500</option>
+            <option value="1k_2k">$1,000 - $2,500</option>
+            <option value="3k_5k">$3,000 - $5,000</option>
+            <option value="5k_plus">$5,000+</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="details">Project Details</label>
+          <textarea id="details" name="details" placeholder="Tell me about the problem you are trying to solve, your current tech stack, and your goals..." required=""></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Request Technical Proposal</button>
+      </form>
+    </div>
+
+  </main>
 
   <script>
-    // Tu script de IntersectionObserver sigue funcionando perfecto
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
+    document.addEventListener("DOMContentLoaded", () => {
+      // Usamos un threshold bajo para móviles, donde el viewport es más chico
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target); // Solo animar una vez para mejor performance
+          }
+        });
+      }, {
+        threshold: 0.05, 
+        rootMargin: "0px 0px -50px 0px"
       });
-    }, { threshold: 0.1 });
-    
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      document.querySelectorAll('.reveal').forEach(el => {
+        revealObserver.observe(el);
+      });
+    });
   </script>
+
 </body>
 </html>
