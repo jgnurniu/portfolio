@@ -127,7 +127,6 @@
     justify-content: center;
   }
 
-  /* floating food images */
   .hero__floats {
     position: absolute;
     inset: 0;
@@ -147,18 +146,14 @@
   .float-img--b { width:288px; height:288px; bottom:32px;  right:64px;  rotate:  27deg; filter: blur(2px)  drop-shadow(0 2px 2px #00000040); animation-delay:.4s; }
   .float-img--c { width:192px; height:192px; top:50%;      left:32px;   rotate:  22deg; transform: translateY(-50%); filter: blur(.2px) drop-shadow(0 2px 2px #00000040); animation-delay:.6s; }
   .float-img--d { width:160px; height:160px; top:37%;      right:64px;  rotate: -14deg; transform: translateY(-50%); filter: blur(4px)  drop-shadow(0 2px 2px #00000040); animation-delay:.8s; }
-  .float-img--e { width: 96px; height: 96px; top:32px;     left:160px;  rotate:  -3deg; filter: blur(1.5px)drop-shadow(0 2px 2px #00000040); animation-delay:1s;   }
+  .float-img--e { width: 96px; height: 96px; top:32px;     left:160px;  rotate:  -3deg; filter: blur(1.5px) drop-shadow(0 2px 2px #00000040); animation-delay:1s; }
   .float-img--f { width: 64px; height: 64px; top:32px;     right:240px; rotate:  29deg; filter: blur(.2px) drop-shadow(0 2px 2px #00000040); animation-delay:1.2s; }
 
   @keyframes floatIn {
     from { opacity:0; transform: scale(.5) translateY(20px); }
     to   { opacity:1; }
   }
-  /* fix transforms that have translateY already */
-  .float-img--c.floatIn-done { transform: translateY(-50%); }
-  .float-img--d.floatIn-done { transform: translateY(-50%); }
 
-  /* announcement badge */
   .hero__badge {
     display: inline-flex;
     align-items: center;
@@ -182,7 +177,6 @@
   }
   .hero__badge .arrow-icon svg { width: 8px; height: 8px; }
 
-  /* title */
   .hero__title-stack {
     display: flex;
     flex-direction: column;
@@ -210,7 +204,6 @@
     max-width: 60%;
   }
 
-  /* CTA buttons */
   .hero__cta {
     display: flex;
     gap: 8px;
@@ -224,7 +217,6 @@
     border-radius: var(--radius-pill);
   }
 
-  /* scroll hint */
   .hero__scroll {
     position: absolute;
     bottom: 16px;
@@ -399,11 +391,9 @@
     background: var(--bg);
   }
 
-  /* Story cards */
   .story-card {
     position: relative;
     border-radius: var(--radius-card);
-    /* Removido el overflow: hidden para que los sellos puedan sobresalir */
     cursor: pointer;
     text-decoration: none;
     display: block;
@@ -419,16 +409,16 @@
     inset: 0;
     object-fit: cover;
     width: 100%; height: 100%;
-    border-radius: inherit; /* Agregado para mantener los bordes redondeados */
+    border-radius: inherit;
     filter: brightness(1) grayscale(0);
     mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.5) 15%, rgba(0,0,0,.75) 35%, #000 55%, #000 100%);
     -webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.5) 15%, rgba(0,0,0,.75) 35%, #000 55%, #000 100%);
   }
   .story-card__overlay {
     position: absolute;
-    inset: 0; /* Arreglado: cubre toda la tarjeta para no cortar la imagen de golpe */
+    inset: 0;
     border-radius: inherit;
-    background: linear-gradient(0deg, #111 0%, rgba(17,17,17,0) 60%); /* Arreglado: degradado en lugar de un bloque negro sólido */
+    background: linear-gradient(0deg, #111 0%, rgba(17,17,17,0) 60%);
     pointer-events: none;
   }
   .story-card__content {
@@ -454,7 +444,6 @@
     width: 75%;
   }
 
-  /* spinning menu badge */
   .spin-badge {
     position: absolute;
     top: -48px; left: -48px;
@@ -555,7 +544,6 @@
     margin: 0 auto;
   }
 
-  /* rotate alternating cards */
   .reviews-track > .review-card:nth-child(odd)  { transform: rotate( 2deg); }
   .reviews-track > .review-card:nth-child(even) { transform: rotate(-2deg); }
 
@@ -580,7 +568,6 @@
     min-height: 220px;
   }
 
-  /* footer floating burgers */
   .footer__floats {
     position: absolute;
     inset: 0;
@@ -716,148 +703,99 @@
   .reveal-delay-3 { transition-delay: .3s; }
   .reveal-delay-4 { transition-delay: .4s; }
 
-</style>
-<!-- Code injected by Five-server -->
-  <script async="" data-id="five-server" data-file="c:\xampp\htdocs\cctv-cloud\html\hambur.html" type="application/javascript" src="/fiveserver.js"></script>
-  <style>  
-  /* ─── MODIFICACIONES MOBILE ────────────────────────────────────────── */
-  
-  /* Ocultar elementos de escritorio */
+  /* ─── MOBILE MENU ──────────────────────────────────────────────────── */
+  .menu-toggle { display: none; }
+
   @media (max-width: 809px) {
     .navbar__links { display: none; }
-    
+
     .menu-toggle {
       display: flex;
       flex-direction: column;
       gap: 5px;
       cursor: pointer;
       padding: 10px;
+      z-index: 1001;
     }
+
     .menu-toggle span {
       width: 25px;
       height: 3px;
       background-color: var(--cream);
       border-radius: 2px;
+      transition: 0.3s ease;
     }
 
-    /* Overlay del menú */
     .mobile-menu-overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
       background: var(--terra);
-      display: none;
+      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 32px;
-      z-index: 999;
       opacity: 0;
-      transition: opacity 0.3s;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 999;
     }
-    .mobile-menu-overlay.is-active { display: flex; opacity: 1; }
-    .mobile-menu-overlay a { color: var(--cream); font-family: var(--font-display); font-size: 1.5rem; }
+
+    .mobile-menu-overlay.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-menu-overlay a {
+      color: var(--cream);
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      text-decoration: none;
+    }
+
+    .footer__bottom { flex-direction: column; gap: 20px; text-align: center; }
+    .footer__copy { font-size: 0.65rem; padding: 0 10px; }
   }
-
-  /* Footer Optimizado para Mobile */
-  @media (max-width: 809px) {
-    .navbar__inner { min-width: unset; width: calc(100vw - 16px); padding: 12px 16px; }
-    .navbar { top: 8px; left: 8px; right: 8px; }
-    
-    /* ... (deja tus otros floats aquí) ... */
-    
-    .footer__bottom { 
-      flex-direction: column; 
-      gap: 20px; 
-      text-align: center;
-    }
-    .footer__copy {
-      font-size: 0.65rem; /* Ajuste para que no se corte en pantallas muy pequeñas */
-      padding: 0 10px;
-    }
-  }    
-      /* Injected by five-server */
-      /*[data-highlight="true"] {
-        border: 1px rgb(90,170,255) solid !important;
-        background-color: rgba(155,215,255,0.5);
-        animation: fadeOutHighlight 1s forwards 0.5s;
-      }
-      img[data-highlight="true"] {
-        filter: sepia(100%) hue-rotate(180deg) saturate(200%);
-        animation: fadeOutHighlightIMG 0.5s forwards 0.5s;
-      }*/
-      @keyframes fadeOutHighlight {
-        from {background-color: rgba(155,215,255,0.5);}
-        to {background-color: rgba(155,215,255,0);}
-      }      
-      @keyframes fadeOutHighlightIMG {
-        0% {filter: sepia(100%) hue-rotate(180deg) saturate(200%);}
-        33% {filter: sepia(66%) hue-rotate(180deg) saturate(100%);}
-        50% {filter: sepia(50%) hue-rotate(90deg) saturate(50%);}
-        66% {filter: sepia(33%) hue-rotate(0deg) saturate(100%);}
-        100% {filter: sepia(0%) hue-rotate(0deg) saturate(100%);}
-      }
-      @keyframes fiveserverInfoPopup {
-        0%   {top:-40px;}
-        15%  {top:4px;}
-        85%  {top:4px;}
-        100% {top:-40px;}
-      }
-      /*smaller*/
-      @media (max-width: 640px) {
-        #fiveserver-info-wrapper {
-          max-width: 98%;
-        }
-        #fiveserver-info {
-          border-radius: 0px;
-        }      
-      }
-
-      
-      </style>
-      </head>
+</style>
+</head>
 <body>
 
+<!-- Mobile menu overlay -->
+<div class="mobile-menu-overlay" id="mobile-menu" style="
+    display: none;
+">
+  <a href="#home">Inicio</a>
+  <a href="#menu">Menú</a>
+  <a href="#story">Nosotros</a>
+  <a href="#feedback">Contacto</a>
+  <a href="#order">Pedir Ahora</a>
+</div>
+
+<!-- Navbar -->
 <nav class="navbar" aria-label="main navigation">
   <div class="navbar__inner">
     <a href="#" class="navbar__logo">King Burger</a>
-    
     <div class="navbar__links">
       <a href="#menu" class="btn-pill btn-cream">MENÚ</a>
       <a href="#story" class="btn-pill btn-cream">NOSOTROS</a>
       <a href="#feedback" class="btn-pill btn-cream">CONTACTO</a>
       <a href="#order" class="btn-pill btn-char">PEDIR AHORA</a>
     </div>
-
     <div class="menu-toggle" id="menu-toggle">
       <span></span><span></span><span></span>
     </div>
   </div>
 </nav>
 
-
-
+<!-- Hero -->
 <header class="hero" id="home">
-
   <div class="hero__floats" aria-hidden="true">
-    <div class="float-img float-img--a">
-      <img src="burgerlog1.png" alt="The Crispy Burger">
-    </div>
-    <div class="float-img float-img--b">
-      <img src="burgerlog2.png" alt="The Classic Burger">
-    </div>
-    <div class="float-img float-img--c">
-      <img src="burgerlog5.png" alt="The Bacon Club">
-    </div>
-    <div class="float-img float-img--d">
-      <img src="burgerlog5.png" alt="The Mushroom Burger">
-    </div>
-    <div class="float-img float-img--e">
-      <img src="burgerlog4.png" alt="The Smash Burger">
-    </div>
-    <div class="float-img float-img--f">
-      <img src="burgerlog1.png" alt="The Crispy Burger">
-    </div>
+    <div class="float-img float-img--a"><img src="burgerlog1.png" alt="The Crispy Burger"></div>
+    <div class="float-img float-img--b"><img src="burgerlog2.png" alt="The Classic Burger"></div>
+    <div class="float-img float-img--c"><img src="burgerlog5.png" alt="The Bacon Club"></div>
+    <div class="float-img float-img--d"><img src="burgerlog5.png" alt="The Mushroom Burger"></div>
+    <div class="float-img float-img--e"><img src="burgerlog4.png" alt="The Smash Burger"></div>
+    <div class="float-img float-img--f"><img src="burgerlog1.png" alt="The Crispy Burger"></div>
   </div>
 
   <div class="hero__content">
@@ -872,10 +810,7 @@
 
     <div class="hero__title-stack">
       <h1 class="hero__h1">La Hamburguesa Perfecta,<br>Siempre.</h1>
-      <p class="hero__sub">
-        La hacemos simple. Buena comida con ingredientes de verdad.<br>
-        Todo lo demás es puro cuento.
-      </p>
+      <p class="hero__sub">La hacemos simple. Buena comida con ingredientes de verdad.<br>Todo lo demás es puro cuento.</p>
     </div>
 
     <div class="hero__cta">
@@ -895,8 +830,8 @@
   </div>
 </header>
 
+<!-- Menu Section -->
 <section class="section section--menu" id="menu" aria-label="menu">
-
   <div class="ticker" aria-hidden="true">
     <div class="ticker__track">
       <span>SABOR A LA PARRILLA</span><span>•</span>
@@ -916,36 +851,23 @@
 
   <div class="section__inner">
     <div class="section__logo reveal visible" aria-hidden="true">
-      <div class="sesame-dots">
-        <span></span><span></span><span></span>
-      </div>
+      <div class="sesame-dots"><span></span><span></span><span></span></div>
     </div>
 
     <h2 class="section__heading reveal reveal-delay-1 visible">Los Favoritos.</h2>
     <p class="section__sub reveal reveal-delay-2 visible">Nuestros pesos pesados.</p>
 
     <div class="cards-grid">
-
       <a href="#order" class="menu-card reveal reveal-delay-1 visible" aria-label="The Classic burger">
-        <div class="menu-card__img">
-          <img src="burger1.jpeg" alt="The Classic Burger" loading="lazy">
-        </div>
-        <div>
-          <h3 class="menu-card__title">King Classic</h3>
-        </div>
+        <div class="menu-card__img"><img src="burger1.jpeg" alt="The Classic Burger" loading="lazy"></div>
+        <div><h3 class="menu-card__title">King Classic</h3></div>
         <p class="menu-card__desc">Carne, Tomate, Lechuga, Cheddar y Salsa King.</p>
-        <div class="menu-card__tags">
-          <span class="tag" aria-label="vegetarian">VG</span>
-        </div>
+        <div class="menu-card__tags"><span class="tag" aria-label="vegetarian">VG</span></div>
       </a>
 
       <a href="#order" class="menu-card reveal reveal-delay-2 visible" aria-label="The Smash burger">
-        <div class="menu-card__img">
-          <img src="burger2.jpeg" alt="The Smash Burger" loading="lazy">
-        </div>
-        <div>
-          <h3 class="menu-card__title">Chesse Boom</h3>
-        </div>
+        <div class="menu-card__img"><img src="burger2.jpeg" alt="The Smash Burger" loading="lazy"></div>
+        <div><h3 class="menu-card__title">Chesse Boom</h3></div>
         <p class="menu-card__desc">Doble carne, Doble Cheddar, Cebolla Caramelizada.</p>
         <div class="menu-card__tags">
           <span class="tag" aria-label="vegetarian">VG</span>
@@ -954,45 +876,39 @@
       </a>
 
       <a href="#order" class="menu-card reveal reveal-delay-3 visible" aria-label="The Bacon Club burger">
-        <div class="menu-card__img">
-          <img src="burger3.jpeg" alt="The Bacon Club Burger" loading="lazy">
-        </div>
-        <div>
-          <h3 class="menu-card__title">King Bacon</h3>
-        </div>
+        <div class="menu-card__img"><img src="burger3.jpeg" alt="The Bacon Club Burger" loading="lazy"></div>
+        <div><h3 class="menu-card__title">King Bacon</h3></div>
         <p class="menu-card__desc">Doble Carne, Cheddar Panceta y Salsa King.</p>
         <div class="menu-card__tags">
           <span class="tag" aria-label="vegetarian">VG</span>
           <span class="tag" aria-label="gluten free">GF</span>
         </div>
       </a>
-
     </div>
 
-    <a href="#menu" class="btn-pill btn-terra btn-lg reveal visible">MENÚ COMPLETO</a>
+    <a href="#menu" class="btn-pill btn-terra btn-lg reveal">MENÚ COMPLETO</a>
   </div>
 </section>
 
+<!-- Story Section -->
 <section class="section section--story" id="story" aria-label="story">
   <div class="section__inner">
-
-    <div class="section__logo reveal visible" aria-hidden="true">
+    <div class="section__logo reveal" aria-hidden="true">
       <div class="sesame-dots"><span></span><span></span><span></span></div>
     </div>
 
-    <h2 class="section__heading reveal reveal-delay-1 visible">¿Cuál es<br>la Historia?</h2>
-    <p class="section__sub reveal reveal-delay-2 visible">Conocenos un poco más.</p>
+    <h2 class="section__heading reveal reveal-delay-1">¿Cuál es<br>la Historia?</h2>
+    <p class="section__sub reveal reveal-delay-2">Conocenos un poco más.</p>
 
-    <a href="#story" class="btn-pill btn-terra btn-lg reveal reveal-delay-3 visible">LEER MÁS</a>
+    <a href="#story" class="btn-pill btn-terra btn-lg reveal reveal-delay-3">LEER MÁS</a>
 
-    <div class="story-grid reveal reveal-delay-1 visible">
-
+    <div class="story-grid reveal reveal-delay-1">
       <article class="story-card story-card--span2" aria-label="Grill Ritual">
         <div class="spin-badge" aria-hidden="true">
           <div class="spin-badge__ring"></div>
           <div class="spin-badge__fill"><span>Menú</span></div>
         </div>
-        <img class="story-card__img" src="juntada4.png" alt="chef cooking" loading="lazy" style="/* object-position: 80.5% 15.2%; */">
+        <img class="story-card__img" src="juntada4.png" alt="chef cooking" loading="lazy">
         <div class="story-card__overlay"></div>
         <div class="story-card__content">
           <h3 class="story-card__title">Ritual de Parrilla</h3>
@@ -1001,8 +917,7 @@
       </article>
 
       <article class="story-card" aria-label="The Main Event">
-        <img class="story-card__img" src="juntada3.png" alt="friends laughing over food" loading="lazy" style="
-">
+        <img class="story-card__img" src="juntada3.png" alt="friends laughing over food" loading="lazy">
         <div class="story-card__overlay"></div>
         <div class="story-card__content">
           <h3 class="story-card__title">El Evento Principal</h3>
@@ -1022,24 +937,24 @@
           <p class="story-card__desc">Las mejores comidas vienen con ruido: buenos amigos, grandes risas y hamburguesas por las que vale la pena juntarse.</p>
         </div>
       </article>
-
     </div>
   </div>
 </section>
 
+<!-- Feedback Section -->
 <section class="section section--feedback" id="feedback" aria-label="customer reviews">
   <div class="section__inner">
-
-    <div class="section__logo reveal visible" aria-hidden="true">
+    <div class="section__logo reveal" aria-hidden="true">
       <div class="sesame-dots"><span></span><span></span><span></span></div>
     </div>
 
-    <h2 class="section__heading reveal reveal-delay-1 visible">Lo que<br>dicen de nosotros.</h2>
-    <p class="section__sub reveal reveal-delay-2 visible">Nuestros clientes hablan...</p>
+    <h2 class="section__heading reveal reveal-delay-1">Lo que<br>dicen de nosotros.</h2>
+    <p class="section__sub reveal reveal-delay-2">Nuestros clientes hablan...</p>
 
-    <a href="#feedback" class="btn-pill btn-terra btn-lg reveal reveal-delay-3 visible">NUESTROS LOCALES</a>
+    <a href="#feedback" class="btn-pill btn-terra btn-lg reveal reveal-delay-3">NUESTROS LOCALES</a>
   </div>
 
+  <!-- Forward track -->
   <div class="reviews-track-wrap">
     <div class="reviews-track reviews-track--fwd" aria-label="customer reviews">
 
@@ -1074,11 +989,18 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Amy</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Centro</span>
             </div>
           </div>
@@ -1094,11 +1016,18 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Tyler</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Yerba Buena</span>
             </div>
           </div>
@@ -1114,72 +1043,83 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">David</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Barrio Sur</span>
             </div>
           </div>
-          <p class="review-card__text">"¡Hamburgesas fantásticas y un servicio excelente! Voy a volver."</p>
+          <p class="review-card__text">"¡Hamburguesas fantásticas y un servicio excelente! Voy a volver."</p>
         </div>
+      </div>
+
+      <div class="review-card review-card--photo" aria-hidden="true">
+        <img src="juntada9.png" alt="" loading="lazy">
       </div>
 
       <div class="review-card">
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
-              <span class="review-card__name">Jack</span>
-            </div>
-            <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
-              <span class="review-card__loc">Barrio Sur</span>
-            </div>
-          </div>
-          <p class="review-card__text">"Las mejores hamburguesas que probé en años. Rápidas, calientes y llenas de sabor. ¡Justo lo que necesitaba después de un día largo!"</p>
-        </div>
-      </div>
-      <div class="review-card review-card--photo" aria-hidden="true">
-        <img src="juntada9.png" alt="" loading="lazy">
-      </div>
-      <div class="review-card">
-        <div class="review-card__inner">
-          <div class="review-card__meta">
-            <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Amy</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Centro</span>
             </div>
           </div>
           <p class="review-card__text">"Servicio súper rápido y hamburguesas riquísimas. Es mi nuevo lugar favorito."</p>
         </div>
       </div>
+
       <div class="review-card review-card--photo" aria-hidden="true">
         <img src="juntada8.png" alt="" loading="lazy" style="object-position:55.5% 16.8%">
       </div>
+
       <div class="review-card">
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Tyler</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Yerba Buena</span>
             </div>
           </div>
           <p class="review-card__text">"Excelente relación calidad-precio. Porciones enormes, hamburguesas jugosas y sin dar vueltas."</p>
         </div>
       </div>
+
     </div>
   </div>
 
+  <!-- Reverse track -->
   <div class="reviews-track-wrap" style="margin-top:32px; margin-bottom: 64px;">
     <div class="reviews-track reviews-track--rev">
 
@@ -1187,11 +1127,18 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Chloe</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Centro</span>
             </div>
           </div>
@@ -1207,11 +1154,18 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Liam</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Barrio Sur</span>
             </div>
           </div>
@@ -1227,11 +1181,18 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Sophie</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Yerba Buena</span>
             </div>
           </div>
@@ -1247,11 +1208,18 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Jessica</span>
             </div>
             <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle></svg>
+              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <circle cx="12" cy="10" r="3" stroke="var(--terra)" fill="none" stroke-width="2"></circle>
+              </svg>
               <span class="review-card__loc">Barrio Norte</span>
             </div>
           </div>
@@ -1267,12 +1235,11 @@
         <div class="review-card__inner">
           <div class="review-card__meta">
             <div class="review-card__name-row">
-              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path><path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path><line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line></svg>
-              <span class="review-card__name">Chloe</span>
-            </div>
-            <div class="review-card__loc-row">
-              <svg class="icon-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6.627-8 12-8 12S4 16.627 4 10a8 8 0 1116 0z" stroke="var(--terra)" fill="none" stroke-width="2"></path><circle cx="12" cy="10" r="" 12"="" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round">
-              </circle></svg>
+              <svg class="icon-person" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 4a1 1 0 101 0zm-1 10l-3 6 3 0 3 6" stroke="var(--terra)" fill="none" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 8l6 2 12 0" stroke="var(--terra)" fill="none" stroke-width="2"></path>
+                <line x1="12" y1="10" x2="12" y2="14" stroke="var(--terra)" stroke-width="2" stroke-linecap="round"></line>
+              </svg>
               <span class="review-card__name">Sofía</span>
             </div>
             <div class="review-card__loc-row">
@@ -1315,12 +1282,10 @@
       </div>
 
     </div>
-
-    <!-- Pista de reseñas en dirección opuesta para lograr el efecto infinito doble -->
-    
   </div>
 </section>
 
+<!-- Footer -->
 <div class="footer-wrap">
   <footer class="footer">
     <div class="footer__floats" aria-hidden="true">
@@ -1332,13 +1297,13 @@
       </div>
     </div>
 
-    <div class="footer__top reveal visible">
+    <div class="footer__top reveal">
       <h2 class="footer__heading">Hambrientos.<br>Bienvenidos.</h2>
       <p class="footer__sub">No te quedes con las ganas. Es el momento perfecto para una King Burger.</p>
       <a href="#order" class="btn-pill btn-char btn-lg" style="margin-top: 16px;">PEDIR AHORA</a>
     </div>
 
-    <div class="footer__bottom reveal visible">
+    <div class="footer__bottom reveal">
       <div class="footer__socials">
         <a href="#" class="social-btn" aria-label="Instagram">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1360,41 +1325,37 @@
 </div>
 
 <script>
-  // Simple intersection observer para las animaciones de clase "reveal"
   document.addEventListener('DOMContentLoaded', () => {
+    // ── Scroll reveal ──────────────────────────────────────────────────
     const reveals = document.querySelectorAll('.reveal');
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          // Remover la clase visible inicial del CSS e inyectar animaciones
           entry.target.classList.add('visible');
           observer.unobserve(entry.target);
         }
       });
-    }, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-    // En un inicio, para limpiar si ya estaban visibles por default
     reveals.forEach(el => {
       el.classList.remove('visible');
       observer.observe(el);
     });
+
+    // ── Mobile menu ────────────────────────────────────────────────────
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('is-active');
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('is-active');
+      });
+    });
   });
 </script>
-<script>
-  const menuToggle = document.getElementById('menu-toggle');
-  const mobileMenu = document.getElementById('mobile-menu');
-
-  function toggleMenu() {
-    mobileMenu.classList.toggle('is-active');
-  }
-
-  menuToggle.addEventListener('click', toggleMenu);
-</script>
-
-
 
 </body></html>
