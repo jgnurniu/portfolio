@@ -5,7 +5,7 @@
 <meta name="description" content="Sin atajos. Solo hamburguesas frescas a la parrilla hechas como se debe. Encontrá tu King Burger más cercano hoy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&amp;family=Inter:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Inter:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
 
 <style>
   /* ─── CSS VARIABLES ────────────────────────────────────────────────── */
@@ -553,6 +553,9 @@
     z-index: 5;
     padding: 16px;
     background: var(--bg);
+    overflow: hidden; /* evita que el padding genere líneas visibles en mobile */
+    box-sizing: border-box;
+    width: 100%;
   }
   .footer {
     width: 100%;
@@ -686,6 +689,8 @@
     .footer__float--l { width:256px; height:256px; top:256px; }
     .footer__float--r { width:256px; height:256px; top:256px; }
     .footer__bottom { flex-direction: column; gap: 16px; }
+    .footer-wrap { padding: 8px; }
+    .footer { border-radius: 12px; }
   }
 
   /* ─── SCROLL-TRIGGERED REVEAL ──────────────────────────────────────── */
@@ -761,9 +766,7 @@
 <body>
 
 <!-- Mobile menu overlay -->
-<div class="mobile-menu-overlay" id="mobile-menu" style="
-    display: none;
-">
+<div class="mobile-menu-overlay" id="mobile-menu">
   <a href="#home">Inicio</a>
   <a href="#menu">Menú</a>
   <a href="#story">Nosotros</a>
@@ -855,17 +858,17 @@
     </div>
 
     <h2 class="section__heading reveal reveal-delay-1 visible">Los Favoritos.</h2>
-    <p class="section__sub reveal reveal-delay-2 visible">Nuestros pesos pesados.</p>
+    <p class="section__sub reveal reveal-delay-2">Nuestros pesos pesados.</p>
 
     <div class="cards-grid">
-      <a href="#order" class="menu-card reveal reveal-delay-1 visible" aria-label="The Classic burger">
+      <a href="#order" class="menu-card reveal reveal-delay-1" aria-label="The Classic burger">
         <div class="menu-card__img"><img src="burger1.jpeg" alt="The Classic Burger" loading="lazy"></div>
         <div><h3 class="menu-card__title">King Classic</h3></div>
         <p class="menu-card__desc">Carne, Tomate, Lechuga, Cheddar y Salsa King.</p>
         <div class="menu-card__tags"><span class="tag" aria-label="vegetarian">VG</span></div>
       </a>
 
-      <a href="#order" class="menu-card reveal reveal-delay-2 visible" aria-label="The Smash burger">
+      <a href="#order" class="menu-card reveal reveal-delay-2" aria-label="The Smash burger">
         <div class="menu-card__img"><img src="burger2.jpeg" alt="The Smash Burger" loading="lazy"></div>
         <div><h3 class="menu-card__title">Chesse Boom</h3></div>
         <p class="menu-card__desc">Doble carne, Doble Cheddar, Cebolla Caramelizada.</p>
@@ -875,7 +878,7 @@
         </div>
       </a>
 
-      <a href="#order" class="menu-card reveal reveal-delay-3 visible" aria-label="The Bacon Club burger">
+      <a href="#order" class="menu-card reveal reveal-delay-3" aria-label="The Bacon Club burger">
         <div class="menu-card__img"><img src="burger3.jpeg" alt="The Bacon Club Burger" loading="lazy"></div>
         <div><h3 class="menu-card__title">King Bacon</h3></div>
         <p class="menu-card__desc">Doble Carne, Cheddar Panceta y Salsa King.</p>
