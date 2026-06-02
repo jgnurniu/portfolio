@@ -765,8 +765,8 @@
 </head>
 <body>
 
-<!-- Mobile menu overlay -->
-<div class="mobile-menu-overlay" id="mobile-menu">
+<!-- Mobile menu overlay (oculto siempre por defecto, visible solo en mobile via JS) -->
+<div class="mobile-menu-overlay" id="mobile-menu" style="display:none;">
   <a href="#home">Inicio</a>
   <a href="#menu">Menú</a>
   <a href="#story">Nosotros</a>
@@ -1350,12 +1350,19 @@
     const mobileMenu = document.getElementById('mobile-menu');
 
     menuToggle.addEventListener('click', () => {
-      mobileMenu.classList.toggle('is-active');
+      if (mobileMenu.style.display === 'none' || mobileMenu.style.display === '') {
+        mobileMenu.style.display = 'flex';
+        requestAnimationFrame(() => mobileMenu.classList.add('is-active'));
+      } else {
+        mobileMenu.classList.remove('is-active');
+        setTimeout(() => { mobileMenu.style.display = 'none'; }, 300);
+      }
     });
 
     mobileMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         mobileMenu.classList.remove('is-active');
+        setTimeout(() => { mobileMenu.style.display = 'none'; }, 300);
       });
     });
   });
