@@ -403,7 +403,7 @@
   .story-card {
     position: relative;
     border-radius: var(--radius-card);
-    overflow: hidden;
+    /* Removido el overflow: hidden para que los sellos puedan sobresalir */
     cursor: pointer;
     text-decoration: none;
     display: block;
@@ -419,14 +419,17 @@
     inset: 0;
     object-fit: cover;
     width: 100%; height: 100%;
+    border-radius: inherit; /* Agregado para mantener los bordes redondeados */
     filter: brightness(1) grayscale(0);
     mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.5) 15%, rgba(0,0,0,.75) 35%, #000 55%, #000 100%);
     -webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.5) 15%, rgba(0,0,0,.75) 35%, #000 55%, #000 100%);
   }
   .story-card__overlay {
     position: absolute;
-    inset: 58px 0 0;
-    background: #000;
+    inset: 0; /* Arreglado: cubre toda la tarjeta para no cortar la imagen de golpe */
+    border-radius: inherit;
+    background: linear-gradient(0deg, #111 0%, rgba(17,17,17,0) 60%); /* Arreglado: degradado en lugar de un bloque negro sólido */
+    pointer-events: none;
   }
   .story-card__content {
     position: absolute;
@@ -989,7 +992,7 @@
           <div class="spin-badge__ring"></div>
           <div class="spin-badge__fill"><span>Menú</span></div>
         </div>
-        <img class="story-card__img" src="juntada4.png" alt="chef cooking" loading="lazy" style="object-position: 80.5% 15.2%;">
+        <img class="story-card__img" src="juntada4.png" alt="chef cooking" loading="lazy" style="/* object-position: 80.5% 15.2%; */">
         <div class="story-card__overlay"></div>
         <div class="story-card__content">
           <h3 class="story-card__title">Ritual de Parrilla</h3>
@@ -998,7 +1001,8 @@
       </article>
 
       <article class="story-card" aria-label="The Main Event">
-        <img class="story-card__img" src="juntada3.png" alt="friends laughing over food" loading="lazy">
+        <img class="story-card__img" src="juntada3.png" alt="friends laughing over food" loading="lazy" style="
+">
         <div class="story-card__overlay"></div>
         <div class="story-card__content">
           <h3 class="story-card__title">El Evento Principal</h3>
@@ -1390,6 +1394,7 @@
 
   menuToggle.addEventListener('click', toggleMenu);
 </script>
+
 
 
 </body></html>
