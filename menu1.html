@@ -4,7 +4,7 @@
 <title>Menú | Giuli Burger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&amp;family=Inter:wght@400;700;900&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --char:   #1c1a17;
@@ -651,24 +651,13 @@
 </nav>
 
 <!-- Ticker -->
-<div class="ticker" style="margin-top:0;" aria-hidden="true">
-  <div class="ticker__track">
-    <span>BURGERS ARTESANALES</span><span>•</span>
-    <span>DELIVERY A DOMICILIO</span><span>•</span>
-    <span>PIZZAS · EMPANADAS · MILANESAS</span><span>•</span>
-    <span>WP: 3815189437</span><span>•</span>
-    <span>BURGERS ARTESANALES</span><span>•</span>
-    <span>DELIVERY A DOMICILIO</span><span>•</span>
-    <span>PIZZAS · EMPANADAS · MILANESAS</span><span>•</span>
-    <span>WP: 3815189437</span><span>•</span>
-  </div>
-</div>
+
 
 <!-- Page header -->
 <div class="page-header">
   <div class="sesame-dots"><span></span><span></span><span></span></div>
   <h1 class="reveal visible">El Menú Completo.</h1>
-  <p class="reveal reveal-delay-1 visible">Todo lo que tenemos. Elegí lo tuyo.</p>
+  <p class="reveal reveal-delay-1 visible">Todo lo que tenemos, Elegí lo tuyo.</p>
 </div>
 
 <!-- Category tabs -->
@@ -686,25 +675,241 @@
   <!-- HAMBURGUESAS -->
   <div class="menu-category visible" data-category="hamburguesas" id="hamburguesas">
     <p class="category-label">— HAMBURGUESAS C/ PAPAS</p>
-    <div class="menu-grid" id="grid-hamburguesas"></div>
+    <div class="menu-grid" id="grid-hamburguesas"><div class="menu-card reveal visible" data-id="h1" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Americana" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Americana</div>
+          <div class="menu-card__desc">La clásica de la casa. Carne jugosa con todos los clásicos.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal visible" data-id="h2" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Mc Cartney" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Mc Cartney</div>
+          <div class="menu-card__desc">Una combinación irresistible con toque especial.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal visible" data-id="h3" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Jackson" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Jackson</div>
+          <div class="menu-card__desc">Para los que la quieren con todo el sabor posible.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="h4" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Francia" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Francia</div>
+          <div class="menu-card__desc">Con un toque diferente, inspirada en los clásicos europeos.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
   <!-- PIZZAS -->
   <div class="menu-category visible" data-category="pizzas" id="pizzas" style="margin-top:48px;">
     <p class="category-label">— PIZZAS</p>
-    <div class="menu-grid" id="grid-pizzas"></div>
+    <div class="menu-grid" id="grid-pizzas"><div class="menu-card reveal" data-id="p1" data-cat="pizzas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Muzzarella" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Muzzarella</div>
+          <div class="menu-card__desc">La clásica con abundante muzzarella derretida.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="p2" data-cat="pizzas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Especial" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Especial</div>
+          <div class="menu-card__desc">Con los mejores ingredientes seleccionados de la casa.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="p3" data-cat="pizzas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Fugazzeta" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Fugazzeta</div>
+          <div class="menu-card__desc">Cebolla y queso en perfecta armonía. Un clásico porteño.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="p4" data-cat="pizzas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Pepperoni" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Pepperoni</div>
+          <div class="menu-card__desc">Con generosas rodajas de pepperoni bien condimentado.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="p5" data-cat="pizzas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Napolitana" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Napolitana</div>
+          <div class="menu-card__desc">Tomate en rodajas, ajo y orégano. La favorita de la nonna.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="p6" data-cat="pizzas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Roquefort" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Roquefort</div>
+          <div class="menu-card__desc">Intensa y cremosa. Para los amantes del queso fuerte.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
   <!-- EMPANADAS -->
   <div class="menu-category visible" data-category="empanadas" id="empanadas" style="margin-top:48px;">
     <p class="category-label">— EMPANADAS</p>
-    <div class="menu-grid" id="grid-empanadas"></div>
+    <div class="menu-grid" id="grid-empanadas"><div class="menu-card reveal" data-id="e1" data-cat="empanadas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Empanada de Pollo" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Empanada de Pollo</div>
+          <div class="menu-card__desc">Relleno jugoso de pollo con condimentos caseros.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="e2" data-cat="empanadas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Empanada de Carne" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Empanada de Carne</div>
+          <div class="menu-card__desc">Relleno clásico de carne picada sazonada.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="e3" data-cat="empanadas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Empanada de Ternera y Queso" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Empanada de Ternera y Queso</div>
+          <div class="menu-card__desc">Ternera tierna con queso derretido en cada mordida.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="e4" data-cat="empanadas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Empanada de Jamón y Queso" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Empanada de Jamón y Queso</div>
+          <div class="menu-card__desc">El combo clásico de jamón y queso en formato empanada.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
   <!-- MILANESAS -->
   <div class="menu-category visible" data-category="milanesas" id="milanesas" style="margin-top:48px;">
     <p class="category-label">— SANDWICH DE MILANESA C/ PAPAS</p>
-    <div class="menu-grid" id="grid-milanesas"></div>
+    <div class="menu-grid" id="grid-milanesas"><div class="menu-card reveal" data-id="m1" data-cat="milanesas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Milanesa Molida Común" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Milanesa Molida Común</div>
+          <div class="menu-card__desc">Milanesa de carne molida clásica, crocante y sabrosa. Con papas.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="m2" data-cat="milanesas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Milanesa Molida Especial" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Milanesa Molida Especial</div>
+          <div class="menu-card__desc">Milanesa molida con ingredientes extras de la casa. Con papas.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="m3" data-cat="milanesas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Milanesa Nalga Común" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Milanesa Nalga Común</div>
+          <div class="menu-card__desc">Milanesa de nalga tierna y bien crocante. Con papas.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="m4" data-cat="milanesas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Milanesa Nalga Especial" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Milanesa Nalga Especial</div>
+          <div class="menu-card__desc">Milanesa de nalga con todos los extras de la casa. Con papas.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">Consultá precio</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
 </main>
@@ -1190,5 +1395,6 @@ document.querySelectorAll('#mobile-menu a').forEach(a => {
 renderCards();
 initReveal();
 </script>
+
 
 </body></html>
