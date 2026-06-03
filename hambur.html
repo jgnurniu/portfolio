@@ -5,7 +5,7 @@
 <meta name="description" content="Sin atajos. Solo hamburguesas frescas a la parrilla hechas como se debe. Encontrá tu King Burger más cercano hoy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Inter:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&amp;family=Inter:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&amp;display=swap" rel="stylesheet">
 
 <style>
   /* ─── CSS VARIABLES ────────────────────────────────────────────────── */
@@ -771,7 +771,7 @@
   <a href="#menu">Menú</a>
   <a href="#story">Nosotros</a>
   <a href="#feedback">Contacto</a>
-  <a href="menu.html">Pedir Ahora</a>
+  <a href="#order">Pedir Ahora</a>
 </div>
 
 <!-- Navbar -->
@@ -795,7 +795,7 @@
   <div class="hero__floats" aria-hidden="true">
     <div class="float-img float-img--a"><img src="burgerlog1.png" alt="The Crispy Burger"></div>
     <div class="float-img float-img--b"><img src="burgerlog2.png" alt="The Classic Burger"></div>
-    <div class="float-img float-img--c"><img src="burgerlog5.png" alt="The Bacon Club"></div>
+    <div class="float-img float-img--c"><img src="burgerlog4.png" alt="The Bacon Club"></div>
     <div class="float-img float-img--d"><img src="burgerlog5.png" alt="The Mushroom Burger"></div>
     <div class="float-img float-img--e"><img src="burgerlog4.png" alt="The Smash Burger"></div>
     <div class="float-img float-img--f"><img src="burgerlog1.png" alt="The Crispy Burger"></div>
@@ -813,7 +813,9 @@
 
     <div class="hero__title-stack">
       <h1 class="hero__h1">La Hamburguesa Perfecta,<br>Siempre.</h1>
-      <p class="hero__sub">La hacemos simple. Buena comida con ingredientes de verdad.<br>Todo lo demás es puro cuento.</p>
+      <p class="hero__sub" style="
+    font-family: var(--font-display);
+">Buena comida con ingredientes de verdad.</p>
     </div>
 
     <div class="hero__cta">
@@ -858,17 +860,17 @@
     </div>
 
     <h2 class="section__heading reveal reveal-delay-1 visible">Los Favoritos.</h2>
-    <p class="section__sub reveal reveal-delay-2">Nuestros pesos pesados.</p>
+    <p class="section__sub reveal reveal-delay-2 visible">Nuestros pesos pesados.</p>
 
     <div class="cards-grid">
-      <a href="#order" class="menu-card reveal reveal-delay-1" aria-label="The Classic burger">
+      <a href="#order" class="menu-card reveal reveal-delay-1 visible" aria-label="The Classic burger">
         <div class="menu-card__img"><img src="burger1.jpeg" alt="The Classic Burger" loading="lazy"></div>
         <div><h3 class="menu-card__title">King Classic</h3></div>
         <p class="menu-card__desc">Carne, Tomate, Lechuga, Cheddar y Salsa King.</p>
         <div class="menu-card__tags"><span class="tag" aria-label="vegetarian">VG</span></div>
       </a>
 
-      <a href="#order" class="menu-card reveal reveal-delay-2" aria-label="The Smash burger">
+      <a href="#order" class="menu-card reveal reveal-delay-2 visible" aria-label="The Smash burger">
         <div class="menu-card__img"><img src="burger2.jpeg" alt="The Smash Burger" loading="lazy"></div>
         <div><h3 class="menu-card__title">Chesse Boom</h3></div>
         <p class="menu-card__desc">Doble carne, Doble Cheddar, Cebolla Caramelizada.</p>
@@ -878,7 +880,7 @@
         </div>
       </a>
 
-      <a href="#order" class="menu-card reveal reveal-delay-3" aria-label="The Bacon Club burger">
+      <a href="#order" class="menu-card reveal reveal-delay-3 visible" aria-label="The Bacon Club burger">
         <div class="menu-card__img"><img src="burger3.jpeg" alt="The Bacon Club Burger" loading="lazy"></div>
         <div><h3 class="menu-card__title">King Bacon</h3></div>
         <p class="menu-card__desc">Doble Carne, Cheddar Panceta y Salsa King.</p>
@@ -889,7 +891,7 @@
       </a>
     </div>
 
-    <a href="menu.html" class="btn-pill btn-terra btn-lg reveal">MENÚ COMPLETO</a>
+    <a href="#menu" class="btn-pill btn-terra btn-lg reveal">MENÚ COMPLETO</a>
   </div>
 </section>
 
@@ -954,7 +956,7 @@
     <h2 class="section__heading reveal reveal-delay-1">Lo que<br>dicen de nosotros.</h2>
     <p class="section__sub reveal reveal-delay-2">Nuestros clientes hablan...</p>
 
-    <a href="#" class="btn-pill btn-terra btn-lg reveal reveal-delay-3">NUESTRO LOCAL</a>
+    <a href="#feedback" class="btn-pill btn-terra btn-lg reveal reveal-delay-3">NUESTROS LOCALES</a>
   </div>
 
   <!-- Forward track -->
@@ -1301,9 +1303,9 @@
     </div>
 
     <div class="footer__top reveal">
-      <h2 class="footer__heading">Hambrientos<br> Bienvenidos.</h2>
+      <h2 class="footer__heading">Hambrientos.<br>Bienvenidos.</h2>
       <p class="footer__sub">No te quedes con las ganas. Es el momento perfecto para una King Burger.</p>
-      <a href="menu.html" class="btn-pill btn-char btn-lg" style="margin-top: 16px;">PEDIR AHORA</a>
+      <a href="#order" class="btn-pill btn-char btn-lg" style="margin-top: 16px;">PEDIR AHORA</a>
     </div>
 
     <div class="footer__bottom reveal">
