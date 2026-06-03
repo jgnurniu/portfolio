@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Menú | King Burger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&amp;family=Inter:wght@400;700;900&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --char:   #1c1a17;
@@ -653,32 +651,17 @@
 </nav>
 
 <!-- Ticker -->
-<div class="ticker" aria-hidden="true">
-  <div class="ticker__track">
-    <span>MENÚ COMPLETO</span><span>•</span>
-    <span>PEDÍ AHORA</span><span>•</span>
-    <span>MENÚ COMPLETO</span><span>•</span>
-    <span>PEDÍ AHORA</span><span>•</span>
-    <span>MENÚ COMPLETO</span><span>•</span>
-    <span>PEDÍ AHORA</span><span>•</span>
-    <span>MENÚ COMPLETO</span><span>•</span>
-    <span>PEDÍ AHORA</span><span>•</span>
-    <span>MENÚ COMPLETO</span><span>•</span>
-    <span>PEDÍ AHORA</span><span>•</span>
-    <span>MENÚ COMPLETO</span><span>•</span>
-    <span>PEDÍ AHORA</span><span>•</span>
-  </div>
-</div>
+
 
 <!-- Page header -->
 <div class="page-header">
   <div class="sesame-dots"><span></span><span></span><span></span></div>
-  <h1 class="reveal">El Menú Completo.</h1>
-  <p class="reveal reveal-delay-1">Todo lo que tenemos. Elegí lo tuyo.</p>
+  <h1 class="reveal visible">El Menú Completo.</h1>
+  <p class="reveal reveal-delay-1 visible">Todo lo que tenemos. Elegí lo tuyo.</p>
 </div>
 
 <!-- Category tabs -->
-<div class="category-tabs reveal reveal-delay-2">
+<div class="category-tabs reveal reveal-delay-2 visible">
   <button class="tab-btn active" data-cat="all">TODOS</button>
   <button class="tab-btn" data-cat="hamburguesas">HAMBURGUESAS</button>
   <button class="tab-btn" data-cat="combos">COMBOS</button>
@@ -692,25 +675,253 @@
   <!-- HAMBURGUESAS -->
   <div class="menu-category visible" data-category="hamburguesas" id="hamburguesas">
     <p class="category-label">— HAMBURGUESAS</p>
-    <div class="menu-grid" id="grid-hamburguesas"></div>
+    <div class="menu-grid" id="grid-hamburguesas"><div class="menu-card reveal visible" data-id="h1" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="King Classic" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">King Classic</div>
+          <div class="menu-card__desc">La clásica de la casa. Jugosa, simple y perfecta.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$8.000</div>
+            <div class="menu-card__tags"><span class="tag">VG</span></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="h2" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Chesse Boom" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Chesse Boom</div>
+          <div class="menu-card__desc">Doble todo. Para los que no se conforman con poco.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$10.000</div>
+            <div class="menu-card__tags"><span class="tag">VG</span><span class="tag">GF</span></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="h3" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="King Bacon" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">King Bacon</div>
+          <div class="menu-card__desc">Con panceta crocante. La favorita de los carnívoros.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$10.500</div>
+            <div class="menu-card__tags"><span class="tag">VG</span><span class="tag">GF</span></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="h4" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="King Crispy" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">King Crispy</div>
+          <div class="menu-card__desc">Pollo crocante, mucho queso y una salsa que engancha.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$12.000</div>
+            <div class="menu-card__tags"><span class="tag">VG</span></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="h5" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="8 Mini Hamburgesas" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">8 Mini Hamburgesas</div>
+          <div class="menu-card__desc">Con papas y 1 Pileta Cheddar</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$22.000</div>
+            <div class="menu-card__tags"><span class="tag">VE</span></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="h6" data-cat="hamburguesas">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="King Mushroom" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">King Mushroom</div>
+          <div class="menu-card__desc">Con hongos salteados y queso brie. Para paladares exigentes.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$5.600</div>
+            <div class="menu-card__tags"><span class="tag">VG</span></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
   <!-- COMBOS -->
   <div class="menu-category" data-category="combos" id="combos" style="margin-top:48px;">
     <p class="category-label">— COMBOS</p>
-    <div class="menu-grid" id="grid-combos"></div>
+    <div class="menu-grid" id="grid-combos"><div class="menu-card reveal" data-id="c1" data-cat="combos">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Combo Classic" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Combo Classic</div>
+          <div class="menu-card__desc">King Classic + Papas Medianas + Bebida 500ml.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$5.800</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="c2" data-cat="combos">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Combo Boom" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Combo Boom</div>
+          <div class="menu-card__desc">Chesse Boom + Papas Grandes + Bebida 500ml.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$7.200</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="c3" data-cat="combos">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Combo Bacon" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Combo Bacon</div>
+          <div class="menu-card__desc">King Bacon + Papas Grandes + Bebida 500ml.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$7.800</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="c4" data-cat="combos">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Combo Familiar" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Combo Familiar</div>
+          <div class="menu-card__desc">2 hamburguesas a elección + 2 Papas Grandes + 2 Bebidas.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$12.500</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
   <!-- BEBIDAS -->
   <div class="menu-category" data-category="bebidas" id="bebidas" style="margin-top:48px;">
     <p class="category-label">— BEBIDAS</p>
-    <div class="menu-grid" id="grid-bebidas"></div>
+    <div class="menu-grid" id="grid-bebidas"><div class="menu-card reveal" data-id="b1" data-cat="bebidas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Coca-Cola 500ml" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Coca-Cola 500ml</div>
+          <div class="menu-card__desc">La clásica bien fría.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$800</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="b2" data-cat="bebidas">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Agua Mineral 500ml" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Agua Mineral 500ml</div>
+          <div class="menu-card__desc">Agua sin gas bien fría.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$600</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="b3" data-cat="bebidas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Jugo Natural" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Jugo Natural</div>
+          <div class="menu-card__desc">Naranja o Limón. Del día.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$950</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="b4" data-cat="bebidas">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Limonada Menta" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Limonada Menta</div>
+          <div class="menu-card__desc">Limonada natural con menta fresca.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$1.100</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
   <!-- EXTRAS -->
   <div class="menu-category" data-category="extras" id="extras" style="margin-top:48px;">
     <p class="category-label">— EXTRAS</p>
-    <div class="menu-grid" id="grid-extras"></div>
+    <div class="menu-grid" id="grid-extras"><div class="menu-card reveal" data-id="e1" data-cat="extras">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Papas Medianas" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Papas Medianas</div>
+          <div class="menu-card__desc">Crocantes por fuera, suaves por dentro.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$1.200</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="e2" data-cat="extras">
+        <div class="menu-card__img">
+          <img src="burger1.jpeg" alt="Papas Grandes" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Papas Grandes</div>
+          <div class="menu-card__desc">La porción completa para los hambrientos.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$1.600</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="e3" data-cat="extras">
+        <div class="menu-card__img">
+          <img src="burger2.jpeg" alt="Aros de Cebolla" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Aros de Cebolla</div>
+          <div class="menu-card__desc">Crocantes y dorados. Para compartir (o no).</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$1.400</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="e4" data-cat="extras">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Extra Cheddar" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Extra Cheddar</div>
+          <div class="menu-card__desc">Porque siempre falta un poco más de queso.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$400</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div><div class="menu-card reveal" data-id="e5" data-cat="extras">
+        <div class="menu-card__img">
+          <img src="burger3.jpeg" alt="Extra Panceta" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="menu-card__body">
+          <div class="menu-card__name">Extra Panceta</div>
+          <div class="menu-card__desc">Panceta crocante adicional.</div>
+          <div class="menu-card__footer">
+            <div class="menu-card__price">$600</div>
+            <div class="menu-card__tags"></div>
+          </div>
+        </div>
+      </div></div>
   </div>
 
 </main>
@@ -765,8 +976,8 @@
     <textarea class="cart-note" id="cart-note" rows="2" placeholder="¿Alguna aclaración? (sin sal, sin cebolla...)"></textarea>
     <button class="whatsapp-btn" id="whatsapp-btn">
       <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.847L.057 23.882a.5.5 0 00.61.61l6.083-1.471A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.956 9.956 0 01-5.073-1.384l-.361-.214-3.744.906.921-3.668-.236-.374A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 5.477 10 10-4.477 10-10 10z"/>
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.847L.057 23.882a.5.5 0 00.61.61l6.083-1.471A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.956 9.956 0 01-5.073-1.384l-.361-.214-3.744.906.921-3.668-.236-.374A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 5.477 10 10-4.477 10-10 10z"></path>
       </svg>
       MANDAR PEDIDO POR WHATSAPP
     </button>
@@ -783,7 +994,7 @@
 <script>
 // ── DATOS DEL MENÚ ────────────────────────────────────────────────────────
 // Editá este objeto para agregar/modificar productos
-const WHATSAPP_NUMBER = '5493812345678'; // ← cambiá por tu número
+const WHATSAPP_NUMBER = '5493812096455'; // ← cambiá por tu número
 
 const menuData = {
   hamburguesas: [
@@ -792,7 +1003,7 @@ const menuData = {
       name: 'King Classic',
       desc: 'La clásica de la casa. Jugosa, simple y perfecta.',
       ingredients: ['Carne 180g', 'Tomate', 'Lechuga', 'Cheddar', 'Salsa King'],
-      price: 3500,
+      price: 8000,
       img: 'burger1.jpeg',
       tags: ['VG'],
     },
@@ -801,7 +1012,7 @@ const menuData = {
       name: 'Chesse Boom',
       desc: 'Doble todo. Para los que no se conforman con poco.',
       ingredients: ['Doble Carne 360g', 'Doble Cheddar', 'Cebolla Caramelizada', 'Salsa Especial'],
-      price: 4800,
+      price: 10000,
       img: 'burger2.jpeg',
       tags: ['VG', 'GF'],
     },
@@ -810,7 +1021,7 @@ const menuData = {
       name: 'King Bacon',
       desc: 'Con panceta crocante. La favorita de los carnívoros.',
       ingredients: ['Doble Carne 360g', 'Cheddar', 'Panceta Crocante', 'Salsa King', 'Pepinillo'],
-      price: 5200,
+      price: 10500,
       img: 'burger3.jpeg',
       tags: ['VG', 'GF'],
     },
@@ -819,16 +1030,16 @@ const menuData = {
       name: 'King Crispy',
       desc: 'Pollo crocante, mucho queso y una salsa que engancha.',
       ingredients: ['Pollo Crocante', 'Cheddar', 'Lechuga', 'Mayonesa Ahumada', 'Pan Brioche'],
-      price: 4200,
+      price: 12000,
       img: 'burger1.jpeg',
       tags: ['VG'],
     },
     {
       id: 'h5',
-      name: 'Veggie King',
-      desc: 'Medallón vegetal, sin sacrificar el sabor.',
+      name: '8 Mini Hamburgesas',
+      desc: 'Con papas y 1 Pileta Cheddar',
       ingredients: ['Medallón Vegetal', 'Tomate', 'Rúcula', 'Palta', 'Salsa Verde'],
-      price: 3800,
+      price: 22000,
       img: 'burger2.jpeg',
       tags: ['VE'],
     },
@@ -1204,5 +1415,5 @@ document.querySelectorAll('#mobile-menu a').forEach(a => {
 renderCards();
 initReveal();
 </script>
-</body>
-</html>
+
+</body></html>
